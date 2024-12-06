@@ -1,3 +1,6 @@
+// ! Copyright @
+// ! Syafiq
+// ! Syahri Ramadhan Wiraasmara (ARI)
 import Image from "next/image";
 
 export default function Home() {

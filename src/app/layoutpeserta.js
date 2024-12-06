@@ -1,8 +1,8 @@
 // ! Copyright @
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
-import localFont from "next/font/local";
 import "./globals.css";
+import localFont from "next/font/local";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -16,21 +16,15 @@ const geistMono = localFont({
 });
 
 export const metadata = {
-  title: "Psikotest",
-  description: "Psikotest Online App",
+  title: "Peserta | Psikotest",
+  description: "Peserta Tes Psikotest Online App",
 };
 
-// backgroundImage: 'url(https://fruitthemes.com/demo/impressive-wordpress-theme/wp-content/uploads/sites/2/2018/06/pexels-photo-247474.jpeg)',
-// backgroundSize: 'cover',
-// backgroundRepeat: 'no-repeat',
-export default function RootLayout({ children }) {
+export default function Layoutpeserta({ children }) {
   return (
     <html lang="id">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        style={{
-          backgroundColor: 'rgba(50, 50, 100, 1)',
-        }}
       >
         {children}
       </body>
