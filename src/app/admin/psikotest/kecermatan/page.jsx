@@ -13,7 +13,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import Helmet from '@/components/Helmet';
+import Myhelmet from '@/components/Myhelmet';
 import Appbarku from '@/components/Appbarku';
 
 const linkStyle = {
@@ -51,10 +51,11 @@ export default function PsikotestKecermatan(props) {
     console.log('dataPsikotestKecermatan', dataPsikotestKecermatan);
     return (
         <Layoutadmin>
-            <Helmet title="Psikotest Kecermatan | Admin | Psikotest"
-                    description="Psikotest Online App"
-                    keywords="Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind"
-             />
+            <Myhelmet
+                title={`Psikotest Kecermatan | Admin | Psikotest`}
+                description={`Psikotest Online App`}
+                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
+            />
             <Appbarku headTitle="Psikotest Kecermatan" />
             <main className="p-5 mb-14">
                 <div>

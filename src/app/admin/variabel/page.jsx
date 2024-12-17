@@ -12,7 +12,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import Helmet from '@/components/Helmet';
+import Myhelmet from '@/components/Myhelmet';
 import Appbarku from '@/components/Appbarku';
 import NewOrEdit from './new_edit';
 
@@ -42,10 +42,11 @@ export default function VariabelSetting(props) {
     // console.log(variabels);
     return (
         <div>
-            <Helmet title="Variabel | Admin | Psikotest"
-                    description="Psikotest Online App"
-                    keywords="Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind"
-             />
+            <Myhelmet
+                title={`Variabel | Admin | Psikotest`}
+                description={`Psikotest Online App`}
+                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
+            />
             <Layoutadmin>
                 <Appbarku headTitle="Variabel" />
                 <main className="p-5 mb-14">

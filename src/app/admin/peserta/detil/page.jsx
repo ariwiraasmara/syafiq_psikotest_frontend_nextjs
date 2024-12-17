@@ -6,7 +6,7 @@ import Layoutadmin from '../../../secondlayoutadmin';
 import axios from 'axios';
 import * as React from 'react';
 
-import Helmet from '@/components/Helmet';
+import Myhelmet from '@/components/Myhelmet';
 import Appbarku from '@/components/Appbarku';
 import TabHasilPsikotestPeserta from '@/components/TabHasilPsikotestPeserta';
 import encodeHtmlEntities from '@/libraries/myfunction';
@@ -119,10 +119,10 @@ export default function PesertaDetil(props) {
 
     return (
         <Layoutadmin>
-            <Helmet title="Detil Peserta | Admin | Psikotest Online App"
-                    token={token}
-                    description="Psikotest Online App"
-                    keywords="Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind"
+            <Myhelmet
+                title={`Detil Peserta | Admin | Psikotest Online App`}
+                description={`Psikotest Online App`}
+                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
             />
             <Appbarku isback={true} headTitle={'Detil Peserta'} />
             <main className="p-5 mb-14">

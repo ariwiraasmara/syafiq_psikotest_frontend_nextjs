@@ -11,7 +11,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 
-import Helmet from '@/components/Helmet';
+import Myhelmet from '@/components/Myhelmet';
 import Appbarku from '@/components/Appbarku';
 import ListPeserta from '@/components/ListPeserta';
   
@@ -34,9 +34,10 @@ export default function Dashboard(props) {
 
     return (
         <Layoutadmin>
-            <Helmet title="Dashboard | Psikotest Online App"
-                    description="Psikotest Online App"
-                    keywords="Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind"
+            <Myhelmet
+                title={`Dashboard | Psikotest Online App`}
+                description={`Psikotest Online App`}
+                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
             />
             <Appbarku headTitle="Dashboard" />
             

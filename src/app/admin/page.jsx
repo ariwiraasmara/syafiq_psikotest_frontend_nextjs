@@ -106,7 +106,7 @@ export default function Admin(props) {
 
     return (
     <div>
-        <Myhelmet 
+        <Myhelmet
             title={`Login Admin | Psikotest Online App`}
             description={`Psikotest Online App`}
             keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}

@@ -6,7 +6,7 @@ import Layoutadmin from '../../layoutadmin';
 import * as React from 'react';
 import Link from '@mui/material/Link';
 
-import Helmet from '@/components/Helmet';
+import Myhelmet from '@/components/Myhelmet';
 import Appbarku from '@/components/Appbarku';
 
 const typePsikotest = [
@@ -19,10 +19,11 @@ const typePsikotest = [
 export default function Psikotest(props) {
     return (
         <Layoutadmin>
-            <Helmet title="Psikotest | Admin | Psikotest"
-                    description="Psikotest Online App"
-                    keywords="Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind"
-             />
+            <Myhelmet
+                title={`Psikotest | Admin | Psikotest`}
+                description={`Psikotest Online App`}
+                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
+            />
             <Appbarku headTitle="Psikotest" />
             <main className="p-5 mb-14" key={1}>
                 {typePsikotest.map((data, index) => (

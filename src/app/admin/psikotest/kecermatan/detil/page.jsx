@@ -23,7 +23,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 
-import Helmet from '@/components/Helmet';
+import Myhelmet from '@/components/Myhelmet';
 import Appbarku from '@/components/Appbarku';
 import encodeHtmlEntities from '@/libraries/myfunction';
 
@@ -131,10 +131,11 @@ export default function DetilPsikotestKecermatan(props) {
 
     return (
         <Layoutadmin>
-            <Helmet title="Detil Psikotest Kecermatan | Admin | Psikotest"
-                    description="Psikotest Online App"
-                    keywords="Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind"
-             />
+            <Myhelmet
+                title={`Detil Psikotest Kecermatan | Admin | Psikotest`}
+                description={`Psikotest Online App`}
+                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
+            />
             <Appbarku headTitle="Detil Psikotest Kecermatan" />
             <main className="p-5 mb-14" key={1}>
                 <div className="text-white">
