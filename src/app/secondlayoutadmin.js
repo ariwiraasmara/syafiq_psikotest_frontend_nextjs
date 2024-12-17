@@ -6,16 +6,23 @@ import myfunction from '../libraries/myfunction';
 import * as React from 'react';
 // import { useLocation } from 'react-router-dom';
 import { useRouter } from 'next/navigation';
-import Head from 'next/head';
+import Box from '@mui/material/Box';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 
-import NavigasiBawah from '@/components/BottomNavigation';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
+import MoreTimeOutlinedIcon from '@mui/icons-material/MoreTimeOutlined';
+import AppSettingsAltOutlinedIcon from '@mui/icons-material/AppSettingsAltOutlined';
 
 export const metadata = {
   title: "Admin | Psikotest",
   description: "Admin Psikotest Online App",
 };
 
-export default function RootLayout({ children, props }) {
+export default function RootLayout({ children }) {
 
   // const fun = new myfunction();
   // const islogin = myfunction.checkCookie('islogin');
@@ -45,9 +52,9 @@ export default function RootLayout({ children, props }) {
     
   }, [router.pathname]);
   
-  return (<div>
-    {children}
-
-    <NavigasiBawah />
-  </div>);
+  return (
+    <div>
+      {children}
+    </div>
+  );
 }

@@ -13,11 +13,19 @@
     "@emotion/styled": "^11.13.5",
     "@mui/icons-material": "^6.1.9",
     "@mui/material": "^6.1.9",
+    "axios": "^1.7.9",
     "chart.js": "^4.4.7",
+    "cookies-next": "^5.0.2",
+    "csrf": "^3.1.0",
+    "js-cookie": "^3.0.5",
     "next": "15.0.3",
+    "next-auth": "^4.24.11",
     "react": "18.3.1",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "18.3.1",
-    "redis": "^4.7.0"
+    "react-helmet": "^6.1.0",
+    "simple-next-csrf": "^1.0.4",
+    "sweetalert2": "^11.14.5"
   },
   "devDependencies": {
     "eslint": "^8",

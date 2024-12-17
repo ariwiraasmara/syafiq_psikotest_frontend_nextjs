@@ -35,5 +35,12 @@
           }
         }
     }
+
+    export default function encodeHtmlEntities(str) {
+      let textarea = document.createElement('textarea');
+      textarea.textContent = str;
+      return textarea.innerHTML;
+    }
+     
       
 // }
