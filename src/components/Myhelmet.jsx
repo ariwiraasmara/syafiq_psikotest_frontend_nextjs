@@ -5,26 +5,24 @@
 import {Helmet} from "react-helmet";
 import axios from 'axios';
 import * as React from 'react';
-
+import { setCookie } from 'cookies-next/client';
+import fun from '@/libraries/myfunction';
 export default function Myhelmet(props) {
 
     const [token, setToken] = React.useState();
     const generateToken = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/token`, {
-                withCredentials: true  // Mengirimkan cookies jika diperlukan
+            const response1 = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
             });
-            setToken(response.data.token);
-            Cookies.set('XSRF-TOKEN', response.data.token, { expires: 1 });
-            // Cookies.set('XSRF-TOKEN', response.data.token, { expires: 1, secure: true });
-            // setCookie('XSRF-TOKEN', response.data.token, [{secure: true}]);
-            console.log('token', response.data.token)
-            if (token != null) {
-                console.log('Token generated:', token);
-                // Simpan token di state atau cookie sesuai kebutuhan
-            } else {
-                console.log('No CSRF token received');
-            }
+            setToken(response1);
+            setCookie('XSRF-TOKEN', token);
+
+            const response2 = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/generate-token-first`, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
+            });
+            // localStorage.setItem('ckey', fun.generateKey());
+            // console.log('token', response);
         } catch (err) {
             return err;
             // console.error(err);
@@ -50,4 +48,3 @@ export default function Myhelmet(props) {
         </Helmet>
     );
 }
-

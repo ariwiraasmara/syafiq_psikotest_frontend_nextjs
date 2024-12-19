@@ -2,9 +2,8 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)import myfunction from '../libraries/myfunction';
 import * as React from 'react';
-// import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import Box from '@mui/material/Box';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
@@ -17,6 +16,34 @@ import AppSettingsAltOutlinedIcon from '@mui/icons-material/AppSettingsAltOutlin
 export default function NavigasiBawah(...props) {
   const router = useRouter();
   const [value, setValue] = React.useState(0);
+
+  const logout = async () => {
+      try {
+          axios.defaults.withCredentials = true;
+          axios.defaults.withXSRFToken = true;
+          const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/logout`);
+          if(response.data.success) {
+              localStorage.removeItem('islogin');
+              localStorage.removeItem('isadmin');
+              localStorage.removeItem('email');
+              localStorage.removeItem('nama');
+              localStorage.removeItem('pat');
+              localStorage.removeItem('csrfToken');
+              sessionStorage.removeItem('peserta_id');
+              sessionStorage.removeItem('psikotest_kecermatan_id');
+              sessionStorage.removeItem('variabel_id');
+              sessionStorage.removeItem('variabel_variabel');
+              sessionStorage.removeItem('variabel_values');
+              return router.push('/admin');
+          }
+          return alert('Tidak Bisa Logout!');
+      }
+      catch(e) {
+          console.log('Terjadi kesalahan', e);
+          alert(`Terjadi Kesalahan untuk logout`);
+      }
+  };
+
   return(
       <BottomNavigation
         showLabels
@@ -79,6 +106,19 @@ export default function NavigasiBawah(...props) {
             },
           }}
           onClick={() => [router.push('/admin/variabel'), setValue(3)]}
+        />
+        <BottomNavigationAction
+          label="Logout"
+          icon={<AppSettingsAltOutlinedIcon />}
+          selected={props.value === 3}
+          sx={{
+            color: '#fff',
+            '&.Mui-selected': {
+              color: '#fff',
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            },
+          }}
+          onClick={() => [logout(), setValue(0)]}
         />
       </BottomNavigation>
   );

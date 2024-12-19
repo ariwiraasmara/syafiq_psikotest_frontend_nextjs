@@ -4,12 +4,13 @@
 'use client';
 import layout from '../../../../layout';
 import * as React from 'react';
+import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
 import { useSearchParams } from 'next/navigation'
 import axios from 'axios';
 
 import Appbarku from '@/components/Appbarku';
 import HasilTes_GrafikKecermatan from '@/components/HasilTes_GrafikKecermatan';
-import encodeHtmlEntities from '@/libraries/myfunction';
+import {myfunction as fun} from '@/libraries/myfunction';
 
 export default function PesertaPsikotestKecermatanHasil() {
 

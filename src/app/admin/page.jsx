@@ -3,12 +3,10 @@
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
 import base_url from '../../api/api';
-import { useSession } from "next-auth/react"
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
 import * as React from 'react';
-import { alpha, styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
@@ -17,6 +15,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import LockPersonIcon from '@mui/icons-material/LockPerson';
 
 import Myhelmet from '@/components/Myhelmet';
+import fun from '@/libraries/myfunction';
 
 const styledTextField = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -41,67 +40,52 @@ const styledTextField = {
 }
 
 export default function Admin(props) {
+    const router = useRouter();
+    if(localStorage.getItem('islogin') && localStorage.getItem('isAdmin')) window.location.href= '/admin/dashboard';
     const [emaillogin, setEmaillogin] = React.useState('');
     const [passlogin, setPasslogin] = React.useState('');
 
-    async function myFunction() {
-        const csrfToken = await getCsrfToken();
-        /* ... */
-        return csrfToken;
-    }
-
-    async function submitLogin() {
-        console.log('submitlogin triggered');
-        console.log(`email ${emaillogin}`);
-        console.log(`password ${passlogin}`);
-        // const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/login`, {
-        //     email: emaillogin,
-        //     password: passlogin,
-        //     tokenlogin: Math.random()
-        // }, {
-        //     headers: {
-        //         'Content-Type': 'application/x-www-form-urlencoded',
-        //         'X-XSRF-TOKEN': token
-        //     }
-        // });
-        // `xsrfCookieName` is the name of the cookie to use as a value for xsrf token
-        // xsrfCookieName: 'XSRF-TOKEN', // default
-        // `xsrfHeaderName` is the name of the http header that carries the xsrf token value
-        // xsrfHeaderName: 'X-XSRF-TOKEN', // default
-        // console.log('response', response);
-        // Cookies.set('token', token);
-
-        const url = `${process.env.NEXT_PUBLIC_API_BACKEND}/api/login`;
-        const data = {
-            email: emaillogin,
-            password: passlogin,
-            tokenlogin: Math.random()
-        };
-
-        const jsonData = JSON.stringify(data);
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        headers.append('X-XSRF-TOKEN', token);
-
-        await fetch(url, {
-            method: 'POST',
-            headers: headers,
-            body: jsonData,
-            credentials: 'include'
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+    const submit = async () => {
+        if(!localStorage.getItem('isepeserta')) {
+            try {
+                axios.defaults.withCredentials = true;
+                axios.defaults.withXSRFToken = true;
+                const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`);
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/login`, {
+                    email: emaillogin,
+                    password: passlogin,
+                    tokenlogin: fun.random('combwisp', 20)
+                }, {
+                    headers: {
+                        'XSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                    }
+                });
+        
+                console.log('response', response);
+                if(response.data.success) {
+                    // setCookie('islogin', true, {secure: true, sameSite: 'strict', httpOnly: true});
+                    // setCookie('isAdmin', true, {secure: true, sameSite: 'strict', httpOnly: true});
+                    localStorage.setItem('islogin', true);
+                    localStorage.setItem('isadmin', true);
+                    localStorage.setItem('isepeserta', false);
+                    localStorage.setItem('email', emaillogin);
+                    localStorage.setItem('nama', response.data.nama);
+                    localStorage.setItem('pat', response.data.token);
+                    localStorage.setItem('csrfToken', csrfToken);
+                    return router.push('/admin/dashboard');
+                }
+                return alert('Email / Password Salah!');
             }
-            return response.json();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    }
+            catch(e) {
+                console.log(e);
+                return alert('Terjadi Kesalahan!');
+            }
+        }
+        alert('Tidak Bisa Login!');
+    };
 
     React.useEffect(() => {
-        // submitLogin();
     }, []);
 
     return (
@@ -110,12 +94,13 @@ export default function Admin(props) {
             title={`Login Admin | Psikotest Online App`}
             description={`Psikotest Online App`}
             keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
+            pathURL={`/admin`}
         />
         <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
             <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-                
+
                 <Box component="form"
-                    sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' }, 
+                    sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' },
                         backgroundColor: 'rgba(125, 150, 255, 0.2)',
                         border: '3px solid white' ,
                         borderRadius: 3,
@@ -144,15 +129,15 @@ export default function Admin(props) {
                                 onChange = {(event)=> setPasslogin(event.target.value)}
                                 slotProps={{
                                     input: {
-                                      startAdornment: (
-                                        <InputAdornment position="start">
-                                            <LockPersonIcon sx={{ color: 'white' }} />
-                                        </InputAdornment>
-                                      ),
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <LockPersonIcon sx={{ color: 'white' }} />
+                                            </InputAdornment>
+                                        ),
                                     },
                                 }} />
                     <Box sx={{ '& button': { m: 1, width: '96%' } }}>
-                        <Button variant="contained" size="large" onClick={() => submitLogin()}>
+                        <Button variant="contained" size="large" onClick={() => submit()}>
                             Login
                         </Button>
                     </Box>

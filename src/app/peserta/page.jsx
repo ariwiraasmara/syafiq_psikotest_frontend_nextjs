@@ -5,14 +5,11 @@
 import layout from '../layout';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
 import * as React from 'react';
-import { alpha, styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import EmailIcon from '@mui/icons-material/Email';
-import LockPersonIcon from '@mui/icons-material/LockPerson';
 
 const styledTextField = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -50,48 +47,93 @@ export default function PesertaTes() {
     const date = getDate.getDate();
     const today = `${year}-${month}-${date}`;
 
-    const submitData = () => {
-        if (!nama || !no_identitas || !tgl_lahir) alert('Nama, No Identitas, dan Tanggal Lahir harus diisi.');
-        else {
-            sessionStorage.setItem('nama', nama);
-            sessionStorage.setItem('no_identitas', no_identitas);
-            sessionStorage.setItem('email', email);
-            sessionStorage.setItem('tgl_lahir', tgl_lahir);
-            sessionStorage.setItem('asal', asal);
-            sessionStorage.setItem('sesi_psikotest_kecermatan', 1);
-            sessionStorage.setItem('tgl_tes', today);
+    const checkData = () => {
+        try {
+            localStorage.setItem('islogin', false);
+            localStorage.setItem('isadmin', false);
+            localStorage.setItem('isepeserta', true);
+            localStorage.removeItem('islogin');
+            localStorage.removeItem('isadmin');
+            localStorage.removeItem('email');
+            localStorage.removeItem('nama');
+            localStorage.removeItem('pat');
+            localStorage.removeItem('csrfToken');
+            sessionStorage.removeItem('peserta_id');
+            sessionStorage.removeItem('psikotest_kecermatan_id');
+            sessionStorage.removeItem('variabel_id');
+            sessionStorage.removeItem('variabel_variabel');
+            sessionStorage.removeItem('variabel_values');
 
-            /*
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/login`, {
-                _method: 'POST',
-                email: emaillogin,
-                password: passlogin,
-                tokenlogin: Math.random()
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': token
-                }
-            });
-            console.log('response', response);
-            */
-            sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom1`, '25');
-            sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom2`, '20');
-            sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom3`, '35');
-            sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom4`, '10');
-            sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom5`, '50');
-            // router.push(`/peserta/psikotest/kecermatan/`);
-            router.push(`/peserta/psikotest/kecermatan/hasil?identitas=${no_identitas}`);
+            if(sessionStorage.getItem('nama_peserta_psikotest')) setNama(sessionStorage.getItem('nama_peserta_psikotest'));
+            if(sessionStorage.getItem('no_identitas_peserta_psikotest')) setNo_identitas(sessionStorage.getItem('no_identitas_peserta_psikotest'));
+            if(sessionStorage.getItem('email_peserta_psikotest')) setEmail(sessionStorage.getItem('email_peserta_psikotest'));
+            if(sessionStorage.getItem('tgl_lahir_peserta_psikotest')) setTgl_lahir(sessionStorage.getItem('tgl_lahir_peserta_psikotest'));
+            if(sessionStorage.getItem('asal_peserta_psikotest')) setAsal(sessionStorage.getItem('asal_peserta_psikotest'));
         }
-        
+        catch(e) {
+            console.log(e);
+        }
+    };
+
+    const submit = async (e) => {
+        e.preventDefault();
+        try {
+            if (!nama || !no_identitas || !tgl_lahir) alert('Nama, No Identitas, dan Tanggal Lahir harus diisi.');
+            else {
+                axios.defaults.withCredentials = true;
+                axios.defaults.withXSRFToken = true;
+                const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`);
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/setup`, {
+                    nama: nama,
+                    no_identitas: no_identitas,
+                    email: email,
+                    tgl_lahir: tgl_lahir,
+                    asal: asal,
+                }, {
+                    headers: {
+                        'XSRF-TOKEN': csrfToken,
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if(response.data.success) {
+                    sessionStorage.setItem('nama_peserta_psikotest', nama);
+                    sessionStorage.setItem('no_identitas_peserta_psikotest', no_identitas);
+                    sessionStorage.setItem('email_peserta_psikotest', email);
+                    sessionStorage.setItem('tgl_lahir_peserta_psikotest', tgl_lahir);
+                    sessionStorage.setItem('asal_peserta_psikotest', asal);
+                    sessionStorage.setItem('sesi_psikotest_kecermatan', 1);
+                    sessionStorage.setItem('tgl_tes_peserta_psikotest', today);
+    
+                    sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom1`, '25');
+                    sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom2`, '20');
+                    sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom3`, '35');
+                    sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom4`, '10');
+                    sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom5`, '50');
+                    // router.push(`/peserta/psikotest/kecermatan/`);
+                    router.push(`/peserta/psikotest/kecermatan/hasil?identitas=${no_identitas}&tgl_text=${today}`);
+                }
+                else {
+                    alert('Terjadi Kesalahan Setup Peserta');
+                }
+            }
+        }
+        catch(e) {
+            console.log('Terjadi Kesalahan', e);
+            alert('Terjadi Kesalahan');
+        }
     }
+
+    React.useEffect(() => {
+        checkData();
+    }, []);
 
     return (
     <main>
         <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
             <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-                
-                <Box component="form" 
+
+                <Box component="form"
                     sx={{ '& > :not(style)': { m: 0, p: 3, width: '100%' },
                         backgroundColor: 'rgba(0, 0, 0, 0.5)',
                         border: '3px solid white' ,
@@ -105,30 +147,35 @@ export default function PesertaTes() {
                     <TextField  type="text" id="nama" variant="outlined" required focused
                                 placeholder="Nama..." label="Nama..."
                                 onChange = {(event)=> setNama(event.target.value)}
+                                defaultValue={nama}
                                 fullWidth sx={styledTextField} />
 
                     <TextField  type="text" id="no_identitas" variant="outlined" required focused
                                 placeholder="Nomor Identitas... (NIK / NIP / NISN)" label="Nomor Identitas... (NIK / NIP / NISN)"
                                 onChange = {(event)=> setNo_identitas(event.target.value)}
+                                defaultValue={no_identitas}
                                 fullWidth sx={styledTextField} />
 
                     <TextField  type="text" id="Email" variant="outlined" focused
                                 placeholder="Email..." label="Email..."
                                 onChange = {(event)=> setEmail(event.target.value)}
+                                defaultValue={email}
                                 fullWidth sx={styledTextField} />
 
                     <TextField  type="date" id="tgl_lahir" variant="outlined" required focused
                                 placeholder="Tanggal Lahir..." label="Tanggal Lahir..."
                                 onChange = {(event)=> setTgl_lahir(event.target.value)}
+                                defaultValue={tgl_lahir}
                                 fullWidth sx={styledTextField} />
 
                     <TextField  type="text" id="asal" variant="outlined" focused
                                 placeholder="Asal..." label="Asal..."
                                 onChange = {(event)=> setAsal(event.target.value)}
+                                defaultValue={asal}
                                 fullWidth sx={styledTextField} />
 
                     <Box sx={{ '& button': { m: 1, width: '96%' } }}>
-                        <Button variant="contained" size="large" onClick={() => submitData()}>
+                        <Button variant="contained" size="large" onClick={(e) => submit(e)}>
                             Lanjut
                         </Button>
                     </Box>

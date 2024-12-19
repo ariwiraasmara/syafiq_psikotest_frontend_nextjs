@@ -6,6 +6,7 @@ import Layoutadmin from '../../../layoutadmin';
 import axios from 'axios';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
 import Fab from '@mui/material/Fab';
 import Link from '@mui/material/Link';
 
@@ -24,8 +25,7 @@ const opencloseEdit = (varid) => {
     document.getElementById(varid).classList.toggle('hidden');
 }
 
-export default function PsikotestKecermatan(props) {
-
+export default function PsikotestKecermatan() {
     const router = useRouter();
     const [dataPsikotestKecermatan, setDataPsikotestKecermatan] = React.useState([]);
 
@@ -44,7 +44,7 @@ export default function PsikotestKecermatan(props) {
     }, []);
 
     const onDetil = (id) => {
-        sessionStorage.setItem('kecermatan_id', id);
+        sessionStorage.setItem('psikotest_kecermatan_id', id);
         router.push(`/admin/psikotest/kecermatan/detil`);
     } 
 
@@ -55,6 +55,7 @@ export default function PsikotestKecermatan(props) {
                 title={`Psikotest Kecermatan | Admin | Psikotest`}
                 description={`Psikotest Online App`}
                 keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
+                pathURL={`/admin/psikotest/kecermatan`}
             />
             <Appbarku headTitle="Psikotest Kecermatan" />
             <main className="p-5 mb-14">

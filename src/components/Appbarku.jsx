@@ -28,8 +28,14 @@ ElevationScroll.propTypes = {
     window: PropTypes.func,
 };
 
-const linkBack = (isback) => {
+const linkBack = (isback, session) => {
     if(isback) {
+        if(session) {
+            session.map((data, index) => (
+                sessionStorage.removeItem(data)
+            ));
+            return <Link onClick={() => history.back()} sx={{ marginRight : '10px' }} ><ArrowBackIcon /></Link>
+        }
         return <Link onClick={() => history.back()} sx={{ marginRight : '10px' }} ><ArrowBackIcon /></Link>
     }
 }

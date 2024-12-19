@@ -4,14 +4,14 @@
 'use client';
 import axios from 'axios';
 import * as React from 'react';
-import PropTypes from 'prop-types';
-import useScrollTrigger from '@mui/material/useScrollTrigger';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
+import fun from '@/libraries/myfunction';
+
 const styledTextField = {
-    '& .MuiStandardInput-notchedOutline': {
+    '& .MuiStandardInput-notchedStandard': {
         color: '#fff',
     },
     '& .MuiInputLabel-root': {
@@ -23,78 +23,57 @@ const styledTextField = {
     '& .MuiStandardInput-placeholder': {
         color: '#fff',
     },
-    '&:hover .MuiStandardInput-notchedOutline': {
-        borderColor: 'rgba(000, 000, 000, 0.8)', // warna hover
+    '&:hover .MuiStandardInput-notchedStandard': {
+        borderColor: 'rgba(255, 255, 255, 0.8)', // warna hover
     },
     '&:hover .MuiInputLabel-root': {
         color: 'white', // warna hover
     },
 }
 
-function ElevationScroll(props) {
-    const { children, window } = props;
-    // Note that you normally won't need to set the window ref as useScrollTrigger
-    // will default to window.
-    // This is only being set here because the demo is in an iframe.
-    const trigger = useScrollTrigger({
-      disableHysteresis: true,
-      threshold: 0,
-      target: window ? window() : undefined,
-    });
-  
-    return children
-      ? React.cloneElement(children, {
-          elevation: trigger ? 4 : 0,
-        })
-      : null;
-}
-
-ElevationScroll.propTypes = {
-    children: PropTypes.element,
-    /**
-     * Injected by the documentation to work in an iframe.
-     * You won't need it on your project.
-     */
-    window: PropTypes.func,
-};
-
 export default function NewOrEdit(props) {
 
-    const [nmethod, setNmethod] = React.useState('');
     const [nvariabel, setNvariabel] = React.useState('');
-    const [nvalues, setNvalues] = React.useState();
-    const [url, setUrl] = React.useState('');
-    if(props.type === 'new') {
-        setUrl('https://127.0.0.1:8000/api/variabel-setting');
-        setNmethod('POST');
-    }
-    else if(props.type === 'edit') {
-        setUrl(`https://127.0.0.1:8000/api/variabel-setting/${props.id}`);
-        setNmethod('PUT');
-        setNvariabel(props.nvariabel);
-        setNvalues(props.nvalues);
-    }
-
-    const submit = async () => {
-        console.log('submit post variabel-setting triggered');
-        console.log(`method ${method}`);
-        console.log(`email ${nvariabel}`);
-        console.log(`password ${nvalues}`);
-        const response = await axios.post(url, {
-            _method: nmethod,
-            variabel: nvariabel,
-            values: nvalues,
-            tokenlogin: Math.random()
-        });
-        console.log('response', response);
-    }
-
     const handleChange_Nvariable = (event, index) => {
         setNvariabel(event.target.value);
+        console.log(nvariabel);
     };
 
+    const [nvalues, setNvalues] = React.useState();
     const handleChange_Nvalues = (event, index) => {
         setNvalues(event.target.value);
+        console.log(nvalues);
+    };
+
+    const submit = async (e) => {
+        e.preventDefault();
+        try {
+            axios.defaults.withCredentials = true;
+            axios.defaults.withXSRFToken = true;
+            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`);
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting`, {
+                variabel: nvariabel,
+                values: nvalues,
+                tokenlogin: fun.random('combwisp', 20)
+            }, {
+                headers: {
+                    'XSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json',
+                }
+            });
+    
+            console.log('response', response);
+            if(response.data.success) {
+                location.reload();
+            }
+            else {
+                return alert('Terjadi Kesalahan Variabel');
+            }
+        }
+        catch(er) {
+            console.log('Terjadi Kesalahan Mengirim Data Variabel', er);
+            return alert('Terjadi Kesalahan Mengirim Data Variabel');
+        }
     };
 
     return (
@@ -104,19 +83,15 @@ export default function NewOrEdit(props) {
             }}
             noValidate
             autoComplete="off">
-            <TextField  type="text" id={`variabel-${props.nvariabel}`} variant="standard" size="small"
+            <TextField  type="text" id={`variabel`} variant="standard" size="small"
                         placeholder="Variabel..." label="Variabel..."
                         fullWidth sx={styledTextField}
-                        onChange={handleChange_Nvariable}
-                        defaultValue={props.nvariabel} />
-
-            <TextField  type="text" id={`variabel-${props.nvalues}`} variant="standard" size="small"
+                        onChange={handleChange_Nvariable} />
+            <TextField  type="text" id={`values`} variant="standard" size="small"
                         placeholder="Nilai..." label="Nilai..."
                         fullWidth sx={styledTextField}
-                        onChange={handleChange_Nvalues}
-                        defaultValue={props.nvalues} />
-
-            <Button type="submit" variant="contained" size="small" onClick={() => submit()}>
+                        onChange={handleChange_Nvalues} />
+            <Button type="submit" variant="contained" size="small" onClick={(e) => submit(e)}>
                 Simpan
             </Button>
         </Box>

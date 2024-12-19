@@ -5,6 +5,7 @@
 import layout from '../../../layout';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
 import * as React from 'react';
 import { alpha, styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';

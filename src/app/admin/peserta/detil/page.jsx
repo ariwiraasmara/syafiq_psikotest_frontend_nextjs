@@ -2,14 +2,15 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
-import Layoutadmin from '../../../secondlayoutadmin';
+import Layoutadmindetil from '../../../layoutadmindetil';
 import axios from 'axios';
 import * as React from 'react';
+import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
 
 import Myhelmet from '@/components/Myhelmet';
 import Appbarku from '@/components/Appbarku';
 import TabHasilPsikotestPeserta from '@/components/TabHasilPsikotestPeserta';
-import encodeHtmlEntities from '@/libraries/myfunction';
+import fun from '@/libraries/myfunction';
 
 const styledTextField = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -35,7 +36,7 @@ const styledTextField = {
 
 export default function PesertaDetil(props) {
     const sessionID = sessionStorage.getItem('peserta_id');
-    const safeID = encodeHtmlEntities(sessionID);
+    const safeID = fun.readable(sessionID);
 
     const [dataPeserta, setDataPeserta] = React.useState({});
 
@@ -118,7 +119,7 @@ export default function PesertaDetil(props) {
     }, []);
 
     return (
-        <Layoutadmin>
+        <Layoutadmindetil>
             <Myhelmet
                 title={`Detil Peserta | Admin | Psikotest Online App`}
                 description={`Psikotest Online App`}
@@ -139,6 +140,6 @@ export default function PesertaDetil(props) {
                     <TabHasilPsikotestPeserta peserta_id={safeID} />
                 </div>
             </main>
-        </Layoutadmin>
+        </Layoutadmindetil>
     );
 }
