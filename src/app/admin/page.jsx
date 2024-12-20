@@ -89,10 +89,10 @@ export default function Admin() {
     return (
     <div>
         <Myhelmet
-            title='Login Admin | Psikotest Online App'
-            description='Psikotest Online App'
-            keywords='Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind'
-            pathURL='/admin'
+            title={`Login Admin | Psikotest Online App`}
+            description={`Psikotest Online App`}
+            keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
+            pathURL={`/admin`}
         />
         <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
             <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">

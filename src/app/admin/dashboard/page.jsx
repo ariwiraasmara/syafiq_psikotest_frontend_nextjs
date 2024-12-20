@@ -34,7 +34,7 @@ export default function AdminDashboard() {
                 title={`Dashboard | Psikotest Online App`}
                 description={`Psikotest Online App`}
                 keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
-                pathURL='/admin/dashboard'
+                pathURL={`/admin/dashboard`}
             />
             <Appbarku headTitle="Dashboard" />
             

@@ -115,9 +115,9 @@ export default function EditVariabel() {
     return (
         <Layoutadmindetil>
             <Myhelmet
-                title='Variabel | Admin | Psikotest'
-                description='Psikotest Online App'
-                keywords='Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind'
+                title={`Variabel | Admin | Psikotest`}
+                description={`Psikotest Online App`}
+                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
                 pathURL={`${process.env.NEXT_PUBLIC_FRONTEND}/admin/variabel/edit`}
             />
             <Appbarku headTitle="Edit Variabel" />

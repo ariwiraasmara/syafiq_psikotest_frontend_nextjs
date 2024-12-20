@@ -35,9 +35,9 @@ export default function Myhelmet(props) {
     return(
         <React.StrictMode>
             <Helmet>
-                <title>{props.title}</title>
                 <meta name="csrf-token" content={token} />
                 <meta charset="utf-8" />
+                <title>{props.title}</title>
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <meta name="description" content={props.description} />
                 <meta name="keywords" content={props.keywords} />
