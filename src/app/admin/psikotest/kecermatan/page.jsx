@@ -6,20 +6,13 @@ import Layoutadmin from '../../../layoutadmin';
 import axios from 'axios';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
 import Fab from '@mui/material/Fab';
 import Link from '@mui/material/Link';
 
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 import Myhelmet from '@/components/Myhelmet';
 import Appbarku from '@/components/Appbarku';
-
-const linkStyle = {
-    color: '#fff'
-}
 
 const opencloseEdit = (varid) => {
     document.getElementById(varid).classList.toggle('hidden');
@@ -45,8 +38,8 @@ export default function PsikotestKecermatan() {
 
     const onDetil = (id) => {
         sessionStorage.setItem('psikotest_kecermatan_id', id);
-        router.push(`/admin/psikotest/kecermatan/detil`);
-    } 
+        router.push(`/admin/psikotest/kecermatan/detil/?page=1`);
+    }
 
     console.log('dataPsikotestKecermatan', dataPsikotestKecermatan);
     return (

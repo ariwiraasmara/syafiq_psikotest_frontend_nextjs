@@ -2,14 +2,15 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
-import layout from '../layout';
+import Layoutpeserta from '../layoutpeserta';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import TextField, { TextFieldProps } from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
+
+import Myhelmet from '@/components/Myhelmet';
 
 const styledTextField = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -110,8 +111,8 @@ export default function PesertaTes() {
                     sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom3`, '35');
                     sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom4`, '10');
                     sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom5`, '50');
-                    // router.push(`/peserta/psikotest/kecermatan/`);
-                    router.push(`/peserta/psikotest/kecermatan/hasil?identitas=${no_identitas}&tgl_text=${today}`);
+                    router.push(`/peserta/psikotest/kecermatan/`);
+                    // router.push(`/peserta/psikotest/kecermatan/hasil?identitas=${no_identitas}&tgl_text=${today}`);
                 }
                 else {
                     alert('Terjadi Kesalahan Setup Peserta');
@@ -129,59 +130,67 @@ export default function PesertaTes() {
     }, []);
 
     return (
-    <main>
-        <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-            <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+        <Layoutpeserta>
+            <Myhelmet
+                title='Formulir Peserta | Psikotest Online App'
+                description='Psikotest Online App'
+                keywords='Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind'
+                pathURL='/peserta'
+            />
+            <main>
+                <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+                    <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
 
-                <Box component="form"
-                    sx={{ '& > :not(style)': { m: 0, p: 3, width: '100%' },
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                        border: '3px solid white' ,
-                        borderRadius: 3,
-                        textAlign: 'center',
-                        p: 3
-                    }}
-                    noValidate
-                    autoComplete="off">
-                    <h1 className="text-2xl text-bold uppercase font-bold">Peserta</h1>
-                    <TextField  type="text" id="nama" variant="outlined" required focused
-                                placeholder="Nama..." label="Nama..."
-                                onChange = {(event)=> setNama(event.target.value)}
-                                defaultValue={nama}
-                                fullWidth sx={styledTextField} />
+                        <Box component="form"
+                            sx={{ '& > :not(style)': { m: 0, p: 3, width: '100%' },
+                                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                border: '3px solid white' ,
+                                borderRadius: 3,
+                                textAlign: 'center',
+                                p: 3
+                            }}
+                            noValidate
+                            autoComplete="off">
+                            <h1 className="text-2xl text-bold uppercase font-bold">Peserta</h1>
+                            <TextField  type="text" id="nama" variant="outlined" required focused
+                                        placeholder="Nama..." label="Nama..."
+                                        onChange = {(event)=> setNama(event.target.value)}
+                                        defaultValue={nama}
+                                        fullWidth sx={styledTextField} />
 
-                    <TextField  type="text" id="no_identitas" variant="outlined" required focused
-                                placeholder="Nomor Identitas... (NIK / NIP / NISN)" label="Nomor Identitas... (NIK / NIP / NISN)"
-                                onChange = {(event)=> setNo_identitas(event.target.value)}
-                                defaultValue={no_identitas}
-                                fullWidth sx={styledTextField} />
+                            <TextField  type="text" id="no_identitas" variant="outlined" required focused
+                                        placeholder="Nomor Identitas... (NIK / NIP / NISN)" label="Nomor Identitas... (NIK / NIP / NISN)"
+                                        onChange = {(event)=> setNo_identitas(event.target.value)}
+                                        defaultValue={no_identitas}
+                                        fullWidth sx={styledTextField} />
 
-                    <TextField  type="text" id="Email" variant="outlined" focused
-                                placeholder="Email..." label="Email..."
-                                onChange = {(event)=> setEmail(event.target.value)}
-                                defaultValue={email}
-                                fullWidth sx={styledTextField} />
+                            <TextField  type="text" id="Email" variant="outlined" focused
+                                        placeholder="Email..." label="Email..."
+                                        onChange = {(event)=> setEmail(event.target.value)}
+                                        defaultValue={email}
+                                        fullWidth sx={styledTextField} />
 
-                    <TextField  type="date" id="tgl_lahir" variant="outlined" required focused
-                                placeholder="Tanggal Lahir..." label="Tanggal Lahir..."
-                                onChange = {(event)=> setTgl_lahir(event.target.value)}
-                                defaultValue={tgl_lahir}
-                                fullWidth sx={styledTextField} />
+                            <TextField  type="date" id="tgl_lahir" variant="outlined" required focused
+                                        placeholder="Tanggal Lahir..." label="Tanggal Lahir..."
+                                        onChange = {(event)=> setTgl_lahir(event.target.value)}
+                                        defaultValue={tgl_lahir}
+                                        fullWidth sx={styledTextField} />
 
-                    <TextField  type="text" id="asal" variant="outlined" focused
-                                placeholder="Asal..." label="Asal..."
-                                onChange = {(event)=> setAsal(event.target.value)}
-                                defaultValue={asal}
-                                fullWidth sx={styledTextField} />
+                            <TextField  type="text" id="asal" variant="outlined" focused
+                                        placeholder="Asal..." label="Asal..."
+                                        onChange = {(event)=> setAsal(event.target.value)}
+                                        defaultValue={asal}
+                                        fullWidth sx={styledTextField} />
 
-                    <Box sx={{ '& button': { m: 1, width: '96%' } }}>
-                        <Button variant="contained" size="large" onClick={(e) => submit(e)}>
-                            Lanjut
-                        </Button>
-                    </Box>
-                </Box>
-            </div>
-        </div>
-    </main>
+                            <Box sx={{ '& button': { m: 1, width: '100%' } }}>
+                                <Button variant="contained" size="large" fullwidth onClick={(e) => submit(e)}>
+                                    Lanjut
+                                </Button>
+                            </Box>
+                        </Box>
+                    </div>
+                </div>
+            </main>
+        </Layoutpeserta>
     )
 }

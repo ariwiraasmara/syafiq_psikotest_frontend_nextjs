@@ -8,7 +8,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import TextField, { TextFieldProps } from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
 
 import Myhelmet from '@/components/Myhelmet';
 import Appbarku from '@/components/Appbarku';
@@ -36,7 +36,7 @@ const styledTextField = {
     },
 }
 
-export default function EditVariabel(props) {
+export default function EditVariabel() {
     const router = useRouter();
     const [nid, setNid] = React.useState(0);
     
@@ -51,8 +51,6 @@ export default function EditVariabel(props) {
         setNvalues(event.target.value);
         console.log(nvalues);
     };
-
-    const sessionRemove = ['variabel_id', 'variabel_variabel', 'variabel_values'];
 
     const getData = () => {
         try {
@@ -96,6 +94,19 @@ export default function EditVariabel(props) {
             console.log('Terjadi Kesalahan Mengirim Data Update Variabel', er);
         }
     };
+
+    const cancel = (e) => {
+        e.preventDefault();
+        try {
+            sessionStorage.removeItem('variabel_id');
+            sessionStorage.removeItem('variabel_variabel');
+            sessionStorage.removeItem('variabel_values');
+            return router.push('/admin/variabel');
+        }
+        catch(err) {
+            console.log('Terjadi Kesalahan Membatalkan Update Variabel', err);
+        }
+    };
     
     React.useEffect(() => {
         getData();
@@ -104,12 +115,12 @@ export default function EditVariabel(props) {
     return (
         <Layoutadmindetil>
             <Myhelmet
-                title={`Variabel | Admin | Psikotest`}
-                description={`Psikotest Online App`}
-                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
+                title='Variabel | Admin | Psikotest'
+                description='Psikotest Online App'
+                keywords='Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind'
                 pathURL={`${process.env.NEXT_PUBLIC_FRONTEND}/admin/variabel/edit`}
             />
-            <Appbarku headTitle="Edit Variabel" isback={true} session={sessionRemove} />
+            <Appbarku headTitle="Edit Variabel" />
             <main className="p-5 mb-14">
                 <Box component="form"
                     sx={{ '& > :not(style)': { m: 0, p: 1, width: '50%' },
@@ -128,8 +139,11 @@ export default function EditVariabel(props) {
                                 onChange={handleChange_Nvalues}
                                 defaultValue={nvalues} />
                     <Box sx={{ '& button': { m: 1, width: '200%' } }}>
-                        <Button variant="contained" size="large" onClick={(e) => submit(e)}>
+                        <Button variant="contained" size="large" color="primary" onClick={(e) => submit(e)}>
                             Simpan
+                        </Button>
+                        <Button variant="contained" size="large" color="secondary" onClick={(e) => cancel(e)}>
+                            Batal
                         </Button>
                     </Box>
                 </Box>

@@ -2,18 +2,16 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
-import layout from '../../../../layout';
+import Layoutpeserta from '../../../../layoutpeserta';
 import * as React from 'react';
-import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
 import { useSearchParams } from 'next/navigation'
 import axios from 'axios';
 
 import Appbarku from '@/components/Appbarku';
+import Myhelmet from '@/components/Myhelmet';
 import HasilTes_GrafikKecermatan from '@/components/HasilTes_GrafikKecermatan';
-import {myfunction as fun} from '@/libraries/myfunction';
 
 export default function PesertaPsikotestKecermatanHasil() {
-
     const searchParams = useSearchParams();
     const paramIdentitas = searchParams.get('identitas');
     const paramTgl_tes = searchParams.get('tgl_tes');
@@ -29,12 +27,11 @@ export default function PesertaPsikotestKecermatanHasil() {
             // const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/3604020302950075/2024-12-13`);
             console.log('response', response);
             setDataPeserta(response.data.data.peserta[0]);
-            setNama(response.data.data.peserta[0].nama);
             setDataHasiltes(response.data.data.hasiltes[0]);
         }
         catch(err) {
-            return err;
             console.log(err);
+            return err;
         }
     }
 
@@ -46,8 +43,14 @@ export default function PesertaPsikotestKecermatanHasil() {
     console.log(dataHasiltes);
 
     return(
-        <div>
-            <Appbarku headTitle={`Hasil Psikotest Kecermatan`} />
+        <Layoutpeserta>
+            <Myhelmet
+                title='Dashboard | Psikotest Online App'
+                description='Psikotest Online App'
+                keywords='Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind'
+                pathURL='/admin/dashboard'
+            />
+            <Appbarku headTitle="Hasil Psikotest Kecermatan" />
             <main className="p-4">
                 <div>
                     <p><span className="font-bold">Nama :</span> {dataPeserta.nama}</p>
@@ -74,6 +77,6 @@ export default function PesertaPsikotestKecermatanHasil() {
                     />
                 </div>
             </main>
-        </div>
+        </Layoutpeserta>
     );
 }

@@ -2,6 +2,7 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
+import { StrictMode } from 'react';
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -21,16 +22,18 @@ const geistMono = localFont({
 // backgroundSize: 'cover',
 // backgroundRepeat: 'no-repeat',
 export default function RootLayout({ children }) {
-  return (
-    <html lang="id">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        style={{
-          backgroundColor: 'rgba(50, 50, 100, 1)',
-        }}
-      >
-        {children}
-      </body>
-    </html>
-  );
+    return (
+        <html lang="id">
+            <body
+                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                style={{
+                  backgroundColor: 'rgba(50, 50, 100, 1)',
+                }}
+            >
+                <StrictMode>
+                    {children}
+                </StrictMode>
+            </body>
+        </html>
+    );
 }

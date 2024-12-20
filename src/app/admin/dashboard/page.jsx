@@ -5,19 +5,12 @@
 import Layoutadmin from '../../layoutadmin';
 import axios from 'axios';
 import * as React from 'react';
-import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
-import PropTypes from 'prop-types';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import useScrollTrigger from '@mui/material/useScrollTrigger';
 
 import Myhelmet from '@/components/Myhelmet';
 import Appbarku from '@/components/Appbarku';
 import ListPeserta from '@/components/ListPeserta';
-import fun from '@/libraries/myfunction';
   
-export default function Dashboard(props) {
+export default function AdminDashboard() {
     const [nama, setNama] =  React.useState('');
     const [dataPeserta, setDataPeserta] = React.useState([]);
     const getDataPeserta = async () => {
@@ -41,10 +34,11 @@ export default function Dashboard(props) {
                 title={`Dashboard | Psikotest Online App`}
                 description={`Psikotest Online App`}
                 keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
+                pathURL='/admin/dashboard'
             />
             <Appbarku headTitle="Dashboard" />
             
-            <main className="p-5 mb-14">
+            <main className="p-4 mb-14">
                 <div>
                     <h1 className="text-xl font-bold">Selamat Datang, {nama}</h1>
                 </div>

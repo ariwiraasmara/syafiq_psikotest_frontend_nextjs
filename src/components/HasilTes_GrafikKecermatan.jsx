@@ -1,13 +1,9 @@
 // ! Copyright @
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
-import axios from 'axios';
 import * as React from 'react';
-import TabHasilPsikotestPeserta from '@/components/TabHasilPsikotestPeserta';
-import encodeHtmlEntities from '@/libraries/myfunction';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
-
 // Registrasi komponen Chart.js
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend);
 
@@ -87,8 +83,11 @@ export default function HasilTes_GrafikKecermatan(props) {
     };
 
     return (
-        <div className="text-white">
-            <Line data={chartData} options={optionsData} />
-        </div>
+        <React.StrictMode>
+            <div className="text-white">
+                <Line data={chartData} options={optionsData} />
+            </div>
+        </React.StrictMode>
+        
     );
 }

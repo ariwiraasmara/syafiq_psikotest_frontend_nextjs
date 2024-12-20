@@ -5,18 +5,12 @@
 import Layoutadmin from '../../layoutadmin';
 import axios from 'axios';
 import * as React from 'react';
-import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
 
 import Myhelmet from '@/components/Myhelmet';
 import Appbarku from '@/components/Appbarku';
 import ListPeserta from '@/components/ListPeserta';
-import encodeHtmlEntities from '@/libraries/myfunction';
 
-const linkStyle = {
-    color: '#fff'
-}
-  
-export default function Peserta(props) {
+export default function AdminPeserta() {
     const [dataPeserta, setDataPeserta] = React.useState([]);
     const getDataPeserta = async () => {
         try {

@@ -116,7 +116,7 @@ export default {
       }
     },
 
-    getTanggalAkhir: ($str, $pemisah, $format, $jam) => {
+    getTanggalAkhir: (str, pemisah, format, jam) => {
       try {
           const date = new Date(str);
           const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);

@@ -4,8 +4,6 @@
 'use client';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie'
-import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
 import NavigasiBawah from '@/components/BottomNavigation';
 
 export default function RootLayout({ children }) {

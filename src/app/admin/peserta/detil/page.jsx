@@ -5,37 +5,19 @@
 import Layoutadmindetil from '../../../layoutadmindetil';
 import axios from 'axios';
 import * as React from 'react';
-import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
+import { useRouter } from 'next/navigation';
+
+import Link from '@mui/material/Link';
+import EditIcon from '@mui/icons-material/Edit';
 
 import Myhelmet from '@/components/Myhelmet';
 import Appbarku from '@/components/Appbarku';
 import TabHasilPsikotestPeserta from '@/components/TabHasilPsikotestPeserta';
 import fun from '@/libraries/myfunction';
 
-const styledTextField = {
-    '& .MuiOutlinedInput-notchedOutline': {
-        border: '2px solid rgba(255, 255, 255, 0.9)',
-        color: 'white',
-    },
-    '& .MuiInputLabel-root': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-input': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-placeholder': {
-        color: 'white',
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'rgba(000, 000, 000, 0.8)', // warna hover
-    },
-    '&:hover .MuiInputLabel-root': {
-        color: 'white', // warna hover
-    },
-}
-
-export default function PesertaDetil(props) {
-    const sessionID = sessionStorage.getItem('peserta_id');
+export default function AdminPesertaDetil() {
+    const router = useRouter();
+    const sessionID = sessionStorage.getItem('admid_peserta');
     const safeID = fun.readable(sessionID);
 
     const [dataPeserta, setDataPeserta] = React.useState({});
@@ -90,7 +72,7 @@ export default function PesertaDetil(props) {
                 console.log('Data tidak ditemukan di cache');
                 
                 try {
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/${id}`);
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/${safeID}`);
                     const data = response.data.data[0];
                     setDataPeserta(data);  // Menyimpan data ke state
                     const responseStore = {
@@ -114,6 +96,22 @@ export default function PesertaDetil(props) {
         }
     };
 
+    const toEdit = (e, id, nama, no_indentitas, email, tgl, asal) => {
+        e.preventDefault();
+        try {
+            sessionStorage.setItem('admid_peserta', id);
+            sessionStorage.setItem('admnama_peserta', nama);
+            sessionStorage.setItem('admnoidentitas_peserta', no_indentitas);
+            sessionStorage.setItem('admemail_peserta', email);
+            sessionStorage.setItem('admtgllahir_peserta', tgl);
+            sessionStorage.setItem('admasal_peserta', asal);
+            router.push(`/admin/peserta/edit`);
+        }
+        catch(e) {
+            console.log(e);
+        }
+    };
+
     React.useEffect(() => {
         getData();
     }, []);
@@ -124,6 +122,7 @@ export default function PesertaDetil(props) {
                 title={`Detil Peserta | Admin | Psikotest Online App`}
                 description={`Psikotest Online App`}
                 keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
+                pathURL={`/admin/peserta/detil`}
             />
             <Appbarku isback={true} headTitle={'Detil Peserta'} />
             <main className="p-5 mb-14">
@@ -134,6 +133,11 @@ export default function PesertaDetil(props) {
                     <p><span className="font-bold">Tanggal Lahir :</span> {dataPeserta.tgl_lahir}</p>
                     <p><span className="font-bold">Usia :</span> {dataPeserta.usia}</p>
                     <p><span className="font-bold">Asal : </span> {dataPeserta.asal}</p>
+                    <p>
+                        <Link onClick={(e) => toEdit(e, dataPeserta.id, dataPeserta.nama, dataPeserta.no_identitas, dataPeserta.email, dataPeserta.tgl_lahir, dataPeserta.asal,)}>
+                            <EditIcon />
+                        </Link>
+                    </p>
                 </div>
 
                 <div className="mt-4">

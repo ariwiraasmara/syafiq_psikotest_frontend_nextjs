@@ -31,16 +31,16 @@ const styledTextField = {
     },
 }
 
-export default function NewOrEdit(props) {
+export default function NewOrEdit() {
 
     const [nvariabel, setNvariabel] = React.useState('');
-    const handleChange_Nvariable = (event, index) => {
+    const handleChange_Nvariable = (event) => {
         setNvariabel(event.target.value);
         console.log(nvariabel);
     };
 
     const [nvalues, setNvalues] = React.useState();
-    const handleChange_Nvalues = (event, index) => {
+    const handleChange_Nvalues = (event) => {
         setNvalues(event.target.value);
         console.log(nvalues);
     };

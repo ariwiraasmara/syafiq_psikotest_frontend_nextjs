@@ -2,14 +2,12 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
-import base_url from '../../api/api';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import TextField, { TextFieldProps } from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import EmailIcon from '@mui/icons-material/Email';
 import LockPersonIcon from '@mui/icons-material/LockPerson';
@@ -39,7 +37,7 @@ const styledTextField = {
     },
 }
 
-export default function Admin(props) {
+export default function Admin() {
     const router = useRouter();
     if(localStorage.getItem('islogin') && localStorage.getItem('isAdmin')) window.location.href= '/admin/dashboard';
     const [emaillogin, setEmaillogin] = React.useState('');
@@ -91,10 +89,10 @@ export default function Admin(props) {
     return (
     <div>
         <Myhelmet
-            title={`Login Admin | Psikotest Online App`}
-            description={`Psikotest Online App`}
-            keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
-            pathURL={`/admin`}
+            title='Login Admin | Psikotest Online App'
+            description='Psikotest Online App'
+            keywords='Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind'
+            pathURL='/admin'
         />
         <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
             <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">

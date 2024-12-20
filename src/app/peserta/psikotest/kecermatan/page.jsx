@@ -2,19 +2,15 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
-import layout from '../../../layout';
+import Layoutpeserta from '../../../layoutpeserta';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import { getCookie, getCookies, setCookie, deleteCookie, hasCookie } from 'cookies-next/client';
 import * as React from 'react';
-import { alpha, styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -23,32 +19,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
-import encodeHtmlEntities from '@/libraries/myfunction';
-
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-const styledTextField = {
-    '& .MuiOutlinedInput-notchedOutline': {
-        border: '2px solid rgba(255, 255, 255, 0.9)',
-        color: 'white',
-    },
-    '& .MuiInputLabel-root': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-input': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-placeholder': {
-        color: 'white',
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'rgba(255, 255, 255, 0.8)', // warna hover
-    },
-    '&:hover .MuiInputLabel-root': {
-        color: 'white', // warna hover
-    },
-}
+import Myhelmet from '@/components/Myhelmet';
 
 const NavigationSession = (props) => {
     if(props.isadmin) {
@@ -145,7 +119,6 @@ export default function PesertaPsikotestKecermatan() {
         // Flag untuk memastikan pembaruan sessionID hanya terjadi sekali
         let hasUpdatedSessionID = false;
 
-        
         // Membuat interval untuk countdown setiap detik
         const interval = setInterval(() => {
             setTimeLeft((prevTime) => {
@@ -177,11 +150,9 @@ export default function PesertaPsikotestKecermatan() {
                 return prevTime - 1; // Mengurangi waktu setiap detik
             });
         }, 1000);
-        
 
         // Menghentikan interval ketika komponen unmount
         return () => clearInterval(interval);
-        
     }, []);
 
     React.useEffect(() => {
@@ -193,60 +164,68 @@ export default function PesertaPsikotestKecermatan() {
     console.log('dataJawaban', dataJawaban);
 
     return (
-        <main>
-            <div className="text-center p-8">
-                <TableContainer component={Paper} className="border-b-2">
-                    <Table aria-label="standard table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell component="th" align="center" colSpan={5}>
-                                    <span className="font-bold">{dataPertanyaan.kolom_x}</span>
-                                </TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            <TableRow>
-                                <TableCell component="td" align="center">{dataPertanyaan.nilai_A}</TableCell>
-                                <TableCell component="td" align="center">{dataPertanyaan.nilai_B}</TableCell>
-                                <TableCell component="td" align="center">{dataPertanyaan.nilai_C}</TableCell>
-                                <TableCell component="td" align="center">{dataPertanyaan.nilai_D}</TableCell>
-                                <TableCell component="td" align="center">{dataPertanyaan.nilai_E}</TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell component="td" align="center">A</TableCell>
-                                <TableCell component="td" align="center">B</TableCell>
-                                <TableCell component="td" align="center">C</TableCell>
-                                <TableCell component="td" align="center">D</TableCell>
-                                <TableCell component="td" align="center">E</TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <div className="mt-8 border-t-2 border-b-2 border-white p-4">
-                    <h3 className="text-lg">Waktu : {formatTime(timeLeft)}</h3>
-                    <FormControl>
-                        {dataSoal.map((data, index) => (
-                            <div className="border-2 mt-4 rounded-lg border-white p-4 bg-gray-700" id={`row${index}`} key={index}>
-                                <div>{data[0]}, {data[1]}, {data[2]}, {data[3]}</div>
+        <Layoutpeserta>
+            <Myhelmet
+                title='Psikotest Sedang Berlangsung... | Psikotest Online App'
+                description='Psikotest Online App'
+                keywords='Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind'
+                pathURL='/peserta'
+            />
+            <main>
+                <div className="text-center p-8">
+                    <TableContainer component={Paper} className="border-b-2">
+                        <Table aria-label="standard table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell component="th" align="center" colSpan={5}>
+                                        <span className="font-bold">{dataPertanyaan.kolom_x}</span>
+                                    </TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell component="td" align="center">{dataPertanyaan.nilai_A}</TableCell>
+                                    <TableCell component="td" align="center">{dataPertanyaan.nilai_B}</TableCell>
+                                    <TableCell component="td" align="center">{dataPertanyaan.nilai_C}</TableCell>
+                                    <TableCell component="td" align="center">{dataPertanyaan.nilai_D}</TableCell>
+                                    <TableCell component="td" align="center">{dataPertanyaan.nilai_E}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell component="td" align="center">A</TableCell>
+                                    <TableCell component="td" align="center">B</TableCell>
+                                    <TableCell component="td" align="center">C</TableCell>
+                                    <TableCell component="td" align="center">D</TableCell>
+                                    <TableCell component="td" align="center">E</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <div className="mt-8 border-t-2 border-b-2 border-white p-4">
+                        <h3 className="text-lg">Waktu : {formatTime(timeLeft)}</h3>
+                        <FormControl>
+                            {dataSoal.map((data, index) => (
+                                <div className="border-2 mt-4 rounded-lg border-white p-4 bg-gray-700" id={`row${index}`} key={index}>
+                                    <div>{data[0]}, {data[1]}, {data[2]}, {data[3]}</div>
 
-                                <RadioGroup
-                                    row
-                                    aria-labelledby="demo-row-radio-buttons-group-label"
-                                    name="row-radio-buttons-group"
-                                    value={jawabanUser[index] || ''}
-                                    onChange={(event) => handleChange_nilaiTotal(event, index)}
-                                >
-                                    <FormControlLabel value={dataPertanyaan.nilai_A} control={<Radio />} label="A" />
-                                    <FormControlLabel value={dataPertanyaan.nilai_B} control={<Radio />} label="B" />
-                                    <FormControlLabel value={dataPertanyaan.nilai_C} control={<Radio />} label="C" />
-                                    <FormControlLabel value={dataPertanyaan.nilai_D} control={<Radio />} label="D" />
-                                    <FormControlLabel value={dataPertanyaan.nilai_E} control={<Radio />} label="E" />
-                                </RadioGroup>
-                            </div>
-                        ))}
-                    </FormControl>
+                                    <RadioGroup
+                                        row
+                                        aria-labelledby="demo-row-radio-buttons-group-label"
+                                        name="row-radio-buttons-group"
+                                        value={jawabanUser[index] || ''}
+                                        onChange={(event) => handleChange_nilaiTotal(event, index)}
+                                    >
+                                        <FormControlLabel value={dataPertanyaan.nilai_A} control={<Radio />} label="A" />
+                                        <FormControlLabel value={dataPertanyaan.nilai_B} control={<Radio />} label="B" />
+                                        <FormControlLabel value={dataPertanyaan.nilai_C} control={<Radio />} label="C" />
+                                        <FormControlLabel value={dataPertanyaan.nilai_D} control={<Radio />} label="D" />
+                                        <FormControlLabel value={dataPertanyaan.nilai_E} control={<Radio />} label="E" />
+                                    </RadioGroup>
+                                </div>
+                            ))}
+                        </FormControl>
+                    </div>
                 </div>
-            </div>
-        </main>
+            </main>
+        </Layoutpeserta>
     )
 }

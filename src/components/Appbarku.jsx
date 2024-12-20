@@ -1,5 +1,7 @@
+// ! Copyright @
+// ! Syafiq
+// ! Syahri Ramadhan Wiraasmara (ARI)
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
 import AppBar from '@mui/material/AppBar';
 import PropTypes from 'prop-types';
 import Toolbar from '@mui/material/Toolbar';
@@ -28,30 +30,32 @@ ElevationScroll.propTypes = {
     window: PropTypes.func,
 };
 
-const linkBack = (isback, session) => {
+const linkBack = (isback) => {
     if(isback) {
-        if(session) {
-            session.map((data, index) => (
-                sessionStorage.removeItem(data)
-            ));
-            return <Link onClick={() => history.back()} sx={{ marginRight : '10px' }} ><ArrowBackIcon /></Link>
-        }
-        return <Link onClick={() => history.back()} sx={{ marginRight : '10px' }} ><ArrowBackIcon /></Link>
+        return (
+            <Link onClick={() => history.back()} sx={{ marginRight : '10px' }} >
+                <ArrowBackIcon />
+            </Link>
+        );
     }
 }
-  
+
 export default function Appbarku(props) {
-    return (<div>
-        <ElevationScroll {...props}>
-          <AppBar sx={{ background: '#000' }}>
-            <Toolbar>
-              <Typography variant="h5" component="div" className="font-bold">
-                {linkBack(props.isback)}
-                <span className="font-bold">{props.headTitle}</span>
-              </Typography>
-            </Toolbar>
-          </AppBar>
-        </ElevationScroll>
-        <Toolbar />
-    </div>);
+    return (
+    <div>
+        <React.StrictMode>
+            <ElevationScroll {...props}>
+                <AppBar sx={{ background: '#000' }}>
+                    <Toolbar>
+                        <Typography variant="h5" component="div" className="font-bold">
+                            {linkBack(props.isback)}
+                            <span className="font-bold">{props.headTitle}</span>
+                        </Typography>
+                    </Toolbar>
+                </AppBar>
+            </ElevationScroll>
+            <Toolbar />
+        </React.StrictMode>
+    </div>
+    );
 }
