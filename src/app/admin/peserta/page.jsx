@@ -11,8 +11,11 @@ import Appbarku from '@/components/Appbarku';
 import ListPeserta from '@/components/ListPeserta';
 
 export default function AdminPeserta() {
-    const [dataPeserta, setDataPeserta] = React.useState([]);
-    const getDataPeserta = async () => {
+    const [data, setData] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
+
+    const getdata = async () => {
+        setLoading(true); // Menandakan bahwa proses loading sedang berjalan
         try {
             const cacheResponse = await caches.match('peserta');
             
@@ -22,7 +25,7 @@ export default function AdminPeserta() {
 
                 const cachedData = await cacheResponse.json();
                 // Set data dari cache ke state
-                setDataPeserta(cachedData); // Menyimpan data dari cache ke state
+                setData(cachedData); // Menyimpan data dari cache ke state
                 
                 // Cek waktu atau versi data di server jika memungkinkan
                 try {
@@ -45,8 +48,8 @@ export default function AdminPeserta() {
                         await cache.put('peserta', newResponse);
                         // console.log('Data baru disimpan ke cache');
                         
-                        // Update dataPeserta dengan data terbaru dari API
-                        setDataPeserta(apiData);
+                        // Update data dengan data terbaru dari API
+                        setData(apiData);
                     }
                 } catch (error) {
                     console.error('Terjadi kesalahan saat mengambil data terbaru:', error);
@@ -58,7 +61,7 @@ export default function AdminPeserta() {
                 try {
                     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta`);
                     const data = response.data.data;
-                    setDataPeserta(data);  // Menyimpan data ke state
+                    setData(data);  // Menyimpan data ke state
                     
                     // Menyimpan data ke cache setelah berhasil mendapatkan data
                     const cache = await caches.open('peserta');
@@ -74,12 +77,18 @@ export default function AdminPeserta() {
         } catch (error) {
             console.log('Terjadi kesalahan saat memeriksa cache:', error);
         }
+        setLoading(false);
     };
 
+    const filteredData = React.useMemo(() => {
+        // return variabels.filter(item => item.values > 10); // Contoh: hanya menampilkan variabel dengan values > 10
+        return data;
+    }, [data]);
+
     React.useEffect(() => {
-        getDataPeserta();
+        getdata();
     }, []);
-    // console.log(dataPeserta);
+    // console.log(data);
 
     return (
         <Layoutadmin>
@@ -91,7 +100,13 @@ export default function AdminPeserta() {
             />
             <Appbarku headTitle={'Peserta'} />
             <main className="p-5 mb-14">
-                <ListPeserta listpeserta={dataPeserta} />
+                {loading ? (
+                    <div className='text-center'>
+                        <p><span className='font-bold text-2lg'>Loading...</span></p>
+                    </div>
+                ) : (
+                    <ListPeserta listpeserta={filteredData} />
+                )}
             </main>
         </Layoutadmin>
     )

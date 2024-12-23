@@ -44,7 +44,7 @@ export default function Admin() {
     const [passlogin, setPasslogin] = React.useState('');
 
     const submit = async () => {
-        if(!localStorage.getItem('isepeserta')) {
+        if(!localStorage.getItem('ispeserta')) {
             try {
                 axios.defaults.withCredentials = true;
                 axios.defaults.withXSRFToken = true;
@@ -59,7 +59,7 @@ export default function Admin() {
                         'Content-Type': 'application/json',
                     }
                 });
-        
+
                 console.log('response', response);
                 if(response.data.success) {
                     // setCookie('islogin', true, {secure: true, sameSite: 'strict', httpOnly: true});

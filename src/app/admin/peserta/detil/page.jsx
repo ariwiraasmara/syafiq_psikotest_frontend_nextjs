@@ -20,9 +20,11 @@ export default function AdminPesertaDetil() {
     const sessionID = sessionStorage.getItem('admid_peserta');
     const safeID = fun.readable(sessionID);
 
-    const [dataPeserta, setDataPeserta] = React.useState({});
+    const [data, setData] = React.useState({});
+    const [loading, setLoading] = React.useState(true);
 
     const getData = async () => {
+        setLoading(true); // Menandakan bahwa proses loading sedang berjalan
         const expirationTime = (Date.now() + 3600000) * 24; // 24 jam ke depan dalam milidetik
         try {
             const cacheResponse = await caches.match('peserta/detil');
@@ -34,7 +36,7 @@ export default function AdminPesertaDetil() {
                 const cachedData = await cacheResponse.json();
                 
                 // Set data dari cache ke state
-                setDataPeserta(cachedData); // Menyimpan data dari cache ke state
+                setData(cachedData); // Menyimpan data dari cache ke state
                 
                 // Cek waktu atau versi data di server jika memungkinkan
                 try {
@@ -61,8 +63,8 @@ export default function AdminPesertaDetil() {
                         await cache.put('peserta/detil', newResponse);
                         // console.log('Data baru disimpan ke cache');
                         
-                        // Update dataPeserta dengan data terbaru dari API
-                        setDataPeserta(apiData);
+                        // Update data dengan data terbaru dari API
+                        setData(apiData);
                     }
                 } catch (error) {
                     console.error('Terjadi kesalahan saat mengambil data terbaru:', error);
@@ -74,7 +76,7 @@ export default function AdminPesertaDetil() {
                 try {
                     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/${safeID}`);
                     const data = response.data.data[0];
-                    setDataPeserta(data);  // Menyimpan data ke state
+                    setData(data);  // Menyimpan data ke state
                     const responseStore = {
                         data: data,
                         expirationTime: expirationTime
@@ -94,7 +96,13 @@ export default function AdminPesertaDetil() {
         } catch (error) {
             console.log('Terjadi kesalahan saat memeriksa cache:', error);
         }
+        setLoading(false);
     };
+
+    const filteredData = React.useMemo(() => {
+        // return variabels.filter(item => item.values > 10); // Contoh: hanya menampilkan variabel dengan values > 10
+        return data;
+    }, [data]);
 
     const toEdit = (e, id, nama, no_indentitas, email, tgl, asal) => {
         e.preventDefault();
@@ -126,23 +134,31 @@ export default function AdminPesertaDetil() {
             />
             <Appbarku isback={true} headTitle={'Detil Peserta'} />
             <main className="p-5 mb-14">
-                <div>
-                    <p><span className="font-bold">Nama :</span> {dataPeserta.nama}</p>
-                    <p><span className="font-bold">No. Identitas :</span> {dataPeserta.no_identitas}</p>
-                    <p><span className="font-bold">Email :</span> {dataPeserta.email}</p>
-                    <p><span className="font-bold">Tanggal Lahir :</span> {dataPeserta.tgl_lahir}</p>
-                    <p><span className="font-bold">Usia :</span> {dataPeserta.usia}</p>
-                    <p><span className="font-bold">Asal : </span> {dataPeserta.asal}</p>
-                    <p>
-                        <Link onClick={(e) => toEdit(e, dataPeserta.id, dataPeserta.nama, dataPeserta.no_identitas, dataPeserta.email, dataPeserta.tgl_lahir, dataPeserta.asal,)}>
-                            <EditIcon />
-                        </Link>
-                    </p>
-                </div>
+                {loading ? (
+                    <div className='text-center'>
+                        <p><span className='font-bold text-2lg'>Loading...</span></p>
+                    </div>
+                ) : (
+                    <div>
+                        <div>
+                            <p><span className="font-bold">Nama :</span> {filteredData.nama}</p>
+                            <p><span className="font-bold">No. Identitas :</span> {filteredData.no_identitas}</p>
+                            <p><span className="font-bold">Email :</span> {filteredData.email}</p>
+                            <p><span className="font-bold">Tanggal Lahir :</span> {filteredData.tgl_lahir}</p>
+                            <p><span className="font-bold">Usia :</span> {filteredData.usia}</p>
+                            <p><span className="font-bold">Asal : </span> {filteredData.asal}</p>
+                            <p>
+                                <Link onClick={(e) => toEdit(e, filteredData.id, filteredData.nama, filteredData.no_identitas, filteredData.email, filteredData.tgl_lahir, filteredData.asal)}>
+                                    <EditIcon />
+                                </Link>
+                            </p>
+                        </div>
 
-                <div className="mt-4">
-                    <TabHasilPsikotestPeserta peserta_id={safeID} />
-                </div>
+                        <div className="mt-4">
+                            <TabHasilPsikotestPeserta peserta_id={safeID} />
+                        </div>
+                    </div>
+                )}
             </main>
         </Layoutadmindetil>
     );

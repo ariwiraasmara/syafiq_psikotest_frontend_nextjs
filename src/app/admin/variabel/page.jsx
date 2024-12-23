@@ -26,57 +26,95 @@ const opencloseEdit = (varid) => {
 
 export default function VariabelSetting() {
     const router = useRouter();
-    const [variabels, setVariabels] = React.useState([]);
+    const [data, setData] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
 
-    // Fungsi untuk memeriksa dan mengambil data dari Cache
-    const getCacheData = async () => {
-        const cache = await caches.open('variabel-cache');
-        const cachedResponse = await cache.match('variabels');
-        if (cachedResponse) {
-            return cachedResponse.json();
-        }
-        return null;
-    };
-
-    // Fungsi untuk menyimpan data ke Cache
-    const setCacheData = async (data) => {
-        const cache = await caches.open('variabel-cache');
-        const response = new Response(JSON.stringify(data));
-        await cache.put('variabels', response);
-    };
-
-    // Fungsi untuk mengambil data (baik dari cache atau API)
     const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
-        let data = await getCacheData(); // Cek jika data ada di cache
-        if (!data) {
-            try {
-                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting`);
-                data = response.data.data;
-                setCacheData(data); // Simpan data ke cache
-            } catch (err) {
-                console.error(err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Terjadi kesalahan',
-                    text: 'Gagal mengambil data variabel.',
-                });
+        const expirationTime = (Date.now() + 3600000) * 24; // 24 jam ke depan dalam milidetik
+        try {
+            const cacheResponse = await caches.match('variabel');
+            
+            if (cacheResponse) {
+                // Jika data ditemukan dalam cache
+                // console.log('Data ditemukan di cache:', cacheResponse);
+                
+                const cachedData = await cacheResponse.json();
+                
+                // Set data dari cache ke state
+                setData(cachedData); // Menyimpan data dari cache ke state
+                
+                // Cek waktu atau versi data di server jika memungkinkan
+                try {
+                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting`);
+                    const apiData = apiResponse.data.data;
+                    const responseStore = {
+                        data: apiData,
+                        expirationTime: expirationTime
+                    }
+                    
+                    // Cek apakah ada pembaruan data
+                    if (JSON.stringify(cachedData) !== JSON.stringify(apiData)) {
+                        // console.log('Data diperbarui. Menyimpan data baru ke cache');
+                        
+                        // Hapus data lama dari cache dan simpan yang baru
+                        const cache = await caches.open('variabel');
+                        await cache.delete('variabel');
+                        // console.log('Data lama dihapus dari cache');
+                        
+                        // Menyimpan data baru ke cache
+                        const newResponse = new Response(JSON.stringify(responseStore), {
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        await cache.put('variabel', newResponse);
+                        // console.log('Data baru disimpan ke cache');
+                        
+                        // Update dataPeserta dengan data terbaru dari API
+                        setData(apiResponse.data.data);
+                    }
+                } catch (error) {
+                    console.error('Terjadi kesalahan saat mengambil data terbaru:', error);
+                }
+            } else {
+                // Jika data tidak ditemukan di cache, ambil dari API
+                console.error('Data tidak ditemukan di cache');
+                
+                try {
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting`);
+                    const data = response.data.data;
+                    setData(data);  // Menyimpan data ke state
+                    const responseStore = {
+                        data: data,
+                        expirationTime: expirationTime
+                    }
+                    
+                    // Menyimpan data ke cache setelah berhasil mendapatkan data
+                    const cache = await caches.open('variabel');
+                    const cacheResponse = new Response(JSON.stringify(responseStore), {
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    await cache.put('variabel', cacheResponse);
+                    // console.log('Data disimpan ke cache');
+                } catch (error) {
+                    console.error('Terjadi kesalahan saat mengambil data:', error);
+                }
             }
+        } catch (error) {
+            console.error('Terjadi kesalahan saat memeriksa cache:', error);
         }
-        setVariabels(data);
         setLoading(false);
     };
 
     React.useEffect(() => {
         getData();
     }, []);
+    console.table('tabel data variabel', data);
 
     // Filter data menggunakan useMemo (hanya jika ada operasi pengolahan data)
-    const filteredVariabels = React.useMemo(() => {
+    const filteredData = React.useMemo(() => {
         // return variabels.filter(item => item.values > 10); // Contoh: hanya menampilkan variabel dengan values > 10
-        return variabels;
-    }, [variabels]);
+        return data;
+    }, [data]);
 
     const toEdit = (e, id, nvariabel, nvalue) => {
         e.preventDefault();
@@ -109,7 +147,7 @@ export default function VariabelSetting() {
                         }
                     });
                     // Hapus item dari state variabels setelah sukses
-                    setVariabels((prev) => prev.filter((item) => item.id !== id));
+                    setData((prev) => prev.filter((item) => item.id !== id));
                 } catch (error) {
                     Swal.showValidationMessage(`Request failed: ${error}`);
                 }
@@ -137,9 +175,11 @@ export default function VariabelSetting() {
             <main className="p-5 mb-14">
                 <div>
                     {loading ? (
-                        <p>Loading...</p>
+                        <div className='text-center'>
+                            <p><span className='font-bold text-2lg'>Loading...</span></p>
+                        </div>
                     ) : (
-                        filteredVariabels.map((data, index) => (
+                        filteredData.map((data, index) => (
                             <div key={index} className='border-b-2 p-3'>
                                 <div className="static mt-3 flex flex-row justify-between">
                                     <div className="order-first">

@@ -1,7 +1,8 @@
 {
-    "name": "psikotest_syafiq",
-    "license": "ISC",
-    "version": "0.1.0",
+    "name": "ari_wiraasmara/syafiq_psikotest_frontend_nextjs",
+    "license": "AGPL-3.0",
+    "security" : "https://github.com/ariwiraasmara/syafiq_psikotest_frontend_nextjs?tab=security-ov-file",
+    "version": "1.0.0",
     "author": "Syafiq. Syahri Ramadhan Wiraasmara (ARI)",
     "description": "Psikotest adalah aplikasi khusus untuk klien Syafiq berbasis online dan bisa digunakan di perangkat manapun (web based). Sistem ini adalah UI/UX atau Frontend, dimana pengguna dapat mengakses aplikasi berbasis website.",
     "keywords": [
@@ -13,6 +14,16 @@
         "million.js"
     ],
     "private": true,
+    "main": "app/page.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ariwiraasmara/syafiq_psikotest_frontend_nextjs.git",
+        "license": "AGPL-3.0"
+    },
+    "bugs": {
+        "url": "https://github.com/ariwiraasmara/syafiq_psikotest_frontend_nextjs/issues"
+    },
+    "homepage": "https://github.com/ariwiraasmara/syafiq_psikotest_frontend_nextjs#readme",
     "scripts": {
         "dev": "next dev",
         "build": "next build",
@@ -29,6 +40,7 @@
         "chart.js": "^4.4.7",
         "cookies-next": "^5.0.2",
         "js-cookie": "^3.0.5",
+        "lodash.debounce": "^4.0.8",
         "million": "^3.1.11",
         "next": "^15.1.2",
         "next-auth": "^4.24.11",
@@ -36,6 +48,7 @@
         "react-chartjs-2": "^5.2.0",
         "react-dom": "18.3.1",
         "react-helmet": "^6.1.0",
+        "react-window": "^1.8.11",
         "sweetalert2": "^11.14.5"
     },
     "devDependencies": {

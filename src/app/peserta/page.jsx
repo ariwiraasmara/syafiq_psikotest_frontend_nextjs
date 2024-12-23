@@ -52,7 +52,7 @@ export default function PesertaTes() {
         try {
             localStorage.setItem('islogin', false);
             localStorage.setItem('isadmin', false);
-            localStorage.setItem('isepeserta', true);
+            localStorage.setItem('ispeserta', true);
             localStorage.removeItem('islogin');
             localStorage.removeItem('isadmin');
             localStorage.removeItem('email');
@@ -97,6 +97,7 @@ export default function PesertaTes() {
                     }
                 });
 
+                console.info('response', response);
                 if(response.data.success) {
                     sessionStorage.setItem('nama_peserta_psikotest', nama);
                     sessionStorage.setItem('no_identitas_peserta_psikotest', no_identitas);
@@ -105,12 +106,12 @@ export default function PesertaTes() {
                     sessionStorage.setItem('asal_peserta_psikotest', asal);
                     sessionStorage.setItem('sesi_psikotest_kecermatan', 1);
                     sessionStorage.setItem('tgl_tes_peserta_psikotest', today);
-    
-                    sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom1`, '25');
-                    sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom2`, '20');
-                    sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom3`, '35');
-                    sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom4`, '10');
-                    sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom5`, '50');
+
+                    // sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom1`, '25');
+                    // sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom2`, '20');
+                    // sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom3`, '35');
+                    // sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom4`, '10');
+                    // sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom5`, '50');
                     router.push(`/peserta/psikotest/kecermatan/`);
                     // router.push(`/peserta/psikotest/kecermatan/hasil?identitas=${no_identitas}&tgl_text=${today}`);
                 }
@@ -119,8 +120,8 @@ export default function PesertaTes() {
                 }
             }
         }
-        catch(e) {
-            console.log('Terjadi Kesalahan', e);
+        catch(err) {
+            console.error('Terjadi Kesalahan', err);
             alert('Terjadi Kesalahan');
         }
     }
@@ -140,7 +141,6 @@ export default function PesertaTes() {
             <main>
                 <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
                     <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-
                         <Box component="form"
                             sx={{ '& > :not(style)': { m: 0, p: 3, width: '100%' },
                                 backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -157,31 +157,26 @@ export default function PesertaTes() {
                                         onChange = {(event)=> setNama(event.target.value)}
                                         defaultValue={nama}
                                         fullWidth sx={styledTextField} />
-
-                            <TextField  type="text" id="no_identitas" variant="outlined" required focused
+                            <TextField  type="number" id="no_identitas" variant="outlined" required focused
                                         placeholder="Nomor Identitas... (NIK / NIP / NISN)" label="Nomor Identitas... (NIK / NIP / NISN)"
                                         onChange = {(event)=> setNo_identitas(event.target.value)}
                                         defaultValue={no_identitas}
                                         fullWidth sx={styledTextField} />
-
                             <TextField  type="text" id="Email" variant="outlined" focused
                                         placeholder="Email..." label="Email..."
                                         onChange = {(event)=> setEmail(event.target.value)}
                                         defaultValue={email}
                                         fullWidth sx={styledTextField} />
-
                             <TextField  type="date" id="tgl_lahir" variant="outlined" required focused
                                         placeholder="Tanggal Lahir..." label="Tanggal Lahir..."
                                         onChange = {(event)=> setTgl_lahir(event.target.value)}
                                         defaultValue={tgl_lahir}
                                         fullWidth sx={styledTextField} />
-
                             <TextField  type="text" id="asal" variant="outlined" focused
                                         placeholder="Asal..." label="Asal..."
                                         onChange = {(event)=> setAsal(event.target.value)}
                                         defaultValue={asal}
                                         fullWidth sx={styledTextField} />
-
                             <Box sx={{ '& button': { m: 1, width: '100%' } }}>
                                 <Button variant="contained" size="large" fullwidth onClick={(e) => submit(e)}>
                                     Lanjut
@@ -192,5 +187,5 @@ export default function PesertaTes() {
                 </div>
             </main>
         </Layoutpeserta>
-    )
+    );
 }
