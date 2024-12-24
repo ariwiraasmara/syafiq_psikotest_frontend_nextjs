@@ -96,9 +96,9 @@ export default function AdminDashboard() {
         <Layoutadmin>
             <Myhelmet
                 title={`Dashboard | Psikotest Online App`}
-                description={`Psikotest Online App`}
+                description={`Halaman Dashboard dengan otoritas sebagai Admin.`}
                 keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
-                pathURL={`/admin/dashboard`}
+                pathURL={`admin/dashboard`}
             />
             <Appbarku headTitle="Dashboard" />
 

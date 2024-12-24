@@ -21,14 +21,32 @@ export default function NavigasiBawah(...props) {
             axios.defaults.withXSRFToken = true;
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/logout`);
             if(response.data.success) {
+                //? Sesi Local Storage Data Admin
                 localStorage.removeItem('islogin');
                 localStorage.removeItem('isadmin');
                 localStorage.removeItem('email');
                 localStorage.removeItem('nama');
                 localStorage.removeItem('pat');
                 localStorage.removeItem('csrfToken');
-                sessionStorage.removeItem('peserta_id');
+
+                //? Sesi Data Halaman Peserta
+                sessionStorage.removeItem('admid_peserta');
+                sessionStorage.removeItem('admnama_peserta');
+                sessionStorage.removeItem('admnoidentitas_peserta');
+                sessionStorage.removeItem('admemail_peserta');
+                sessionStorage.removeItem('admtgllahir_peserta');
+                sessionStorage.removeItem('admasal_peserta');
+
+                //? Sesi Data Halaman Psikotest Kecermatan
                 sessionStorage.removeItem('psikotest_kecermatan_id');
+                sessionStorage.removeItem('psikotest_kecermatan_idsoal');
+                sessionStorage.removeItem('psikotest_kecermatan_soalA');
+                sessionStorage.removeItem('psikotest_kecermatan_soalB');
+                sessionStorage.removeItem('psikotest_kecermatan_soalC');
+                sessionStorage.removeItem('psikotest_kecermatan_soalD');
+                sessionStorage.removeItem('psikotest_kecermatan_jawaban');
+
+                //? Sesi Data Halaman Variabel
                 sessionStorage.removeItem('variabel_id');
                 sessionStorage.removeItem('variabel_variabel');
                 sessionStorage.removeItem('variabel_values');

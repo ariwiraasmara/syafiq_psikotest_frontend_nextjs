@@ -10,8 +10,15 @@
         "react.js",
         "next.js",
         "mui.js",
+        "material ui",
         "tailwind.css",
-        "million.js"
+        "node.js",
+        "bun",
+        "million.js",
+        "chart.js",
+        "sweetalert2.js",
+        "axios",
+        "frontend ui/ux"
     ],
     "private": true,
     "main": "app/page.js",

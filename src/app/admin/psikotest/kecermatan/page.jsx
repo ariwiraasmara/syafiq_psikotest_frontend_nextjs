@@ -46,11 +46,10 @@ export default function PsikotestKecermatan() {
         <Layoutadmin>
             <Myhelmet
                 title={`Psikotest Kecermatan | Admin | Psikotest`}
-                description={`Psikotest Online App`}
-                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
-                pathURL={`/admin/psikotest/kecermatan`}
+                description={`Halaman Psikotest Kecermatan dengan otoritas sebagai Admin.`}
+                pathURL={`admin/psikotest/kecermatan`}
             />
-            <Appbarku headTitle="Psikotest Kecermatan" />
+            <Appbarku headTitle="Psikotest Kecermatan" isback={true} url={`/admin/psikotest`} />
             <main className="p-5 mb-14">
                 <div>
                     {dataPsikotestKecermatan.map((data, index) => (

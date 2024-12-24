@@ -21,7 +21,7 @@ export default function HasilTes_GrafikKecermatan(props) {
     const dataset = {
         label: 'Hasil Psikotes Kecermatan',
         datasets: [{
-            label: 'Dataset Nilai',
+            label: 'Nilai',
             data: [
                 props.hasilnilai_kolom_1,
                 props.hasilnilai_kolom_2,
@@ -30,9 +30,9 @@ export default function HasilTes_GrafikKecermatan(props) {
                 props.hasilnilai_kolom_5,
             ],
             fill: false,
-            borderColor: 'rgba(255, 0, 0, 1)',
+            borderColor: 'rgba(100, 100, 255, 1)',
             tension: 0.1,
-            pointBackgroundColor: 'rgba(255, 0, 0, 1)',
+            pointBackgroundColor: 'rgba(100, 100, 255, 1)',
             pointRadius: 5,
         },],
     };

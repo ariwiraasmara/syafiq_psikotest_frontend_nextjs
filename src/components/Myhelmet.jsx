@@ -38,13 +38,13 @@ export default function Myhelmet(props) {
                 <meta name="csrf-token" content={token} />
                 <meta charset="utf-8" />
                 <title>{props.title}</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <meta name="description" content={props.description} />
-                <meta name="keywords" content={props.keywords} />
-                <meta name="author" content="Syahri Ramadhan Wiraasmara (ARI)" />
+                <meta name="description" content={`Syafiq Psikotest Online App. Adalah aplikasi khusus untuk klien Syafiq berbasis online dan bisa digunakan di perangkat manapun (web based). Sistem ini adalah UI/UX atau Frontend, dimana pengguna dapat mengakses aplikasi berbasis website. ${props.description}`} />
+                <meta name="keywords" content="Psikotest, Javascript, React.JS, Next.JS, MUI.JS, Material UI, Tailwind, Node.JS, Bun, Million.JS, Chart.JS, SweetAlert2.JS, Axios, Frontend UI/UX" />
+                <meta name="author" content="Syafiq. Syahri Ramadhan Wiraasmara (ARI)" />
                 <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONTEND}/${props.pathURL}`} />
-                <link rel="author" href="https://github.com/ariwiraasmara" />
+                <link rel="repository" href="https://github.com/ariwiraasmara" />
                 <link rel="license" href="https://github.com/ariwiraasmara/syafiq_psikotest_frontend_nextjs?tab=AGPL-3.0-1-ov-file#" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
             </Helmet>
         </React.StrictMode>
     );

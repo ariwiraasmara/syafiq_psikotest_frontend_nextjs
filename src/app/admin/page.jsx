@@ -66,7 +66,6 @@ export default function Admin() {
                     // setCookie('isAdmin', true, {secure: true, sameSite: 'strict', httpOnly: true});
                     localStorage.setItem('islogin', true);
                     localStorage.setItem('isadmin', true);
-                    localStorage.setItem('isepeserta', false);
                     localStorage.setItem('email', emaillogin);
                     localStorage.setItem('nama', response.data.nama);
                     localStorage.setItem('pat', response.data.token);
@@ -90,9 +89,8 @@ export default function Admin() {
     <div>
         <Myhelmet
             title={`Login Admin | Psikotest Online App`}
-            description={`Psikotest Online App`}
-            keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
-            pathURL={`/admin`}
+            description={`Halaman Login Admin.`}
+            pathURL={`admin`}
         />
         <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
             <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
@@ -134,8 +132,8 @@ export default function Admin() {
                                         ),
                                     },
                                 }} />
-                    <Box sx={{ '& button': { m: 1, width: '96%' } }}>
-                        <Button variant="contained" size="large" onClick={() => submit()}>
+                    <Box sx={{ m: 1 }}>
+                        <Button variant="contained" size="large" fullWidth onClick={() => submit()}>
                             Login
                         </Button>
                     </Box>

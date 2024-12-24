@@ -10,10 +10,7 @@ import Myhelmet from '@/components/Myhelmet';
 import Appbarku from '@/components/Appbarku';
 
 const typePsikotest = [
-    "kecermatan",
-    "dumb_data1",
-    "dumb_data2",
-    "dumb_data3",
+    "Kecermatan",
 ];
 
 export default function Psikotest() {
@@ -21,9 +18,8 @@ export default function Psikotest() {
         <Layoutadmin>
             <Myhelmet
                 title={`Psikotest | Admin | Psikotest`}
-                description={`Psikotest Online App`}
-                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
-                pathURL={`/admin/psikotest`}
+                description={`Halaman Psikotest dengan otoritas sebagai Admin.`}
+                pathURL={`admin/psikotest`}
             />
             <Appbarku headTitle="Psikotest" />
             <main className="p-5 mb-14" key={1}>

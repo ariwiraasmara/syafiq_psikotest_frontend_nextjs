@@ -237,11 +237,10 @@ export default function DetilPsikotestKecermatan() {
         <Layoutadmindetil>
             <Myhelmet
                 title={`Detil Psikotest Kecermatan | Admin | Psikotest`}
-                description={`Psikotest Online App`}
-                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
-                pathURL={`/admin/psikotest/kecermatan/detil`}
+                description={`Halaman Detil Psikotest Kecermatan dengan otoritas sebagai Admin.`}
+                pathURL={`admin/psikotest/kecermatan/detil`}
             />
-            <Appbarku headTitle="Detil Psikotest Kecermatan" isback={true} />
+            <Appbarku headTitle="Detil Psikotest Kecermatan" isback={true} url={`/admin/psikotest/kecermatan`} />
             <main className="p-5 mb-14" key={1}>
                 {loading ? (
                     <div className='text-center'>

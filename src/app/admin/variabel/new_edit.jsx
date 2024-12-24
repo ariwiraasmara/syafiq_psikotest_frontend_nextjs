@@ -78,7 +78,7 @@ export default function NewOrEdit() {
 
     return (
         <Box component="form"
-            sx={{ '& > :not(style)': { m: 0, p: 1, width: '33%' },
+            sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' },
                 p: 3,
             }}
             noValidate
@@ -91,9 +91,11 @@ export default function NewOrEdit() {
                         placeholder="Nilai..." label="Nilai..."
                         fullWidth sx={styledTextField}
                         onChange={handleChange_Nvalues} />
-            <Button type="submit" variant="contained" size="small" onClick={(e) => submit(e)}>
-                Simpan
-            </Button>
+            <Box sx={{ m: 1 }}>
+                <Button variant="contained" size="large" fullWidth onClick={() => submit(e)}>
+                    Simpan
+                </Button>
+            </Box>
         </Box>
     )
 }

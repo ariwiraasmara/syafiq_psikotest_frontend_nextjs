@@ -22,20 +22,6 @@ export default function PesertaPsikotestKecermatanHasil() {
     const [dataHasiltes, setDataHasiltes] = React.useState({});
     const [loading, setLoading] = React.useState(true);
 
-    /*const getData = async () => {
-        try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/${paramIdentitas}/${paramTgl_tes}`);
-            // const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/3604020302950075/2024-12-13`);
-            console.log('response', response);
-            setDataPeserta(response.data.data.peserta[0]);
-            setDataHasiltes(response.data.data.hasiltes[0]);
-        }
-        catch(err) {
-            console.log(err);
-            return err;
-        }
-    }*/
-
     const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
         try {
@@ -121,16 +107,15 @@ export default function PesertaPsikotestKecermatanHasil() {
         return dataHasiltes;
     }, [dataHasiltes]);
 
-    console.log(dataPeserta);
-    console.log(dataHasiltes);
+    console.table('Data Peserta', dataPeserta);
+    console.table('Data Hasil Psikotest Kecermatan Peserta', dataHasiltes);
 
     return(
         <Layoutpeserta>
             <Myhelmet
-                title='Dashboard | Psikotest Online App'
-                description='Psikotest Online App'
-                keywords='Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind'
-                pathURL='/admin/dashboard'
+                title='Hasil Psikotest Kecermatan | Psikotest Online App'
+                description={`Halaman Hasil Psikotest Kecermatan Peserta ${filteredDataPeserta.nama}`}
+                pathURL='peserta/psikotest/kecermatan/hasil'
             />
             <Appbarku headTitle="Hasil Psikotest Kecermatan" />
             <main className="p-4">
@@ -150,7 +135,7 @@ export default function PesertaPsikotestKecermatanHasil() {
                             <p><span className="font-bold">Tanggal Tes : </span> {paramTgl_tes}</p>
                         </div>
                         <div className="mt-4">
-                            <HasilTes_GrafikKecermatan 
+                            <HasilTes_GrafikKecermatan
                                 tgl_tes={paramTgl_tes}
                                 hasilnilai_kolom_1={filteredDataHasilTes.hasilnilai_kolom_1}
                                 hasilnilai_kolom_2={filteredDataHasilTes.hasilnilai_kolom_2}

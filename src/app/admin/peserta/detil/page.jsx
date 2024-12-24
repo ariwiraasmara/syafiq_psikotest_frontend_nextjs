@@ -128,11 +128,10 @@ export default function AdminPesertaDetil() {
         <Layoutadmindetil>
             <Myhelmet
                 title={`Detil Peserta | Admin | Psikotest Online App`}
-                description={`Psikotest Online App`}
-                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
-                pathURL={`/admin/peserta/detil`}
+                description={`Halaman Detil Peserta dengan otoritas sebagai Admin.`}
+                pathURL={`admin/peserta/detil`}
             />
-            <Appbarku isback={true} headTitle={'Detil Peserta'} />
+            <Appbarku headTitle={'Detil Peserta'}  isback={true} url={`/admin/peserta`} />
             <main className="p-5 mb-14">
                 {loading ? (
                     <div className='text-center'>

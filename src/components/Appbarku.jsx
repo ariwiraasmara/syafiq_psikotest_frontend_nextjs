@@ -2,6 +2,7 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import AppBar from '@mui/material/AppBar';
 import PropTypes from 'prop-types';
 import Toolbar from '@mui/material/Toolbar';
@@ -30,10 +31,11 @@ ElevationScroll.propTypes = {
     window: PropTypes.func,
 };
 
-const linkBack = (isback) => {
+const linkBack = (isback, url) => {
+    const router = useRouter();
     if(isback) {
         return (
-            <Link onClick={() => history.back()} sx={{ marginRight : '10px' }} >
+            <Link onClick={() => router.push(url)} sx={{ marginRight : '10px' }} >
                 <ArrowBackIcon />
             </Link>
         );
@@ -48,7 +50,7 @@ export default function Appbarku(props) {
                 <AppBar sx={{ background: '#000' }}>
                     <Toolbar>
                         <Typography variant="h5" component="div" className="font-bold">
-                            {linkBack(props.isback)}
+                            {linkBack(props.isback, props.url)}
                             <span className="font-bold">{props.headTitle}</span>
                         </Typography>
                     </Toolbar>

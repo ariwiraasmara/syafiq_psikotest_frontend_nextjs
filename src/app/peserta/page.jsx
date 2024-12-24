@@ -52,7 +52,6 @@ export default function PesertaTes() {
         try {
             localStorage.setItem('islogin', false);
             localStorage.setItem('isadmin', false);
-            localStorage.setItem('ispeserta', true);
             localStorage.removeItem('islogin');
             localStorage.removeItem('isadmin');
             localStorage.removeItem('email');
@@ -99,6 +98,7 @@ export default function PesertaTes() {
 
                 console.info('response', response);
                 if(response.data.success) {
+                    sessionStorage.setItem('id_peserta_psikotest', response.data.res);
                     sessionStorage.setItem('nama_peserta_psikotest', nama);
                     sessionStorage.setItem('no_identitas_peserta_psikotest', no_identitas);
                     sessionStorage.setItem('email_peserta_psikotest', email);
@@ -134,9 +134,8 @@ export default function PesertaTes() {
         <Layoutpeserta>
             <Myhelmet
                 title='Formulir Peserta | Psikotest Online App'
-                description='Psikotest Online App'
-                keywords='Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind'
-                pathURL='/peserta'
+                description='Halaman Formulir Peserta'
+                pathURL='peserta'
             />
             <main>
                 <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -177,8 +176,8 @@ export default function PesertaTes() {
                                         onChange = {(event)=> setAsal(event.target.value)}
                                         defaultValue={asal}
                                         fullWidth sx={styledTextField} />
-                            <Box sx={{ '& button': { m: 1, width: '100%' } }}>
-                                <Button variant="contained" size="large" fullwidth onClick={(e) => submit(e)}>
+                            <Box sx={{ m: 1 }}>
+                                <Button variant="contained" size="large" fullWidth onClick={(e) => submit(e)}>
                                     Lanjut
                                 </Button>
                             </Box>

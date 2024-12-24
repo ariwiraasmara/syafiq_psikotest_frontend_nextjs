@@ -111,9 +111,8 @@ export default function AdminPesertaEdit() {
         <Layoutadmindetil>
             <Myhelmet
                 title={`Detil Peserta | Admin | Psikotest Online App`}
-                description={`Psikotest Online App`}
-                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
-                pathURL={`/admin/peserta/edit`}
+                description={`Halaman Edit Peserta dengan otoritas sebagai Admin.`}
+                pathURL={`admin/peserta/edit`}
             />
             <Appbarku headTitle={'Update Peserta'} />
             <main className="p-5 mb-14">
@@ -146,12 +145,16 @@ export default function AdminPesertaEdit() {
                                 fullWidth sx={styledTextField} />
 
                     <Box sx={{ m: 1 }}>
-                        <Button variant="contained" size="large" color="primary" fullWidth onClick={(e) => submit(e)} >
-                            Simpan
-                        </Button>
-                        <Button variant="contained" size="large" color="secondary" fullWidth onClick={(e) => cancel(e)} sx={{marginTop: 2}} >
-                            Batal
-                        </Button>
+                        <div>
+                            <Button variant="contained" size="large" color="primary" fullWidth onClick={(e) => submit(e)} >
+                                Simpan
+                            </Button>
+                        </div>
+                        <div className="mt-4">
+                            <Button variant="contained" size="large" color="secondary" fullWidth onClick={(e) => cancel(e)} sx={{marginTop: 2}} >
+                                Batal
+                            </Button>
+                        </div>
                     </Box>
                 </Box>
             </main>

@@ -115,15 +115,14 @@ export default function EditVariabel() {
     return (
         <Layoutadmindetil>
             <Myhelmet
-                title={`Variabel | Admin | Psikotest`}
-                description={`Psikotest Online App`}
-                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
-                pathURL={`${process.env.NEXT_PUBLIC_FRONTEND}/admin/variabel/edit`}
+                title={`Edit Variabel | Admin | Psikotest`}
+                description={`Halaman Edit Variabel dengan otoritas sebagai Admin.`}
+                pathURL={`admin/variabel/edit`}
             />
             <Appbarku headTitle="Edit Variabel" />
             <main className="p-5 mb-14">
                 <Box component="form"
-                    sx={{ '& > :not(style)': { m: 0, p: 1, width: '50%' },
+                    sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' },
                         p: 3
                     }}
                     noValidate
@@ -138,13 +137,17 @@ export default function EditVariabel() {
                                 fullWidth sx={styledTextField}
                                 onChange={handleChange_Nvalues}
                                 defaultValue={nvalues} />
-                    <Box sx={{ '& button': { m: 1, width: '200%' } }}>
-                        <Button variant="contained" size="large" color="primary" onClick={(e) => submit(e)}>
-                            Simpan
-                        </Button>
-                        <Button variant="contained" size="large" color="secondary" onClick={(e) => cancel(e)}>
-                            Batal
-                        </Button>
+                    <Box sx={{ m: 1 }}>
+                        <div>
+                            <Button variant="contained" size="large" fullWidth color="primary" onClick={(e) => submit(e)}>
+                                Simpan
+                            </Button>
+                        </div>
+                        <div className="mt-4">
+                            <Button variant="contained" size="large" fullWidth color="secondary" onClick={(e) => cancel(e)}>
+                                Batal
+                            </Button>
+                        </div>
                     </Box>
                 </Box>
             </main>

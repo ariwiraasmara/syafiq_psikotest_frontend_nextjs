@@ -94,9 +94,8 @@ export default function AdminPeserta() {
         <Layoutadmin>
             <Myhelmet
                 title={`Peserta | Admin | Psikotest Online App`}
-                description={`Psikotest Online App`}
-                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
-                pathURL={`/admin/peserta`}
+                description={`Halaman Peserta dengan otoritas sebagai Admin.`}
+                pathURL={`admin/peserta`}
             />
             <Appbarku headTitle={'Peserta'} />
             <main className="p-5 mb-14">

@@ -167,9 +167,8 @@ export default function VariabelSetting() {
         <Layoutadmin>
             <Myhelmet
                 title={`Variabel | Admin | Psikotest`}
-                description={`Psikotest Online App`}
-                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
-                pathURL={`${process.env.NEXT_PUBLIC_FRONTEND}/admin/variabel`}
+                description={`Halamana Variabel dengan otoritas sebagai Admin.`}
+                pathURL={`admin/variabel`}
             />
             <Appbarku headTitle="Variabel" />
             <main className="p-5 mb-14">
@@ -207,8 +206,8 @@ export default function VariabelSetting() {
                         ))
                     )}
                 </div>
-                <div id="newdata" className="mt-6 border-1 hidden">
-                    <h3 className="font-bold">Tambah Variabel Baru</h3>
+                <div id="newdata" className="mt-6 border-2 p-2 rounded-lg hidden">
+                    <h3 className="font-bold border-b-2">Tambah Variabel Baru</h3>
                     <NewOrEdit />
                 </div>
             </main>

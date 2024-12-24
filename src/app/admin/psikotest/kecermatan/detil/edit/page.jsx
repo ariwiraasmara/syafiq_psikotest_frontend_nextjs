@@ -137,10 +137,9 @@ export default function PsikotestKecermatanDetilEdit() {
     return(
         <Layoutadmindetil>
             <Myhelmet
-                title={`Detil Psikotest Kecermatan | Admin | Psikotest`}
-                description={`Psikotest Online App`}
-                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
-                pathURL={`/admin/psikotest/kecermatan/detil/edit`}
+                title={`Edit Detil Psikotest Kecermatan | Admin | Psikotest`}
+                description={`Halaman Edit Detil Psikotest Kecermatan dengan otoritas sebagai Admin.`}
+                pathURL={`admin/psikotest/kecermatan/detil/edit`}
             />
             <Appbarku headTitle="Detil Psikotest Kecermatan" />
             <main className="p-5 mb-14">
@@ -178,12 +177,16 @@ export default function PsikotestKecermatanDetilEdit() {
                                 defaultValue={jawaban} variant="outlined"
                                 sx={styledTextField} />
                     <Box sx={{ m: 1 }}>
-                        <Button variant="contained" size="large" color="primary" fullWidth onClick={(e) => submit(e)} >
-                            Simpan
-                        </Button>
-                        <Button variant="contained" size="large" color="secondary" fullWidth onClick={(e) => cancel(e)} sx={{marginTop: 2}} >
-                            Batal
-                        </Button>
+                        <div>
+                            <Button variant="contained" size="large" color="primary" fullWidth onClick={(e) => submit(e)} >
+                                Simpan
+                            </Button>
+                        </div>
+                        <div className="mt-4">
+                            <Button variant="contained" size="large" color="secondary" fullWidth onClick={(e) => cancel(e)} sx={{marginTop: 2}} >
+                                Batal
+                            </Button>
+                        </div>
                     </Box>
                 </Box>
             </main>
