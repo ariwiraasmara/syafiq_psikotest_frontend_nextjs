@@ -2,6 +2,7 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 import * as React from 'react';
+import { findDOMNode } from 'react-dom';
 import AppBar from '@mui/material/AppBar';
 import PropTypes from 'prop-types';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,7 +15,7 @@ function ElevationScroll(props) {
         threshold: 0,
         target: window ? window() : undefined,
     });
-  
+
     return children
         ? React.cloneElement(children, {
             elevation: trigger ? 4 : 0,
@@ -25,6 +26,16 @@ function ElevationScroll(props) {
 ElevationScroll.propTypes = {
     children: PropTypes.element,
     window: PropTypes.func,
+};
+
+Appbarpeserta.propTypes = {
+    kolom_x: PropTypes.string,
+    timer: PropTypes.string,
+    soalA: PropTypes.number,
+    soalB: PropTypes.number,
+    soalC: PropTypes.number,
+    soalD: PropTypes.number,
+    soalE: PropTypes.number
 };
 
 export default function Appbarpeserta(props) {

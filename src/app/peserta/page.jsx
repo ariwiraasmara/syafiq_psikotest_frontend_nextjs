@@ -4,13 +4,16 @@
 'use client';
 import Layoutpeserta from '../layoutpeserta';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import axios from 'axios';
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
-import Myhelmet from '@/components/Myhelmet';
+const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 
 const styledTextField = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -126,6 +129,7 @@ export default function PesertaTes() {
         }
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
         checkData();
     }, []);

@@ -3,6 +3,7 @@ import Layoutadmin from '../../layoutadmin';
 import axios from 'axios';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import Swal from 'sweetalert2';
 
 import Fab from '@mui/material/Fab';
@@ -12,9 +13,15 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import Myhelmet from '@/components/Myhelmet';
-import Appbarku from '@/components/Appbarku';
-import NewOrEdit from './new_edit';
+const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Appbarku = dynamic(() => import('@/components/Appbarku'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const NewOrEdit = dynamic(() => import('./new_edit'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 
 const linkStyle = {
     color: '#fff'
@@ -108,13 +115,14 @@ export default function VariabelSetting() {
     React.useEffect(() => {
         getData();
     }, []);
-    console.table('tabel data variabel', data);
-
+    
     // Filter data menggunakan useMemo (hanya jika ada operasi pengolahan data)
     const filteredData = React.useMemo(() => {
         // return variabels.filter(item => item.values > 10); // Contoh: hanya menampilkan variabel dengan values > 10
         return data;
     }, [data]);
+
+    console.table('tabel data variabel', filteredData);
 
     const toEdit = (e, id, nvariabel, nvalue) => {
         e.preventDefault();

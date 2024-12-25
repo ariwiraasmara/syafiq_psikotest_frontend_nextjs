@@ -6,6 +6,13 @@ import * as React from 'react';
 import {Helmet} from "react-helmet";
 import axios from 'axios';
 import { setCookie } from 'cookies-next/client';
+import PropTypes from 'prop-types';
+
+Myhelmet.propTypes = {
+    title: PropTypes.string,
+    description: PropTypes.string,
+    pathURL: PropTypes.string
+};
 
 export default function Myhelmet(props) {
     const [token, setToken] = React.useState();
@@ -30,7 +37,7 @@ export default function Myhelmet(props) {
 
     React.useEffect(() => {
         generateToken();
-    }, []);
+    }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
 
     return(
         <React.StrictMode>

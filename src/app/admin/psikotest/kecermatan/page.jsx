@@ -8,15 +8,16 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Fab from '@mui/material/Fab';
 import Link from '@mui/material/Link';
+import dynamic from 'next/dynamic';
 
 import AddIcon from '@mui/icons-material/Add';
 
-import Myhelmet from '@/components/Myhelmet';
-import Appbarku from '@/components/Appbarku';
-
-const opencloseEdit = (varid) => {
-    document.getElementById(varid).classList.toggle('hidden');
-}
+const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Appbarku = dynamic(() => import('@/components/Appbarku'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 
 export default function PsikotestKecermatan() {
     const router = useRouter();
@@ -39,6 +40,10 @@ export default function PsikotestKecermatan() {
     const onDetil = (id) => {
         sessionStorage.setItem('psikotest_kecermatan_id', id);
         router.push(`/admin/psikotest/kecermatan/detil/?page=1`);
+    }
+
+    const opencloseEdit = (varid) => {
+        document.getElementById(varid).classList.toggle('hidden');
     }
 
     console.log('dataPsikotestKecermatan', dataPsikotestKecermatan);

@@ -3,6 +3,7 @@
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import axios from 'axios';
 import * as React from 'react';
 import Box from '@mui/material/Box';
@@ -12,8 +13,11 @@ import InputAdornment from '@mui/material/InputAdornment';
 import EmailIcon from '@mui/icons-material/Email';
 import LockPersonIcon from '@mui/icons-material/LockPerson';
 
-import Myhelmet from '@/components/Myhelmet';
+const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 import fun from '@/libraries/myfunction';
+import { ErrorOutlineOutlined } from '@mui/icons-material';
 
 const styledTextField = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -39,7 +43,6 @@ const styledTextField = {
 
 export default function Admin() {
     const router = useRouter();
-    if(localStorage.getItem('islogin') && localStorage.getItem('isAdmin')) window.location.href= '/admin/dashboard';
     const [emaillogin, setEmaillogin] = React.useState('');
     const [passlogin, setPasslogin] = React.useState('');
 
@@ -60,8 +63,8 @@ export default function Admin() {
                     }
                 });
 
-                console.log('response', response);
                 if(response.data.success) {
+                    console.info(response.data.pesan);
                     // setCookie('islogin', true, {secure: true, sameSite: 'strict', httpOnly: true});
                     // setCookie('isAdmin', true, {secure: true, sameSite: 'strict', httpOnly: true});
                     localStorage.setItem('islogin', true);
@@ -70,12 +73,13 @@ export default function Admin() {
                     localStorage.setItem('nama', response.data.nama);
                     localStorage.setItem('pat', response.data.token);
                     localStorage.setItem('csrfToken', csrfToken);
+                    sessionStorage.setItem('nav_id', 1);
                     return router.push('/admin/dashboard');
                 }
                 return alert('Email / Password Salah!');
             }
-            catch(e) {
-                console.log(e);
+            catch(err) {
+                console.error(err);
                 return alert('Terjadi Kesalahan!');
             }
         }
@@ -83,6 +87,7 @@ export default function Admin() {
     };
 
     React.useEffect(() => {
+        if(localStorage.getItem('islogin') && localStorage.getItem('isAdmin')) window.location.href= '/admin/dashboard';
     }, []);
 
     return (

@@ -3,10 +3,15 @@
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import { useRouter } from 'next/navigation';
 import NavigasiBawah from '@/components/BottomNavigation';
 
-export default function RootLayout({ children }) {
+Layoutadmin.propTypes = {
+    children: PropTypes.any,
+  };
+
+export default function Layoutadmin({ children }) {
     const router = useRouter();
     const [islogin, setIslogin] = React.useState();
     const [isadmin, setIsadmin] = React.useState();
@@ -14,10 +19,8 @@ export default function RootLayout({ children }) {
     React.useEffect(() => {
         setIslogin(localStorage.getItem('islogin'));
         setIsadmin(localStorage.getItem('isadmin'));
-    }, [islogin, isadmin]);
-    // console.log('islogin', islogin);
-    // console.log('isadmin', isadmin);
-  
+    }, [router, islogin, isadmin]);
+
     return(
         <div>
             {children}

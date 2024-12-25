@@ -1,9 +1,15 @@
 {
   // "extends": "next/core-web-vitals"
-  "extends": ["next/core-web-vitals", "eslint:recommended", "plugin:react/recommended"],
+  "extends": [
+    "next/core-web-vitals",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@next/next/recommended"
+  ],
   "rules": {
     "react/no-deprecated": "warn",  // Memberikan peringatan jika ada penggunaan metode deprecated
-    "react/no-unsafe": "warn"      // Memberikan peringatan jika ada penggunaan UNSAFE_* lifecycle methods
+    "react/no-unsafe": "warn",      // Memberikan peringatan jika ada penggunaan UNSAFE_* lifecycle methods
+    "react/prop-types": "off"  // Jika Anda tidak menggunakan TypeScript
   },
   "parserOptions": {
     "ecmaVersion": 2020,       // Pastikan ESLint mendukung ECMAScript terbaru

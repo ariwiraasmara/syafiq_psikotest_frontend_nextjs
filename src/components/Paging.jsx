@@ -4,6 +4,12 @@
 'use client'
 import * as React from 'react';
 import Link from '@mui/material/Link';
+import PropTypes from 'prop-types';
+
+Paging.propTypes = {
+    current: PropTypes.number,
+    page: PropTypes.number,
+};
 
 export default function Paging(props) {
     const xr = parseInt(props.page) + 1;

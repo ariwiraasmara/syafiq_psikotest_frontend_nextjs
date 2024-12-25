@@ -31,18 +31,25 @@ ElevationScroll.propTypes = {
     window: PropTypes.func,
 };
 
-const linkBack = (isback, url) => {
-    const router = useRouter();
-    if(isback) {
-        return (
-            <Link onClick={() => router.push(url)} sx={{ marginRight : '10px' }} >
-                <ArrowBackIcon />
-            </Link>
-        );
-    }
-}
+Appbarku.propTypes = {
+    isback: PropTypes.boolean,
+    url: PropTypes.string,
+    headTitle: PropTypes.string,
+};
 
 export default function Appbarku(props) {
+    const router = useRouter();
+
+    const linkBack = (isback, url) => {
+        if(isback) {
+            return (
+                <Link onClick={() => router.push(url)} sx={{ marginRight : '10px' }} >
+                    <ArrowBackIcon />
+                </Link>
+            );
+        }
+    }
+
     return (
     <div>
         <React.StrictMode>

@@ -2,7 +2,8 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
-import { StrictMode } from 'react';
+import * as React from 'react';
+import PropTypes from 'prop-types';
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -21,6 +22,11 @@ const geistMono = localFont({
 // backgroundImage: 'url(https://fruitthemes.com/demo/impressive-wordpress-theme/wp-content/uploads/sites/2/2018/06/pexels-photo-247474.jpeg)',
 // backgroundSize: 'cover',
 // backgroundRepeat: 'no-repeat',
+
+RootLayout.propTypes = {
+  children: PropTypes.any,
+};
+
 export default function RootLayout({ children }) {
     return (
         <html lang="id">
@@ -30,9 +36,9 @@ export default function RootLayout({ children }) {
                   backgroundColor: 'rgba(50, 50, 100, 1)',
                 }}
             >
-                <StrictMode>
+                <React.StrictMode>
                     {children}
-                </StrictMode>
+                </React.StrictMode>
             </body>
         </html>
     );

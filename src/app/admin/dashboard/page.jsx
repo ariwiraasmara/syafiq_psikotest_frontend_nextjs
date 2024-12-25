@@ -5,10 +5,17 @@
 import Layoutadmin from '../../layoutadmin';
 import axios from 'axios';
 import * as React from 'react';
+import dynamic from 'next/dynamic';
 
-import Myhelmet from '@/components/Myhelmet';
-import Appbarku from '@/components/Appbarku';
-import ListPeserta from '@/components/ListPeserta';
+const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Appbarku = dynamic(() => import('@/components/Appbarku'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const ListPeserta = dynamic(() => import('@/components/ListPeserta'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 
 export default function AdminDashboard() {
     const [nama, setNama] =  React.useState('');
@@ -57,7 +64,7 @@ export default function AdminDashboard() {
                 }
             } else {
                 // Jika data tidak ditemukan di cache, ambil dari API
-                console.log('Data tidak ditemukan di cache');
+                console.info('Data tidak ditemukan di cache');
 
                 try {
                     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/terbaru`);
@@ -70,13 +77,13 @@ export default function AdminDashboard() {
                         headers: { 'Content-Type': 'application/json' }
                     });
                     await cache.put('peserta/terbaru', cacheResponse);
-                    console.log('Data disimpan ke cache');
+                    console.info('Data disimpan ke cache');
                 } catch (error) {
                     console.error('Terjadi kesalahan saat mengambil data:', error);
                 }
             }
         } catch (error) {
-            console.log('Terjadi kesalahan saat memeriksa cache:', error);
+            console.error('Terjadi kesalahan saat memeriksa cache:', error);
         }
         setLoading(false);
     };
@@ -91,6 +98,7 @@ export default function AdminDashboard() {
         // return variabels.filter(item => item.values > 10); // Contoh: hanya menampilkan variabel dengan values > 10
         return data;
     }, [data]);
+    console.table('Data Peserta Terbaru', filteredData);
 
     return (
         <Layoutadmin>
@@ -114,7 +122,7 @@ export default function AdminDashboard() {
                             <p><span className='font-bold text-2lg'>Loading...</span></p>
                         </div>
                     ) : (
-                        <ListPeserta listpeserta={filteredData} />
+                        <ListPeserta listpeserta={filteredData} isLatest={true} />
                     )}
                 </div>
             </main>

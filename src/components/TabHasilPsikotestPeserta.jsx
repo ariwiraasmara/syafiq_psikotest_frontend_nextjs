@@ -40,6 +40,10 @@ const TabStyle = {
     color: '#fff'
 };
 
+TabHasilPsikotestPeserta.propTypes = {
+    peserta_id: PropTypes.number,
+};
+
 export default function TabHasilPsikotestPeserta(props) {
     const [value, setValue] = React.useState(0);
 

@@ -1,19 +1,20 @@
 // ! Copyright @
 // ! Syafiq
-// ! Syahri Ramadhan Wiraasmara (ARI)import myfunction from '../libraries/myfunction';
+// ! Syahri Ramadhan Wiraasmara (ARI)
 import * as React from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import AppSettingsAltOutlinedIcon from '@mui/icons-material/AppSettingsAltOutlined';
 
-export default function NavigasiBawah(...props) {
+export default function NavigasiBawah() {
     const router = useRouter();
-    const [value, setValue] = React.useState(0);
+    const [svalue, setSvalue] = React.useState(0);
 
     const logout = async () => {
         try {
@@ -28,6 +29,7 @@ export default function NavigasiBawah(...props) {
                 localStorage.removeItem('nama');
                 localStorage.removeItem('pat');
                 localStorage.removeItem('csrfToken');
+                sessionStorage.removeItem('nav_id');
 
                 //? Sesi Data Halaman Peserta
                 sessionStorage.removeItem('admid_peserta');
@@ -61,83 +63,82 @@ export default function NavigasiBawah(...props) {
     };
 
     return(
-    <React.StrictMode>
-        <BottomNavigation
-            showLabels
-            value={props.value}
-            // onChange={(event, newValue) => {
-            //   setValue(newValue);
-            //   console.log(`value : ${value}`);
-            // }}
-            sx={{ position: 'fixed', bottom: 0, width: '100%', background: '#000' }}
-        >
-          <BottomNavigationAction
-              label="Beranda"
-              icon={<HomeOutlinedIcon />}
-              // selected={props.value === 0}
-              selected={false}
-              sx={{
-                  color: '#fff',
-                  '&.Mui-selected': {
+        <React.StrictMode>
+            <BottomNavigation
+                showLabels
+                values={svalue}
+                sx={{ position: 'fixed', bottom: 0, width: '100%', background: '#000' }}
+            >
+            <BottomNavigationAction
+                label="Beranda"
+                icon={<HomeOutlinedIcon />}
+                defaultValue={0}
+                selected={svalue === 0}
+                sx={{
                     color: '#fff',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  },
-              }}
-              onClick={() => [router.push('/admin/dashboard'), setValue(0)]}
-          />
-          <BottomNavigationAction
-              label="Peserta"
-              icon={<PeopleAltOutlinedIcon />}
-              selected={props.value === 1}
-              sx={{
-                  color: '#fff',
-                  '&.Mui-selected': {
+                    '&.Mui-selected': {
+                        color: '#fff',
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    },
+                }}
+                onClick={(event) =>router.push('/admin/dashboard') }
+            />
+            <BottomNavigationAction
+                label="Peserta"
+                icon={<PeopleAltOutlinedIcon />}
+                defaultValue={1}
+                selected={svalue === 1}
+                sx={{
                     color: '#fff',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  },
-              }}
-              onClick={() => [router.push('/admin/peserta'), setValue(1)]}
-          />
-          <BottomNavigationAction
-              label="Psikotest"
-              icon={<AssignmentOutlinedIcon />}
-              selected={props.value === 2}
-              sx={{
-                  color: '#fff',
-                  '&.Mui-selected': {
+                    '&.Mui-selected': {
+                        color: '#fff',
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    },
+                }}
+                onClick={(event) => router.push('/admin/peserta')}
+            />
+            <BottomNavigationAction
+                label="Psikotest"
+                icon={<AssignmentOutlinedIcon />}
+                defaultValue={2}
+                selected={svalue === 2}
+                sx={{
                     color: '#fff',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  },
-              }}
-              onClick={() => [router.push('/admin/psikotest'), setValue(2)]}
-          />
-          <BottomNavigationAction
-              label="Variabel"
-              icon={<AppSettingsAltOutlinedIcon />}
-              selected={props.value === 3}
-              sx={{
-                  color: '#fff',
-                  '&.Mui-selected': {
+                    '&.Mui-selected': {
+                        color: '#fff',
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    },
+                }}
+                onClick={(event) => router.push('/admin/psikotest')}
+            />
+            <BottomNavigationAction
+                label="Variabel"
+                icon={<AppSettingsAltOutlinedIcon />}
+                defaultValue={3}
+                selected={svalue === 3}
+                sx={{
                     color: '#fff',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  },
-              }}
-              onClick={() => [router.push('/admin/variabel'), setValue(3)]}
-          />
-          <BottomNavigationAction
-              label="Logout"
-              icon={<AppSettingsAltOutlinedIcon />}
-              selected={props.value === 3}
-              sx={{
-                  color: '#fff',
-                  '&.Mui-selected': {
+                    '&.Mui-selected': {
+                        color: '#fff',
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    },
+                }}
+                onClick={(event) => router.push('/admin/variabel')}
+            />
+            <BottomNavigationAction
+                label="Logout"
+                defaultValue={4}
+                icon={<AppSettingsAltOutlinedIcon />}
+                sx={{
                     color: '#fff',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  },
-              }}
-              onClick={() => [logout(), setValue(0)]}
-          />
-        </BottomNavigation>
-    </React.StrictMode>
+                    '&.Mui-selected': {
+                        color: '#fff',
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    },
+                }}
+                onClick={(event) => logout()}
+            />
+            </BottomNavigation>
+        </React.StrictMode>
     );
 }

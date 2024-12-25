@@ -7,6 +7,7 @@ import axios from 'axios';
 import * as React from 'react';
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import Swal from 'sweetalert2'
 
 import IconButton from '@mui/material/IconButton';
@@ -18,22 +19,27 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
-import Myhelmet from '@/components/Myhelmet';
-import Appbarku from '@/components/Appbarku';
-import Paging from '@/components/Paging';
+const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Appbarku = dynamic(() => import('@/components/Appbarku'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Paging = dynamic(() => import('@/components/Paging'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 
 export default function DetilPsikotestKecermatan() {
     const router = useRouter();
-    const searchParams = useSearchParams();
-
-    const pkid = sessionStorage.getItem('psikotest_kecermatan_id');
-
+    const params = useSearchParams();
+    // const [pkid, setPkid] = React.useState(0);
+    const pkid = sessionStorage.getItem('psikotest_kecermatan_id')
     const [dataPertanyaan, setDataPertanyaan] = React.useState([]);
     const [dataSoalJawaban, setDataSoalJawaban] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
 
     // paging
-    let currentpage = searchParams.get('page');
+    let currentpage = params.get('page');
     const [lastpage, setLastpage] = React.useState(1);
     let numbertable = 0;
     if(currentpage == 1) numbertable = 1;
@@ -42,23 +48,11 @@ export default function DetilPsikotestKecermatan() {
     else if(currentpage == 4) numbertable = 31;
     else if(currentpage == 5) numbertable = 41;
 
-    /*
-    const getData = async () => {
-        try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/kecermatan/soaljawaban/all/${pkid}?page=${currentpage}`);
-            console.log(response);
-            setDataPertanyaan(response.data.pertanyaan[0]);
-            setDataSoalJawaban(response.data.soaljawaban.data);
-            setLastpage(response.data.soaljawaban.last_page);
-        } catch (err) {
-            console.error(err);
-            return err;
-        }
-    }
-    */
-
     const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
+        
+        // setCurrentpage(params.get('page'));
+        // setPkid(sessionStorage.getItem('psikotest_kecermatan_id'));
         const expirationTime = (Date.now() + 3600000) * 24; // 24 jam ke depan dalam milidetik
         try {
             const cacheResponse = await caches.match('psikotest/kecermatan/detil');
@@ -79,7 +73,7 @@ export default function DetilPsikotestKecermatan() {
                 // Cek waktu atau versi data di server jika memungkinkan
                 try {
                     const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/kecermatan/soaljawaban/all/${pkid}?page=${currentpage}`);
-                    const apiData = apiResponse;
+                    const apiData = apiResponse.data;
                     const responseStore = {
                         data: apiData,
                         expirationTime: expirationTime
@@ -102,9 +96,9 @@ export default function DetilPsikotestKecermatan() {
                         // console.log('Data baru disimpan ke cache');
                         
                         // Update dataPeserta dengan data terbaru dari API
-                        setDataPertanyaan(apiResponse.data.pertanyaan[0]);
-                        setDataSoalJawaban(apiResponse.data.soaljawaban.data);
-                        setLastpage(apiResponse.data.soaljawaban.last_page);
+                        setDataPertanyaan(apiResponse.data.data.pertanyaan[0]);
+                        setDataSoalJawaban(apiResponse.data.data.soaljawaban.data);
+                        setLastpage(apiResponse.data.data.soaljawaban.last_page);
                     }
                 } catch (error) {
                     console.error('Terjadi kesalahan saat mengambil data terbaru:', error);
@@ -115,9 +109,9 @@ export default function DetilPsikotestKecermatan() {
                 
                 try {
                     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/kecermatan/soaljawaban/all/${pkid}?page=${currentpage}`);
-                    setDataPertanyaan(response.data.pertanyaan[0]);
-                    setDataSoalJawaban(response.data.soaljawaban.data);
-                    setLastpage(response.data.soaljawaban.last_page);
+                    setDataPertanyaan(response.data.data.pertanyaan[0]);
+                    setDataSoalJawaban(response.data.data.soaljawaban.data);
+                    setLastpage(response.data.data.soaljawaban.last_page);
                     const responseStore = {
                         dataPertanyaan: dataPertanyaan,
                         dataSoalJawaban: dataSoalJawaban,
@@ -144,7 +138,7 @@ export default function DetilPsikotestKecermatan() {
 
     React.useEffect(() => {
         getData();
-    }, []);
+    }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
 
     // Filter data menggunakan useMemo (hanya jika ada operasi pengolahan data)
     const filteredDataPertanyaan = React.useMemo(() => {

@@ -5,18 +5,22 @@
 import Layoutpeserta from '../../../../layoutpeserta';
 import * as React from 'react';
 import { useSearchParams } from 'next/navigation'
+import dynamic from 'next/dynamic';
 import axios from 'axios';
 
-import Appbarku from '@/components/Appbarku';
-import Myhelmet from '@/components/Myhelmet';
-import HasilTes_GrafikKecermatan from '@/components/HasilTes_GrafikKecermatan';
+const Appbarku = dynamic(() => import('@/components/Appbarku'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const HasilTes_GrafikKecermatan = dynamic(() => import('@/components/HasilTes_GrafikKecermatan'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 
 export default function PesertaPsikotestKecermatanHasil() {
-    const searchParams = useSearchParams();
-    const paramIdentitas = searchParams.get('identitas');
-    const paramTgl_tes = searchParams.get('tgl_tes');
-    console.log(paramIdentitas);
-    console.log(paramTgl_tes);
+    const [paramIdentitas, setParamIdentitas] = React.useState(0);
+    const [paramTgl_tes, setParamTgl_tes] = React.useState('');
 
     const [dataPeserta, setDataPeserta] = React.useState({});
     const [dataHasiltes, setDataHasiltes] = React.useState({});
@@ -24,6 +28,9 @@ export default function PesertaPsikotestKecermatanHasil() {
 
     const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
+        const searchParams = useSearchParams();
+        setParamIdentitas(searchParams.get('identitas'));
+        setParamTgl_tes(searchParams.get('tgl_tes'));
         try {
             const cacheResponse = await caches.match('peserta/psikotest/kecermatan/hasil-tes');
 
@@ -95,7 +102,7 @@ export default function PesertaPsikotestKecermatanHasil() {
 
     React.useEffect(() => {
         getData();
-    }, []);
+    }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
 
     const filteredDataPeserta = React.useMemo(() => {
         // return variabels.filter(item => item.values > 10); // Contoh: hanya menampilkan variabel dengan values > 10

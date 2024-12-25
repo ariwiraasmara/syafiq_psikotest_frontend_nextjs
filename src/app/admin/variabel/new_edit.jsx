@@ -92,7 +92,7 @@ export default function NewOrEdit() {
                         fullWidth sx={styledTextField}
                         onChange={handleChange_Nvalues} />
             <Box sx={{ m: 1 }}>
-                <Button variant="contained" size="large" fullWidth onClick={() => submit(e)}>
+                <Button variant="contained" size="large" fullWidth onClick={(e) => submit(e)}>
                     Simpan
                 </Button>
             </Box>

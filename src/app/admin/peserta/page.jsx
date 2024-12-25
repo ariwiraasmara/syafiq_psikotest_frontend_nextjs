@@ -5,10 +5,17 @@
 import Layoutadmin from '../../layoutadmin';
 import axios from 'axios';
 import * as React from 'react';
+import dynamic from 'next/dynamic';
 
-import Myhelmet from '@/components/Myhelmet';
-import Appbarku from '@/components/Appbarku';
-import ListPeserta from '@/components/ListPeserta';
+const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Appbarku = dynamic(() => import('@/components/Appbarku'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const ListPeserta = dynamic(() => import('@/components/ListPeserta'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 
 export default function AdminPeserta() {
     const [data, setData] = React.useState([]);
@@ -80,15 +87,16 @@ export default function AdminPeserta() {
         setLoading(false);
     };
 
+    React.useEffect(() => {
+        getdata();
+    }, []);
+
     const filteredData = React.useMemo(() => {
         // return variabels.filter(item => item.values > 10); // Contoh: hanya menampilkan variabel dengan values > 10
         return data;
     }, [data]);
 
-    React.useEffect(() => {
-        getdata();
-    }, []);
-    // console.log(data);
+    console.table('tabel peserta', filteredData);
 
     return (
         <Layoutadmin>

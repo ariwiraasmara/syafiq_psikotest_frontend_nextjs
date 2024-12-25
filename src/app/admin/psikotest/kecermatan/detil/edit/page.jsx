@@ -3,13 +3,18 @@ import Layoutadmindetil from '../../../../../layoutadmindetil';
 import axios from 'axios';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
-import Myhelmet from '@/components/Myhelmet';
-import Appbarku from '@/components/Appbarku';
+const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Appbarku = dynamic(() => import('@/components/Appbarku'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 
 const styledTextField = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -35,34 +40,35 @@ const styledTextField = {
 
 export default function PsikotestKecermatanDetilEdit() {
     const router = useRouter();
-    const pkid = sessionStorage.getItem('psikotest_kecermatan_id');
-    const idsoal = sessionStorage.getItem('psikotest_kecermatan_idsoal');
+    const [pkid, setPkid] = React.useState(sessionStorage.getItem('psikotest_kecermatan_id'));
+    const [lastpage, setLastpage] = React.useState(sessionStorage.getItem('psikotest_kecermatan_tabellastpage'));
 
-    const [soalA, setSoalA] = React.useState(sessionStorage.getItem('psikotest_kecermatan_soalA'));
+    const [idsoal, setIdsoal] = React.useState(0);
+    const [soalA, setSoalA] = React.useState(0);
     const handleChange_soalA = (event) => {
         setSoalA(event.target.value);
         console.log('soalA', soalA);
     };
 
-    const [soalB, setSoalB] = React.useState(sessionStorage.getItem('psikotest_kecermatan_soalB'));
+    const [soalB, setSoalB] = React.useState(0);
     const handleChange_soalB = (event) => {
         setSoalB(event.target.value);
         console.log('soalB', soalB);
     };
 
-    const [soalC, setSoalC] = React.useState(sessionStorage.getItem('psikotest_kecermatan_soalC'));
+    const [soalC, setSoalC] = React.useState(0);
     const handleChange_soalC = (event) => {
         setSoalC(event.target.value);
         console.log('soalC', soalC);
     };
 
-    const [soalD, setSoalD] = React.useState(sessionStorage.getItem('psikotest_kecermatan_soalD'));
+    const [soalD, setSoalD] = React.useState(0);
     const handleChange_soalD = (event) => {
         setSoalD(event.target.value);
         console.log('soalD', soalD);
     };
 
-    const [jawaban, setJawaban] = React.useState(sessionStorage.getItem('psikotest_kecermatan_jawaban'));
+    const [jawaban, setJawaban] = React.useState(0);
     const handleChange_jawaban = (event) => {
         setJawaban(event.target.value);
         console.log('jawaban', jawaban);
@@ -70,6 +76,9 @@ export default function PsikotestKecermatanDetilEdit() {
 
     const getData = () => {
         try {
+            // setPkid(sessionStorage.getItem('psikotest_kecermatan_id'));
+            // setLastpage(sessionStorage.getItem('psikotest_kecermatan_tabellastpage'));
+            setIdsoal(sessionStorage.getItem('psikotest_kecermatan_idsoal'));
             setSoalA(sessionStorage.getItem('psikotest_kecermatan_soalA'));
             setSoalB(sessionStorage.getItem('psikotest_kecermatan_soalB'));
             setSoalC(sessionStorage.getItem('psikotest_kecermatan_soalC'));

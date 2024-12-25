@@ -2,10 +2,19 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
 // Registrasi komponen Chart.js
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend);
+
+HasilTes_GrafikKecermatan.propTypes = {
+    hasilnilai_kolom_1: PropTypes.number,
+    hasilnilai_kolom_2: PropTypes.number,
+    hasilnilai_kolom_3: PropTypes.number,
+    hasilnilai_kolom_4: PropTypes.number,
+    hasilnilai_kolom_5: PropTypes.number
+};
 
 export default function HasilTes_GrafikKecermatan(props) {
     // Daftar label untuk grafik (Kolom)

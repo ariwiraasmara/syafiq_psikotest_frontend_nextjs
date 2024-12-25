@@ -3,10 +3,15 @@
 // ! Syahri Ramadhan Wiraasmara
 import axios from 'axios';
 import * as React from 'react';
+import PropTypes from 'prop-types';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
 // Registrasi komponen Chart.js
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend);
+
+PesertaDetil_GrafikKecermatan.propTypes = {
+    peserta_id: PropTypes.number,
+};
 
 export default function PesertaDetil_GrafikKecermatan(props) {
     const [labels, setLabels] = React.useState([]);
@@ -17,7 +22,7 @@ export default function PesertaDetil_GrafikKecermatan(props) {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/semua/${props.peserta_id}`);
             setDataHasilPsikotesKecermatan(response.data.data);
-            // console.log(response.data.data);
+            console.log('response api from getDataHasilPsikotesKecermatan', response.data);
         } catch (err) {
             console.error(err);
         }
@@ -73,7 +78,7 @@ export default function PesertaDetil_GrafikKecermatan(props) {
             setLabels(labels);
             setDatasets(dataset);
         }
-    }, [dataHasilPsikotesKecermatan]);
+    }, [dataHasilPsikotesKecermatan]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
     const chartData = {
         labels,
@@ -107,6 +112,8 @@ export default function PesertaDetil_GrafikKecermatan(props) {
             },
         },
     };
+
+    console.table(`tabel grafik peserta id:${props.peserta_id}`, chartData);
 
     return (
         <React.StrictMode>

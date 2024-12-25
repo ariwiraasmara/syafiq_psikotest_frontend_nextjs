@@ -4,22 +4,27 @@
 'use client';
 import Layoutpeserta from '../../../layoutpeserta';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import axios from 'axios';
 import * as React from 'react';
 import { List } from 'million/react';
 
+import PropTypes from 'prop-types';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import debounce from 'lodash.debounce';
 
-import Appbarpeserta from '@/components/peserta/Appbarpeserta';
+const Appbarpeserta = dynamic(() => import('@/components/peserta/Appbarpeserta'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 import fun from '@/libraries/myfunction';
 
 export default function PesertaPsikotestKecermatan() {
     const router = useRouter();
     const [sessionID, setSessionID] = React.useState(parseInt(sessionStorage.getItem('sesi_psikotest_kecermatan') || 1)); // Session ID dimulai dari 1
+    // const [safeID, setSafeID] = React.useState(sessionID);
     const safeID = fun.readable(sessionID);
     const [dataPertanyaan, setDataPertanyaan] = React.useState([]);
     const [dataSoal, setDataSoal] = React.useState([]);
@@ -36,7 +41,6 @@ export default function PesertaPsikotestKecermatan() {
         debounce((event, index) => handleChange_nilaiTotal(event, index), 300),
         []
     );
-      
 
     const handleChange_nilaiTotal = React.useCallback((event, index) => {
         const value = parseInt(event.target.value);
@@ -44,26 +48,26 @@ export default function PesertaPsikotestKecermatan() {
 
         const correctAnswer = parseInt(dataJawaban[index]);
         console.info('handleChange_nilaiTotal: correctAnswer', correctAnswer);
-      
+
         // Update jawabanUser untuk setiap perubahan
         setJawabanUser(prev => {
-          const newAnswers = { ...prev, [index]: value };
-          return newAnswers;
+            const newAnswers = { ...prev, [index]: value };
+            return newAnswers;
         });
         console.info('handleChange_nilaiTotal: jawabanUser', jawabanUser);
-      
+
         // Update nilaiTotal berdasarkan jawaban yang benar atau salah
         setNilaiTotal(prev => {
-          if (value === correctAnswer) {
-            const res = prev + 1; // Menambahkan 1 jika jawabannya benar
-            console.info('jawaban benar', res);
-            return res;
-          } else {
-            // const res =  prev > 0 ? prev - 1 : 0; // Mengurangi 1 jika jawabannya salah, tapi tidak kurang dari 0
-            const res = prev - 0; // Ketika jawaban salah, nilai tidak berkurang maupun bertambah
-            console.info('jawaban salah', res);
-            return res;
-          }
+            if (value === correctAnswer) {
+                const res = prev + 1; // Menambahkan 1 jika jawabannya benar
+                console.info('jawaban benar', res);
+                return res;
+            } else {
+                // const res =  prev > 0 ? prev - 1 : 0; // Mengurangi 1 jika jawabannya salah, tapi tidak kurang dari 0
+                const res = prev - 0; // Ketika jawaban salah, nilai tidak berkurang maupun bertambah
+                console.info('jawaban salah', res);
+                return res;
+            }
         });
         console.info('handleChange_nilaiTotal: nilaiTotal', nilaiTotal);
     }, [dataJawaban]);
@@ -71,6 +75,9 @@ export default function PesertaPsikotestKecermatan() {
     // Mendapatkan data soal dan jawaban
     const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
+        // setSessionID(parseInt(sessionStorage.getItem('sesi_psikotest_kecermatan') || 1));
+        // setSafeID(fun.readable(sessionID));
+        // setSafeID(sessionID);
         try {
             const cacheResponse = await caches.match('peserta/psikotest/kecermatan/mulai-tes');
 
@@ -289,7 +296,7 @@ export default function PesertaPsikotestKecermatan() {
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [sessionID, router]);
+    }, [sessionID, router]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
     React.useEffect(() => {
         nilaiTotalRef.current = nilaiTotal;
@@ -301,30 +308,36 @@ export default function PesertaPsikotestKecermatan() {
         else {
             router.push(`/peserta/psikotest/kecermatan`);
         }
-    }, [jawabanUser, nilaiTotal]);
+    }, [jawabanUser, nilaiTotal]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
     // console.log('dataJawaban', dataJawaban);
 
     const FormControlOptimized = React.memo(({ data, index, handleChange }) => {
         return (
-          <div className="border-2 mt-4 rounded-lg border-white p-4 bg-gray-700" id={`row${index}`} key={index}>
-            <div>{data[0]}, {data[1]}, {data[2]}, {data[3]}</div>
-            <RadioGroup
-              row
-              aria-labelledby="demo-row-radio-buttons-group-label"
-              name="row-radio-buttons-group"
-              value={jawabanUser[index] || ''}
-              onChange={(event) => handleChange(event, index)}
-            >
-              <FormControlLabel value={dataPertanyaan.nilai_A} control={<Radio />} label="A" />
-              <FormControlLabel value={dataPertanyaan.nilai_B} control={<Radio />} label="B" />
-              <FormControlLabel value={dataPertanyaan.nilai_C} control={<Radio />} label="C" />
-              <FormControlLabel value={dataPertanyaan.nilai_D} control={<Radio />} label="D" />
-              <FormControlLabel value={dataPertanyaan.nilai_E} control={<Radio />} label="E" />
-            </RadioGroup>
-          </div>
+            <div className="border-2 mt-4 rounded-lg border-white p-4 bg-gray-700" id={`row${index}`} key={index}>
+                <div>{data[0]}, {data[1]}, {data[2]}, {data[3]}</div>
+                <RadioGroup
+                row
+                aria-labelledby="demo-row-radio-buttons-group-label"
+                name="row-radio-buttons-group"
+                value={jawabanUser[index] || ''}
+                onChange={(event) => handleChange(event, index)}
+                >
+                <FormControlLabel value={dataPertanyaan.nilai_A} control={<Radio />} label="A" />
+                <FormControlLabel value={dataPertanyaan.nilai_B} control={<Radio />} label="B" />
+                <FormControlLabel value={dataPertanyaan.nilai_C} control={<Radio />} label="C" />
+                <FormControlLabel value={dataPertanyaan.nilai_D} control={<Radio />} label="D" />
+                <FormControlLabel value={dataPertanyaan.nilai_E} control={<Radio />} label="E" />
+                </RadioGroup>
+            </div>
         );
-      });      
+    });
+
+    FormControlOptimized.propTypes = {
+        index: PropTypes.number,
+        data: PropTypes.any,
+        handleChange: PropTypes.any
+    };
 
     return (
         <Layoutpeserta>
@@ -357,12 +370,13 @@ export default function PesertaPsikotestKecermatan() {
                             <div className="mt-8 border-white p-4">
                                 <FormControl>
                                     {dataSoal.map((data, index) => (
-                                        <FormControlOptimized
-                                            key={index}
-                                            data={data}
-                                            index={index}
-                                            handleChange={handleChange_nilaiTotal}
-                                        />
+                                        <List key={index}>
+                                            <FormControlOptimized
+                                                data={data}
+                                                index={index}
+                                                handleChange={handleChange_nilaiTotal}
+                                            />
+                                        </List>
                                     ))}
                                 </FormControl>
                             </div>

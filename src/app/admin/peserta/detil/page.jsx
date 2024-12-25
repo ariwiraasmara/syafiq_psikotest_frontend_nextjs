@@ -6,18 +6,25 @@ import Layoutadmindetil from '../../../layoutadmindetil';
 import axios from 'axios';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 
 import Link from '@mui/material/Link';
 import EditIcon from '@mui/icons-material/Edit';
 
-import Myhelmet from '@/components/Myhelmet';
-import Appbarku from '@/components/Appbarku';
-import TabHasilPsikotestPeserta from '@/components/TabHasilPsikotestPeserta';
+const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Appbarku = dynamic(() => import('@/components/Appbarku'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const TabHasilPsikotestPeserta = dynamic(() => import('@/components/TabHasilPsikotestPeserta'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 import fun from '@/libraries/myfunction';
 
 export default function AdminPesertaDetil() {
     const router = useRouter();
-    const sessionID = sessionStorage.getItem('admid_peserta');
+    const [sessionID, setSessionID] = React.useState(sessionStorage.getItem('admid_peserta'));
     const safeID = fun.readable(sessionID);
 
     const [data, setData] = React.useState({});
@@ -25,6 +32,7 @@ export default function AdminPesertaDetil() {
 
     const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
+        // setSessionID(sessionStorage.getItem('admid_peserta'));
         const expirationTime = (Date.now() + 3600000) * 24; // 24 jam ke depan dalam milidetik
         try {
             const cacheResponse = await caches.match('peserta/detil');
@@ -94,15 +102,22 @@ export default function AdminPesertaDetil() {
                 }
             }
         } catch (error) {
-            console.log('Terjadi kesalahan saat memeriksa cache:', error);
+            setData({});
+            console.log('Terjadi Error:', error);
         }
         setLoading(false);
     };
+
+    React.useEffect(() => {
+        getData(); // Menjalankan fungsi setelah state sessionID di-set
+    }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
 
     const filteredData = React.useMemo(() => {
         // return variabels.filter(item => item.values > 10); // Contoh: hanya menampilkan variabel dengan values > 10
         return data;
     }, [data]);
+
+    console.table('tabel peserta detil', filteredData);
 
     const toEdit = (e, id, nama, no_indentitas, email, tgl, asal) => {
         e.preventDefault();
@@ -119,10 +134,6 @@ export default function AdminPesertaDetil() {
             console.log(e);
         }
     };
-
-    React.useEffect(() => {
-        getData();
-    }, []);
 
     return (
         <Layoutadmindetil>

@@ -6,12 +6,17 @@ import Layoutadmindetil from '../../../layoutadmindetil';
 import axios from 'axios';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
-import Myhelmet from '@/components/Myhelmet';
-import Appbarku from '@/components/Appbarku';
+const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Appbarku = dynamic(() => import('@/components/Appbarku'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 import fun from '@/libraries/myfunction';
 
 const styledTextField = {
@@ -38,7 +43,7 @@ const styledTextField = {
 
 export default function EditVariabel() {
     const router = useRouter();
-    const [nid, setNid] = React.useState(0);
+    const [nid, setNid] = React.useState(fun.readable(sessionStorage.getItem('variabel_id')));
     
     const [nvariabel, setNvariabel] = React.useState('');
     const handleChange_Nvariable = (event) => {
@@ -54,12 +59,12 @@ export default function EditVariabel() {
 
     const getData = () => {
         try {
-            setNid(fun.readable(sessionStorage.getItem('variabel_id')));
+            // setNid(fun.readable(sessionStorage.getItem('variabel_id')));
             setNvariabel(fun.readable(sessionStorage.getItem('variabel_variabel')));
             setNvalues(fun.readable(sessionStorage.getItem('variabel_values')));
         } catch (err) {
+            console.error(err);
             return err;
-            // console.error(err);
         }
     }
 

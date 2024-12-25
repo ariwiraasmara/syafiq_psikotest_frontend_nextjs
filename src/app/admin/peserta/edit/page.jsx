@@ -6,13 +6,18 @@ import Layoutadmindetil from '../../../layoutadmindetil';
 import axios from 'axios';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
-import Myhelmet from '@/components/Myhelmet';
-import Appbarku from '@/components/Appbarku';
+const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Appbarku = dynamic(() => import('@/components/Appbarku'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 
 const styledTextField = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -39,7 +44,7 @@ const styledTextField = {
 
 export default function AdminPesertaEdit() {
     const router = useRouter();
-    const idpeserta = sessionStorage.getItem('admid_peserta');
+    const [idpeserta, setIdpeserta] = React.useState(0);
     const [nama, setNama] = React.useState('');
     const [no_identitas, setNo_identitas] = React.useState('');
     const [email, setEmail] = React.useState('');
@@ -47,6 +52,7 @@ export default function AdminPesertaEdit() {
     const [asal, setAsal] = React.useState('');
 
     const getData = () => {
+        setIdpeserta(sessionStorage.getItem('admid_peserta'));
         setNama(sessionStorage.getItem('admnama_peserta'));
         setNo_identitas(sessionStorage.getItem('admnoidentitas_peserta'));
         setEmail(sessionStorage.getItem('admemail_peserta'));
