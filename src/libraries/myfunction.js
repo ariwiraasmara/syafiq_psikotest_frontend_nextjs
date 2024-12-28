@@ -92,7 +92,7 @@ export default {
                     seed = '`~!@#$%^&*()-_=+[{]}|;:,<.>/?/'.split('');
                     break;
                 case 'combwisp':
-                    seed = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
+                    seed = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789'.split('');
                     break;
                 default:
                     seed = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~!@#$%^&*()-_=+[{]}|;:,<.>/?/'.split('');

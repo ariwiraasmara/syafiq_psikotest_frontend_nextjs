@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import axios from 'axios';
 import * as React from 'react';
-import { List } from 'million/react';
+import { FixedSizeList as List } from 'react-window';
 
 import PropTypes from 'prop-types';
 import Radio from '@mui/material/Radio';
@@ -36,6 +36,7 @@ export default function PesertaPsikotestKecermatan() {
     const [jawabanUser, setJawabanUser] = React.useState({});
     const [nilaiTotal, setNilaiTotal] = React.useState(0);
     const nilaiTotalRef = React.useRef(nilaiTotal);
+    const lastRadioRef = React.useRef(null);
 
     const debouncedChange = React.useCallback(
         debounce((event, index) => handleChange_nilaiTotal(event, index), 300),
@@ -69,15 +70,16 @@ export default function PesertaPsikotestKecermatan() {
                 return res;
             }
         });
+
+        if (lastRadioRef.current) {
+            lastRadioRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
         console.info('handleChange_nilaiTotal: nilaiTotal', nilaiTotal);
     }, [dataJawaban]);
 
     // Mendapatkan data soal dan jawaban
     const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
-        // setSessionID(parseInt(sessionStorage.getItem('sesi_psikotest_kecermatan') || 1));
-        // setSafeID(fun.readable(sessionID));
-        // setSafeID(sessionID);
         try {
             const cacheResponse = await caches.match('peserta/psikotest/kecermatan/mulai-tes');
 
@@ -298,19 +300,26 @@ export default function PesertaPsikotestKecermatan() {
         return () => clearInterval(interval);
     }, [sessionID, router]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
+    const scrollPositionRef = React.useRef(0); // Menyimpan posisi scro
     React.useEffect(() => {
         nilaiTotalRef.current = nilaiTotal;
         console.log('Jawaban User:', jawabanUser);
         console.log('Nilai Total:', nilaiTotal);
+        scrollPositionRef.current = window.scrollY;
         if (sessionID > 5) {
             submit();
         }
         else {
             router.push(`/peserta/psikotest/kecermatan`);
         }
-    }, [jawabanUser, nilaiTotal]); // eslint-disable-next-line react-hooks/exhaustive-deps
-
-    // console.log('dataJawaban', dataJawaban);
+    }, [jawabanUser, nilaiTotal, scrollPositionRef.current]); // eslint-disable-next-line react-hooks/exhaustive-deps
+    
+    React.useLayoutEffect(() => {
+        const savedScrollPosition = scrollPositionRef;
+        if (savedScrollPosition) {
+            window.scrollTo(0, scrollPositionRef.current);
+        }
+    }, []); // Empty dependency array ensures this runs once on mount
 
     const FormControlOptimized = React.memo(({ data, index, handleChange }) => {
         return (
@@ -370,13 +379,12 @@ export default function PesertaPsikotestKecermatan() {
                             <div className="mt-8 border-white p-4">
                                 <FormControl>
                                     {dataSoal.map((data, index) => (
-                                        <List key={index}>
                                             <FormControlOptimized
+                                                key={index}
                                                 data={data}
                                                 index={index}
                                                 handleChange={handleChange_nilaiTotal}
                                             />
-                                        </List>
                                     ))}
                                 </FormControl>
                             </div>

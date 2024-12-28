@@ -15,20 +15,22 @@ Myhelmet.propTypes = {
 };
 
 export default function Myhelmet(props) {
+    const [csrf, setCsrf] = React.useState();
     const [token, setToken] = React.useState();
+    const [unique, setUnique] = React.useState();
     const generateToken = async () => {
         try {
-            const response1 = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+            const response1 = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/generate-token-first`, {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
             });
-            setToken(response1);
-            setCookie('XSRF-TOKEN', token);
+            setToken(response1.data.data.token);
+            setUnique(response1.data.data.unique);
 
-            await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/generate-token-first`, {
+            const response2 = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
             });
-            // localStorage.setItem('ckey', fun.generateKey());
-            // console.log('token', response);
+            setCsrf(response2);
+            setCookie('XSRF-TOKEN', response2);
         } catch (err) {
             console.error(err);
             return err;
@@ -36,22 +38,46 @@ export default function Myhelmet(props) {
     }
 
     React.useEffect(() => {
-        generateToken();
+        if(props.onetime) {
+            generateToken();
+        }
     }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    const headContent = React.memo(function SomeComponent(props) {
+        return(
+            <>
+                <meta charset="utf-8" />
+                <meta name="description" content={`Syafiq Psikotest Online App. Adalah aplikasi khusus untuk klien Syafiq berbasis online dan bisa digunakan di perangkat manapun (web based). Sistem ini adalah UI/UX atau Frontend, dimana pengguna dapat mengakses aplikasi berbasis website. ${props.description}`} />
+                <meta name="keywords" content="Psikotest, Javascript, React.JS, Next.JS, MUI.JS, Material UI, Tailwind, Node.JS, Bun, Million.JS, Chart.JS, SweetAlert2.JS, Axios, Frontend UI/UX" />
+                <meta name="author" content="Syafiq. Syahri Ramadhan Wiraasmara (ARI)" />
+                <link rel="repository" href="https://github.com/ariwiraasmara" />
+                <link rel="license" href="https://github.com/ariwiraasmara/syafiq_psikotest_frontend_nextjs?tab=AGPL-3.0-1-ov-file#" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+            </>
+        );
+    });
+
+    if(props.onetime) {
+        return(
+            <React.StrictMode>
+                <Helmet>
+                    <meta name="XSRF-TOKEN" content={csrf} />
+                    <meta name="__token__" content={token} />
+                    <meta name="__unique__" content={unique} />
+                    <title>{props.title}</title>
+                    <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONTEND}/${props.pathURL}`} />
+                    <headContent />
+                </Helmet>
+            </React.StrictMode>
+        );
+    }
 
     return(
         <React.StrictMode>
             <Helmet>
-                <meta name="csrf-token" content={token} />
-                <meta charset="utf-8" />
                 <title>{props.title}</title>
-                <meta name="description" content={`Syafiq Psikotest Online App. Adalah aplikasi khusus untuk klien Syafiq berbasis online dan bisa digunakan di perangkat manapun (web based). Sistem ini adalah UI/UX atau Frontend, dimana pengguna dapat mengakses aplikasi berbasis website. ${props.description}`} />
-                <meta name="keywords" content="Psikotest, Javascript, React.JS, Next.JS, MUI.JS, Material UI, Tailwind, Node.JS, Bun, Million.JS, Chart.JS, SweetAlert2.JS, Axios, Frontend UI/UX" />
-                <meta name="author" content="Syafiq. Syahri Ramadhan Wiraasmara (ARI)" />
                 <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONTEND}/${props.pathURL}`} />
-                <link rel="repository" href="https://github.com/ariwiraasmara" />
-                <link rel="license" href="https://github.com/ariwiraasmara/syafiq_psikotest_frontend_nextjs?tab=AGPL-3.0-1-ov-file#" />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <headContent />
             </Helmet>
         </React.StrictMode>
     );

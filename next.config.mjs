@@ -14,7 +14,7 @@ const nextConfig = {
 
 // export default nextConfig;
 export default MillionLint.next({
-    rsc: true,
+    rsc: false,
     filter: {
         include: ["**/components/*.{mtsx,mjsx,tsx,jsx}", "**/app/*.{mtsx,mjsx,tsx,jsx}"],
     },

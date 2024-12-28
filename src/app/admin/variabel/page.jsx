@@ -22,6 +22,7 @@ const Appbarku = dynamic(() => import('@/components/Appbarku'), {
 const NewOrEdit = dynamic(() => import('./new_edit'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
+import fun from '@/libraries/myfunction';
 
 const linkStyle = {
     color: '#fff'
@@ -53,7 +54,30 @@ export default function VariabelSetting() {
                 
                 // Cek waktu atau versi data di server jika memungkinkan
                 try {
-                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting`);
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    });
+                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting`, {
+                        withCredentials: true,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'XSRF-TOKEN': csrfToken,
+                            'islogin' : localStorage.getItem('islogin'),
+                            'isadmin' : localStorage.getItem('isadmin'),
+                            'Authorization': `Bearer ${localStorage.getItem('pat')}`,
+                            'remember-token': localStorage.getItem('remember-token'),
+                            'tokenlogin': fun.random('combwisp', 50),
+                            'email' : localStorage.getItem('email'),
+                            '--unique--': 'I am unique!',
+                            'isvalid': 'VALID!',
+                            'isallowed': true,
+                            'key': 'key',
+                            'values': 'values',
+                            'isdumb': 'no',
+                            'challenger': 'of course',
+                            'pranked': 'absolutely'
+                        }
+                    });
                     const apiData = apiResponse.data.data;
                     const responseStore = {
                         data: apiData,
@@ -87,7 +111,30 @@ export default function VariabelSetting() {
                 console.error('Data tidak ditemukan di cache');
                 
                 try {
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting`);
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    });
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting`, {
+                        withCredentials: true,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'XSRF-TOKEN': csrfToken,
+                            'islogin' : localStorage.getItem('islogin'),
+                            'isadmin' : localStorage.getItem('isadmin'),
+                            'Authorization': `Bearer ${localStorage.getItem('pat')}`,
+                            'remember-token': localStorage.getItem('remember-token'),
+                            'tokenlogin': fun.random('combwisp', 50),
+                            'email' : localStorage.getItem('email'),
+                            '--unique--': 'I am unique!',
+                            'isvalid': 'VALID!',
+                            'isallowed': true,
+                            'key': 'key',
+                            'values': 'values',
+                            'isdumb': 'no',
+                            'challenger': 'of course',
+                            'pranked': 'absolutely'
+                        }
+                    });
                     const data = response.data.data;
                     setData(data);  // Menyimpan data ke state
                     const responseStore = {

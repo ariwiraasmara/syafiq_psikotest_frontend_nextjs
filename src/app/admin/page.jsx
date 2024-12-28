@@ -54,12 +54,12 @@ export default function Admin() {
                 const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`);
                 const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/login`, {
                     email: emaillogin,
-                    password: passlogin,
-                    tokenlogin: fun.random('combwisp', 20)
+                    password: passlogin
                 }, {
                     headers: {
-                        'XSRF-TOKEN': csrfToken,
                         'Content-Type': 'application/json',
+                        'XSRF-TOKEN': csrfToken,
+                        'tokenlogin': fun.random('combwisp', 50)
                     }
                 });
 
@@ -70,8 +70,9 @@ export default function Admin() {
                     localStorage.setItem('islogin', true);
                     localStorage.setItem('isadmin', true);
                     localStorage.setItem('email', emaillogin);
-                    localStorage.setItem('nama', response.data.nama);
-                    localStorage.setItem('pat', response.data.token);
+                    localStorage.setItem('nama', response.data.data.nama);
+                    localStorage.setItem('pat', response.data.data.token_1);
+                    localStorage.setItem('remember-token', response.data.data.token_2);
                     localStorage.setItem('csrfToken', csrfToken);
                     sessionStorage.setItem('nav_id', 1);
                     return router.push('/admin/dashboard');
@@ -96,6 +97,7 @@ export default function Admin() {
             title={`Login Admin | Psikotest Online App`}
             description={`Halaman Login Admin.`}
             pathURL={`admin`}
+            onetime={true}
         />
         <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
             <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
