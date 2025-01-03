@@ -19,14 +19,26 @@ const typePsikotest = [
 ];
 
 export default function Psikotest() {
-    return (
-        <Layoutadmin>
+    const MemoHelmet = React.memo(function Memo() {
+        return(
             <Myhelmet
                 title={`Psikotest | Admin | Psikotest`}
                 description={`Halaman Psikotest dengan otoritas sebagai Admin.`}
                 pathURL={`admin/psikotest`}
             />
+        );
+    });
+
+    const MemoAppbarku = React.memo(function Memo() {
+        return(
             <Appbarku headTitle="Psikotest" />
+        );
+    });
+
+    return (
+        <Layoutadmin>
+            <MemoHelmet />
+            <MemoAppbarku />
             <main className="p-5 mb-14" key={1}>
                 {typePsikotest.map((data, index) => (
                     <Link href={`/admin/psikotest/${data}`} sx={{color: '#fff'}} key={index}>

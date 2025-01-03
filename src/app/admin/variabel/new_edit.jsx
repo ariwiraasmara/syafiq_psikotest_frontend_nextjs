@@ -32,7 +32,7 @@ const styledTextField = {
 }
 
 export default function NewOrEdit() {
-
+    const [loading, setLoading] = React.useState(false);
     const [nvariabel, setNvariabel] = React.useState('');
     const handleChange_Nvariable = (event) => {
         setNvariabel(event.target.value);
@@ -47,18 +47,35 @@ export default function NewOrEdit() {
 
     const submit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             axios.defaults.withCredentials = true;
             axios.defaults.withXSRFToken = true;
-            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`);
+            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
+            });
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting`, {
                 variabel: nvariabel,
-                values: nvalues,
-                tokenlogin: fun.random('combwisp', 20)
+                values: nvalues
             }, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
                 headers: {
-                    'XSRF-TOKEN': csrfToken,
                     'Content-Type': 'application/json',
+                    'XSRF-TOKEN': csrfToken,
+                    'islogin' : fun.readable(localStorage.getItem('islogin')),
+                    'isadmin' : fun.readable(localStorage.getItem('isadmin')),
+                    'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
+                    'remember-token': fun.readable(localStorage.getItem('remember-token')),
+                    'tokenlogin': fun.random('combwisp', 50),
+                    'email' : fun.readable(localStorage.getItem('email')),
+                    '--unique--': 'I am unique!',
+                    'isvalid': 'VALID!',
+                    'isallowed': true,
+                    'key': 'key',
+                    'values': 'values',
+                    'isdumb': 'no',
+                    'challenger': 'of course',
+                    'pranked': 'absolutely'
                 }
             });
     
@@ -74,7 +91,21 @@ export default function NewOrEdit() {
             console.log('Terjadi Kesalahan Mengirim Data Variabel', er);
             return alert('Terjadi Kesalahan Mengirim Data Variabel');
         }
+        setLoading(false);
     };
+
+    if(loading) {
+        return (
+            <div className='text-center p-8'>
+                <p>
+                    <span className='font-bold text-2lg'>
+                        Loading...<br/>
+                        Sedang mengirim dan menyimpan data
+                    </span>
+                </p>
+            </div>
+        );
+    }
 
     return (
         <Box component="form"
@@ -82,6 +113,7 @@ export default function NewOrEdit() {
                 p: 3,
             }}
             noValidate
+            onSubmit={(e) => submit(e)}
             autoComplete="off">
             <TextField  type="text" id={`variabel`} variant="standard" size="small"
                         placeholder="Variabel..." label="Variabel..."
@@ -92,7 +124,7 @@ export default function NewOrEdit() {
                         fullWidth sx={styledTextField}
                         onChange={handleChange_Nvalues} />
             <Box sx={{ m: 1 }}>
-                <Button variant="contained" size="large" fullWidth onClick={(e) => submit(e)}>
+                <Button variant="contained" size="large" fullWidth type="submit">
                     Simpan
                 </Button>
             </Box>

@@ -2,6 +2,12 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
+import {
+    checkCompatibility,
+    readPertanyaan,
+    readSoalJawaban,
+    readKunciJawaban,
+} from '@/indexedDB/db';
 import Layoutpeserta from '../../../layoutpeserta';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -29,9 +35,11 @@ export default function PesertaPsikotestKecermatan() {
     const [dataPertanyaan, setDataPertanyaan] = React.useState([]);
     const [dataSoal, setDataSoal] = React.useState([]);
     const [dataJawaban, setDataJawaban] = React.useState([]);
+    const [dataSoalJawaban, setDataSoalJawaban] = React.useState([]);
     const [variabel, setVariabel] = React.useState([]);
     const [timeLeft, setTimeLeft] = React.useState();
     const [loading, setLoading] = React.useState(true);
+    const [loadingTimer, setLoadingTimer] = React.useState(true);
 
     const [jawabanUser, setJawabanUser] = React.useState({});
     const [nilaiTotal, setNilaiTotal] = React.useState(0);
@@ -43,11 +51,12 @@ export default function PesertaPsikotestKecermatan() {
         []
     );
 
-    const handleChange_nilaiTotal = React.useCallback((event, index) => {
+    const handleChange_nilaiTotal = React.useCallback((event, index, kuncijawaban) => {
         const value = parseInt(event.target.value);
         console.info('handleChange_nilaiTotal: value', value);
 
-        const correctAnswer = parseInt(dataJawaban[index]);
+        const correctAnswer = parseInt(kuncijawaban);
+        // const correctAnswer = parseInt(kuncijawaban);
         console.info('handleChange_nilaiTotal: correctAnswer', correctAnswer);
 
         // Update jawabanUser untuk setiap perubahan
@@ -71,14 +80,32 @@ export default function PesertaPsikotestKecermatan() {
             }
         });
 
-        if (lastRadioRef.current) {
-            lastRadioRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
         console.info('handleChange_nilaiTotal: nilaiTotal', nilaiTotal);
-    }, [dataJawaban]);
+    }, []);
 
     // Mendapatkan data soal dan jawaban
     const getData = async () => {
+        setLoading(true);
+        try {
+            if(!checkCompatibility) {
+                alert('Browser Tidak Support');
+                return router.push(`/peserta`);
+            }
+            const pertanyaan = await readPertanyaan(sessionID);
+            const soal = await readSoalJawaban(sessionID);
+            const jawaban = await readKunciJawaban(sessionID);
+            setDataPertanyaan(pertanyaan);
+            setDataSoalJawaban(soal);
+            setDataJawaban(jawaban);
+            setJawabanUser({});
+        }
+        catch (error) {
+            console.error('Terjadi kesalahan saat memeriksa cache:', error);
+        }
+        setLoading(false);
+    }
+
+    /*const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
         try {
             const cacheResponse = await caches.match('peserta/psikotest/kecermatan/mulai-tes');
@@ -96,7 +123,17 @@ export default function PesertaPsikotestKecermatan() {
 
                 // Cek waktu atau versi data di server jika memungkinkan
                 try {
-                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/kecermatan/soaljawaban/${safeID}`);
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    });
+                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/kecermatan/soaljawaban/${safeID}`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                        headers: {
+                            'XSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json',
+                            'tokenlogin': fun.random('combwisp', 50),
+                        }
+                    });
                     const apiData = apiResponse.data.data;
 
                     // Cek apakah ada pembaruan data
@@ -128,7 +165,17 @@ export default function PesertaPsikotestKecermatan() {
                 console.log('Data tidak ditemukan di cache');
 
                 try {
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/kecermatan/soaljawaban/${safeID}`);
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    });
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/kecermatan/soaljawaban/${safeID}`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                        headers: {
+                            'XSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json',
+                            'tokenlogin': fun.random('combwisp', 50),
+                        }
+                    });
                     const data = response.data.data;
                     // Menyimpan data ke state
                     setDataPertanyaan(response.data.data.pertanyaan[0]);
@@ -147,13 +194,13 @@ export default function PesertaPsikotestKecermatan() {
                 }
             }
         } catch (error) {
-            console.log('Terjadi kesalahan saat memeriksa cache:', error);
+            console.error('Terjadi kesalahan saat memeriksa cache:', error);
         }
         setLoading(false);
-    };
+    };*/
 
     const getVariabel = async () => {
-        setLoading(true); // Menandakan bahwa proses loading sedang berjalan
+        setLoadingTimer(true); // Menandakan bahwa proses loading sedang berjalan
         try {
             const cacheResponse = await caches.match('peserta/psikotest/kecermatan/get-variabel');
 
@@ -169,7 +216,19 @@ export default function PesertaPsikotestKecermatan() {
 
                 // Cek waktu atau versi data di server jika memungkinkan
                 try {
-                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting/1`);
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    });
+                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting/1`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                        headers: {
+                            'XSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json',
+                            'tokenlogin': fun.random('combwisp', 50),
+                        }
+                    });
                     const apiData = apiResponse.data.data;
 
                     // Cek apakah ada pembaruan data
@@ -200,7 +259,19 @@ export default function PesertaPsikotestKecermatan() {
                 console.log('Data tidak ditemukan di cache');
 
                 try {
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting/1`);
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    });
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting/1`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                        headers: {
+                            'XSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json',
+                            'tokenlogin': fun.random('combwisp', 50),
+                        }
+                    });
                     const data = response.data.data;
                     // Menyimpan data ke state
                     setVariabel(response.data.data[0]);
@@ -220,7 +291,7 @@ export default function PesertaPsikotestKecermatan() {
         } catch (error) {
             console.log('Terjadi kesalahan saat memeriksa cache:', error);
         }
-        setLoading(false);
+        setLoadingTimer(false);
     };
 
     const submit = async(e) => {
@@ -228,23 +299,31 @@ export default function PesertaPsikotestKecermatan() {
         try {
             axios.defaults.withCredentials = true;
             axios.defaults.withXSRFToken = true;
-            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`);
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/${parseInt(sessionStorage.getItem(`id_peserta_psikotest`))}`, {
-                hasilnilai_kolom_1: parseInt(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom1`)),
-                hasilnilai_kolom_2: parseInt(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom2`)),
-                hasilnilai_kolom_3: parseInt(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom3`)),
-                hasilnilai_kolom_4: parseInt(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom4`)),
-                hasilnilai_kolom_5: parseInt(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom5`))
+            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
+            });
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/${parseInt(fun.readable(sessionStorage.getItem(`id_peserta_psikotest`)))}`, {
+                hasilnilai_kolom_1: parseInt(fun.readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom1`))),
+                hasilnilai_kolom_2: parseInt(fun.readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom2`))),
+                hasilnilai_kolom_3: parseInt(fun.readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom3`))),
+                hasilnilai_kolom_4: parseInt(fun.readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom4`))),
+                hasilnilai_kolom_5: parseInt(fun.readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom5`)))
             }, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
                 headers: {
                     'XSRF-TOKEN': csrfToken,
                     'Content-Type': 'application/json',
+                    'tokenlogin': fun.random('combwisp', 50),
                 }
             });
 
             console.info('response', response);
             if(parseInt(response.data.success)) {
-                router.push(`/peserta/psikotest/kecermatan/hasil?identitas=${sessionStorage.getItem('no_identitas_peserta_psikotest')}&tgl_tes=${sessionStorage.getItem('tgl_tes_peserta_psikotest')}`);
+                router.push(`
+                    /peserta/psikotest/kecermatan/hasil?
+                    identitas=${fun.readable(sessionStorage.getItem('no_identitas_peserta_psikotest'))}
+                    &tgl_tes=${fun.readable(sessionStorage.getItem('tgl_tes_peserta_psikotest'))}
+                `);
             }
             console.error('Tidak dapat menyimpan data sesi');
         }
@@ -312,7 +391,7 @@ export default function PesertaPsikotestKecermatan() {
         else {
             router.push(`/peserta/psikotest/kecermatan`);
         }
-    }, [jawabanUser, nilaiTotal, scrollPositionRef.current]); // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [scrollPositionRef.current]); // eslint-disable-next-line react-hooks/exhaustive-deps
     
     React.useLayoutEffect(() => {
         const savedScrollPosition = scrollPositionRef;
@@ -320,6 +399,17 @@ export default function PesertaPsikotestKecermatan() {
             window.scrollTo(0, scrollPositionRef.current);
         }
     }, []); // Empty dependency array ensures this runs once on mount
+
+    const MemoSoal = React.memo(({ soal1, soal2, soal3, soal4 }) => {
+        return(
+            <div>
+                <span className="mr-4">{soal1}</span>
+                <span className="mr-4">{soal2}</span>
+                <span className="mr-4">{soal3}</span>
+                <span className="mr-4">{soal4}</span>
+            </div>
+        )
+    });
 
     const FormControlOptimized = React.memo(({ data, index, handleChange }) => {
         return (
@@ -367,27 +457,67 @@ export default function PesertaPsikotestKecermatan() {
                         </div>
                     ) : (
                         <div className="text-center p-8">
-                            <Appbarpeserta
-                                kolom_x={dataPertanyaan.kolom_x}
-                                timer={formatTime(timeLeft)}
-                                soalA={dataPertanyaan.nilai_A}
-                                soalB={dataPertanyaan.nilai_B}
-                                soalC={dataPertanyaan.nilai_C}
-                                soalD={dataPertanyaan.nilai_D}
-                                soalE={dataPertanyaan.nilai_E}
-                            />
-                            <div className="mt-8 border-white p-4">
-                                <FormControl>
-                                    {dataSoal.map((data, index) => (
-                                            <FormControlOptimized
-                                                key={index}
-                                                data={data}
-                                                index={index}
-                                                handleChange={handleChange_nilaiTotal}
-                                            />
-                                    ))}
-                                </FormControl>
-                            </div>
+                            {loadingTimer ? (
+                                <div className='text-center p-8'>
+                                    <p><span className='font-bold text-2lg'>Loading...</span></p>
+                                </div>
+                            ) : (
+                                <>
+                                    <Appbarpeserta
+                                        kolom_x={dataPertanyaan.kolom_x}
+                                        timer={formatTime(timeLeft)}
+                                        soalA={dataPertanyaan.nilai_A}
+                                        soalB={dataPertanyaan.nilai_B}
+                                        soalC={dataPertanyaan.nilai_C}
+                                        soalD={dataPertanyaan.nilai_D}
+                                        soalE={dataPertanyaan.nilai_E}
+                                    />
+                                    <div className="mt-8 border-white p-4">
+                                        <FormControl>
+                                            {
+                                            /*dataSoal.map((data, index) => (
+                                                    <FormControlOptimized
+                                                        key={index}
+                                                        data={data}
+                                                        index={index}
+                                                        handleChange={handleChange_nilaiTotal}
+                                                    />
+                                            )) dataSoal */
+                                                    
+                                            dataSoalJawaban.map((data, index) => (
+                                                <div className="border-2 mt-4 rounded-lg border-white p-4 bg-gray-700" id={`row${index}`} key={index}>
+                                                    {/* <div>
+                                                        <span className="mr-4">{data.soal_jawaban.soal[0][0]}</span>
+                                                        <span className="mr-4">{data.soal_jawaban.soal[0][1]}</span>
+                                                        <span className="mr-4">{data.soal_jawaban.soal[0][2]}</span>
+                                                        <span className="mr-4">{data.soal_jawaban.soal[0][3]}</span>
+                                                    </div> */}
+                                                    <MemoSoal
+                                                        soal1={data.soal_jawaban.soal[0][0]}
+                                                        soal2={data.soal_jawaban.soal[0][1]}
+                                                        soal3={data.soal_jawaban.soal[0][2]}
+                                                        soal4={data.soal_jawaban.soal[0][3]}
+                                                    />
+                                                    <RadioGroup
+                                                        row
+                                                        aria-labelledby="demo-row-radio-buttons-group-label"
+                                                        name="row-radio-buttons-group"
+                                                        value={jawabanUser[index] || ''}
+                                                        onChange={(event) => handleChange_nilaiTotal(event, index, dataJawaban[index].kunci_jawaban)}
+                                                    >
+                                                        <FormControlLabel value={dataPertanyaan.nilai_A} control={<Radio />} label="A" />
+                                                        <FormControlLabel value={dataPertanyaan.nilai_B} control={<Radio />} label="B" />
+                                                        <FormControlLabel value={dataPertanyaan.nilai_C} control={<Radio />} label="C" />
+                                                        <FormControlLabel value={dataPertanyaan.nilai_D} control={<Radio />} label="D" />
+                                                        <FormControlLabel value={dataPertanyaan.nilai_E} control={<Radio />} label="E" />
+                                                    </RadioGroup>
+                                                </div>
+                                            ))
+                                            }
+                                        </FormControl>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     )
                 )}

@@ -6,6 +6,7 @@ import Layoutadmin from '../../layoutadmin';
 import axios from 'axios';
 import * as React from 'react';
 import dynamic from 'next/dynamic';
+import { block } from 'million/react';
 
 const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
@@ -38,20 +39,22 @@ export default function AdminDashboard() {
 
                 // Cek waktu atau versi data di server jika memungkinkan
                 try {
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
                     const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
                         withCredentials: true,  // Mengirimkan cookie dalam permintaan
                     });
-                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/terbaru`, {
-                        withCredentials: true,
+                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/dashboard_admin`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
                         headers: {
                             'Content-Type': 'application/json',
                             'XSRF-TOKEN': csrfToken,
-                            'islogin' : localStorage.getItem('islogin'),
-                            'isadmin' : localStorage.getItem('isadmin'),
-                            'Authorization': `Bearer ${localStorage.getItem('pat')}`,
-                            'remember-token': localStorage.getItem('remember-token'),
+                            'islogin' : fun.readable(localStorage.getItem('islogin')),
+                            'isadmin' : fun.readable(localStorage.getItem('isadmin')),
+                            'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
+                            'remember-token': fun.readable(localStorage.getItem('remember-token')),
                             'tokenlogin': fun.random('combwisp', 50),
-                            'email' : localStorage.getItem('email'),
+                            'email' : fun.readable(localStorage.getItem('email')),
                             '--unique--': 'I am unique!',
                             'isvalid': 'VALID!',
                             'isallowed': true,
@@ -91,10 +94,12 @@ export default function AdminDashboard() {
                 console.info('Data tidak ditemukan di cache');
 
                 try {
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
                     const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
                         withCredentials: true,  // Mengirimkan cookie dalam permintaan
                     });
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/terbaru`, {
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/dashboard_admin`, {
                         withCredentials: true,
                         headers: {
                             'Content-Type': 'application/json',
@@ -141,27 +146,33 @@ export default function AdminDashboard() {
     }, [nama]);
     // console.log(data);
 
-    const filteredData = React.useMemo(() => {
-        // return variabels.filter(item => item.values > 10); // Contoh: hanya menampilkan variabel dengan values > 10
-        return data;
-    }, [data]);
-    console.table('Data Peserta Terbaru', filteredData);
+    console.table('Data Peserta Terbaru', data);
 
-    return (
-        <Layoutadmin>
+    const MemoHelmet = React.memo(function Memo() {
+        return(
             <Myhelmet
                 title={`Dashboard | Psikotest Online App`}
                 description={`Halaman Dashboard dengan otoritas sebagai Admin.`}
                 keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
                 pathURL={`admin/dashboard`}
             />
-            <Appbarku headTitle="Dashboard" />
+        );
+    });
 
+    const MemoAppbarku = React.memo(function Memo() {
+        return(
+            <Appbarku headTitle="Dashboard" />
+        );
+    });
+
+    return (
+        <Layoutadmin>
+            <MemoHelmet />
+            <MemoAppbarku />
             <main className="p-4 mb-14">
                 <div>
                     <h1 className="text-xl font-bold">Selamat Datang, {nama}</h1>
                 </div>
-
                 <div className="mt-4">
                     <p><span className="font-bold">Daftar Tes Psikotest Terbaru</span></p>
                     {loading ? (
@@ -169,7 +180,7 @@ export default function AdminDashboard() {
                             <p><span className='font-bold text-2lg'>Loading...</span></p>
                         </div>
                     ) : (
-                        <ListPeserta listpeserta={filteredData} isLatest={true} />
+                        <ListPeserta listpeserta={data} isLatest={true} />
                     )}
                 </div>
             </main>

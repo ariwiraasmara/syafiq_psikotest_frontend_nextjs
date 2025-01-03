@@ -4,12 +4,14 @@ import axios from 'axios';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import { For } from 'million/react';
 import Swal from 'sweetalert2';
 
 import Fab from '@mui/material/Fab';
 import Link from '@mui/material/Link';
 
 import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -28,15 +30,15 @@ const linkStyle = {
     color: '#fff'
 }
 
-const opencloseEdit = (varid) => {
-    document.getElementById(varid).classList.toggle('hidden');
-}
-
 export default function VariabelSetting() {
     const router = useRouter();
     const [data, setData] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
 
+    const opencloseEdit = (varid) => {
+        document.getElementById(varid).classList.toggle('hidden');
+    }
+            
     const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
         const expirationTime = (Date.now() + 3600000) * 24; // 24 jam ke depan dalam milidetik
@@ -54,6 +56,8 @@ export default function VariabelSetting() {
                 
                 // Cek waktu atau versi data di server jika memungkinkan
                 try {
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
                     const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
                         withCredentials: true,  // Mengirimkan cookie dalam permintaan
                     });
@@ -103,6 +107,7 @@ export default function VariabelSetting() {
                         // Update dataPeserta dengan data terbaru dari API
                         setData(apiResponse.data.data);
                     }
+                    console.info('Get Data Dari Cache');
                 } catch (error) {
                     console.error('Terjadi kesalahan saat mengambil data terbaru:', error);
                 }
@@ -111,6 +116,8 @@ export default function VariabelSetting() {
                 console.error('Data tidak ditemukan di cache');
                 
                 try {
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
                     const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
                         withCredentials: true,  // Mengirimkan cookie dalam permintaan
                     });
@@ -148,7 +155,7 @@ export default function VariabelSetting() {
                         headers: { 'Content-Type': 'application/json' }
                     });
                     await cache.put('variabel', cacheResponse);
-                    // console.log('Data disimpan ke cache');
+                    console.log('Data disimpan ke cache');
                 } catch (error) {
                     console.error('Terjadi kesalahan saat mengambil data:', error);
                 }
@@ -167,7 +174,7 @@ export default function VariabelSetting() {
     const filteredData = React.useMemo(() => {
         // return variabels.filter(item => item.values > 10); // Contoh: hanya menampilkan variabel dengan values > 10
         return data;
-    }, [data]);
+    }, []);
 
     console.table('tabel data variabel', filteredData);
 
@@ -196,9 +203,24 @@ export default function VariabelSetting() {
                     axios.defaults.withXSRFToken = true;
                     const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`);
                     await axios.delete(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting/${id}`, {
+                        withCredentials: true,
                         headers: {
-                            'XSRF-TOKEN': csrfToken,
                             'Content-Type': 'application/json',
+                            'XSRF-TOKEN': csrfToken,
+                            'islogin' : fun.readable(localStorage.getItem('islogin')),
+                            'isadmin' : fun.readable(localStorage.getItem('isadmin')),
+                            'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
+                            'remember-token': fun.readable(localStorage.getItem('remember-token')),
+                            'tokenlogin': fun.random('combwisp', 50),
+                            'email' : fun.readable(localStorage.getItem('email')),
+                            '--unique--': 'I am unique!',
+                            'isvalid': 'VALID!',
+                            'isallowed': true,
+                            'key': 'key',
+                            'values': 'values',
+                            'isdumb': 'no',
+                            'challenger': 'of course',
+                            'pranked': 'absolutely'
                         }
                     });
                     // Hapus item dari state variabels setelah sukses
@@ -218,22 +240,44 @@ export default function VariabelSetting() {
         });
     };
 
-    return (
-        <Layoutadmin>
+    const MemoHelmet = React.memo(function Memo() {
+        return(
             <Myhelmet
                 title={`Variabel | Admin | Psikotest`}
                 description={`Halamana Variabel dengan otoritas sebagai Admin.`}
                 pathURL={`admin/variabel`}
             />
+        );
+    });
+
+    const MemoAppbarku = React.memo(function Memo() {
+        return(
             <Appbarku headTitle="Variabel" />
+        );
+    });
+
+    if(loading) {
+        return (
+            <div className='text-center p-8'>
+                <p><span className='font-bold text-2lg'>Loading...</span></p>
+            </div>
+        );
+    }
+
+    return (
+        <Layoutadmin>
+            <MemoHelmet />
+            <MemoAppbarku  />
             <main className="p-5 mb-14">
                 <div>
                     {loading ? (
                         <div className='text-center'>
                             <p><span className='font-bold text-2lg'>Loading...</span></p>
+                            <p><span className='font-bold text-2lg'>Sedang memproses...</span></p>
                         </div>
                     ) : (
-                        filteredData.map((data, index) => (
+                        <For each={data}>
+                            {(data, index) =>
                             <div key={index} className='border-b-2 p-3'>
                                 <div className="static mt-3 flex flex-row justify-between">
                                     <div className="order-first">
@@ -257,8 +301,8 @@ export default function VariabelSetting() {
                                         </Link>
                                     </div>
                                 </div>
-                            </div>
-                        ))
+                            </div>}
+                        </For>
                     )}
                 </div>
                 <div id="newdata" className="mt-6 border-2 p-2 rounded-lg hidden">

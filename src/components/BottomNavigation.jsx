@@ -12,15 +12,26 @@ import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import AppSettingsAltOutlinedIcon from '@mui/icons-material/AppSettingsAltOutlined';
 
+import fun from '@/libraries/myfunction';
+
 export default function NavigasiBawah() {
     const router = useRouter();
-    const [svalue, setSvalue] = React.useState(0);
 
     const logout = async () => {
         try {
             axios.defaults.withCredentials = true;
             axios.defaults.withXSRFToken = true;
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/logout`);
+            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
+            });
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/logout`, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                headers: {
+                    'Content-Type': 'application/json',
+                    'XSRF-TOKEN': csrfToken,
+                    'tokenlogin': fun.random('combwisp', 50)
+                }
+            });
             if(response.data.success) {
                 //? Sesi Local Storage Data Admin
                 localStorage.removeItem('islogin');
@@ -66,14 +77,12 @@ export default function NavigasiBawah() {
         <React.StrictMode>
             <BottomNavigation
                 showLabels
-                values={svalue}
                 sx={{ position: 'fixed', bottom: 0, width: '100%', background: '#000' }}
             >
             <BottomNavigationAction
                 label="Beranda"
                 icon={<HomeOutlinedIcon />}
                 defaultValue={0}
-                selected={svalue === 0}
                 sx={{
                     color: '#fff',
                     '&.Mui-selected': {
@@ -81,13 +90,12 @@ export default function NavigasiBawah() {
                         backgroundColor: 'rgba(255, 255, 255, 0.2)',
                     },
                 }}
-                onClick={(event) =>router.push('/admin/dashboard') }
+                onClick={(event) => router.push('/admin/dashboard') }
             />
             <BottomNavigationAction
                 label="Peserta"
                 icon={<PeopleAltOutlinedIcon />}
                 defaultValue={1}
-                selected={svalue === 1}
                 sx={{
                     color: '#fff',
                     '&.Mui-selected': {
@@ -101,7 +109,6 @@ export default function NavigasiBawah() {
                 label="Psikotest"
                 icon={<AssignmentOutlinedIcon />}
                 defaultValue={2}
-                selected={svalue === 2}
                 sx={{
                     color: '#fff',
                     '&.Mui-selected': {
@@ -115,7 +122,6 @@ export default function NavigasiBawah() {
                 label="Variabel"
                 icon={<AppSettingsAltOutlinedIcon />}
                 defaultValue={3}
-                selected={svalue === 3}
                 sx={{
                     color: '#fff',
                     '&.Mui-selected': {

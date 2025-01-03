@@ -2,12 +2,14 @@ import axios from 'axios';
 import fun from '@/libraries/myfunction';
 const base_url = `${process.env.NEXT_PUBLIC_API_BACKEND}/api`;
 
-const getToken = async() => {
+const csrfToken = async() => {
     try {
+        axios.defaults.withCredentials = true;
+        axios.defaults.withXSRFToken = true;
         const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
             withCredentials: true,  // Mengirimkan cookie dalam permintaan
         });
-        console.info('getToken', response);
+        console.info('csrfToken', response);
         return response;
     }
     catch (err) {
@@ -18,7 +20,7 @@ const getToken = async() => {
 
 const getUniqueToken = async() => {
     try {
-        const response = await axios.get(`${base_url}/api/generate-token-first`, {
+        const response = await axios.get(`${base_url}/generate-token-first`, {
             withCredentials: true,  // Mengirimkan cookie dalam permintaan
         });
         console.info('getUniqueToken', response);
@@ -30,10 +32,35 @@ const getUniqueToken = async() => {
     }
 }
 
+const submitLogin = async(email, password) => {
+    try {
+        axios.defaults.withCredentials = true;
+        axios.defaults.withXSRFToken = true;
+        const csrfToken = await csrfToken();
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/login`, {
+            email: emaillogin,
+            password: passlogin
+        }, {
+            withCredentials: true,  // Mengirimkan cookie dalam permintaan
+            headers: {
+                'Content-Type': 'application/json',
+                'XSRF-TOKEN': csrfToken,
+                'tokenlogin': fun.random('combwisp', 50)
+            }
+        });
+        console.info('submitLogin', response);
+        return response;
+    }
+    catch (err) {
+        console.error('Error : submitLogin', err);
+        return err;
+    }
+}
+
 const getDashboard = async(islogin, isadmin, pat, remember_token, email) => {
     try {
         const csrfToken = getToken;
-        const response = await axios.get(`${base_url}/dashboard`, {
+        const response = await axios.get(`${base_url}/dashboard_admin`, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json',
@@ -78,8 +105,9 @@ const getVariabel = async(id) => {
 }
 
 export {
-    getToken,
+    csrfToken,
     getUniqueToken,
+    submitLogin,
     getDashboard,
     getVariabel
 };

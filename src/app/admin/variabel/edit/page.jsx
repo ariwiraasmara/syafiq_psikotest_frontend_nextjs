@@ -48,13 +48,11 @@ export default function EditVariabel() {
     const [nvariabel, setNvariabel] = React.useState('');
     const handleChange_Nvariable = (event) => {
         setNvariabel(event.target.value);
-        console.log(nvariabel);
     };
 
     const [nvalues, setNvalues] = React.useState();
     const handleChange_Nvalues = (event) => {
         setNvalues(event.target.value);
-        console.log(nvalues);
     };
 
     const getData = () => {
@@ -73,15 +71,32 @@ export default function EditVariabel() {
         try {
             axios.defaults.withCredentials = true;
             axios.defaults.withXSRFToken = true;
-            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`);
+            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
+            });
             const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting/${nid}`, {
                 variabel: nvariabel,
                 values: nvalues,
                 tokenlogin: fun.random('combwisp', 20)
             }, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
                 headers: {
-                    'XSRF-TOKEN': csrfToken,
                     'Content-Type': 'application/json',
+                    'XSRF-TOKEN': csrfToken,
+                    'islogin' : fun.readable(localStorage.getItem('islogin')),
+                    'isadmin' : fun.readable(localStorage.getItem('isadmin')),
+                    'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
+                    'remember-token': fun.readable(localStorage.getItem('remember-token')),
+                    'tokenlogin': fun.random('combwisp', 50),
+                    'email' : fun.readable(localStorage.getItem('email')),
+                    '--unique--': 'I am unique!',
+                    'isvalid': 'VALID!',
+                    'isallowed': true,
+                    'key': 'key',
+                    'values': 'values',
+                    'isdumb': 'no',
+                    'challenger': 'of course',
+                    'pranked': 'absolutely'
                 }
             });
             if(response.data.success) {
@@ -117,19 +132,32 @@ export default function EditVariabel() {
         getData();
     }, []);
 
-    return (
-        <Layoutadmindetil>
+    const MemoHelmet = React.memo(function Memo() {
+        return(
             <Myhelmet
                 title={`Edit Variabel | Admin | Psikotest`}
                 description={`Halaman Edit Variabel dengan otoritas sebagai Admin.`}
                 pathURL={`admin/variabel/edit`}
             />
+        );
+    });
+
+    const MemoAppbarku = React.memo(function Memo() {
+        return(
             <Appbarku headTitle="Edit Variabel" />
+        );
+    });
+
+    return (
+        <Layoutadmindetil>
+            <MemoHelmet />
+            <MemoAppbarku />
             <main className="p-5 mb-14">
                 <Box component="form"
                     sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' },
                         p: 3
                     }}
+                    onSubmit={(e) => submit(e)}
                     noValidate
                     autoComplete="off">
                     <TextField  type="text" id="variabel" variant="outlined" focused
@@ -144,12 +172,12 @@ export default function EditVariabel() {
                                 defaultValue={nvalues} />
                     <Box sx={{ m: 1 }}>
                         <div>
-                            <Button variant="contained" size="large" fullWidth color="primary" onClick={(e) => submit(e)}>
+                            <Button variant="contained" size="large" fullWidth color="primary" type="submit">
                                 Simpan
                             </Button>
                         </div>
                         <div className="mt-4">
-                            <Button variant="contained" size="large" fullWidth color="secondary" onClick={(e) => cancel(e)}>
+                            <Button variant="contained" size="large" fullWidth color="secondary" onClick={(e) => cancel(e)} type="button">
                                 Batal
                             </Button>
                         </div>

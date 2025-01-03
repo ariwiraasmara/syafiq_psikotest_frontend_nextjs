@@ -14,6 +14,7 @@ import TextField from '@mui/material/TextField';
 const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
+import fun from '@/libraries/myfunction';
 
 const styledTextField = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -39,6 +40,7 @@ const styledTextField = {
 
 export default function PesertaTes() {
     const router = useRouter();
+    const [loading, setLoading] = React.useState(true);
     const [nama, setNama] = React.useState('');
     const [no_identitas, setNo_identitas] = React.useState('');
     const [email, setEmail] = React.useState('');
@@ -52,6 +54,7 @@ export default function PesertaTes() {
     const today = `${year}-${month}-${date}`;
 
     const checkData = () => {
+        setLoading(true);
         try {
             localStorage.setItem('islogin', false);
             localStorage.setItem('isadmin', false);
@@ -76,16 +79,20 @@ export default function PesertaTes() {
         catch(e) {
             console.log(e);
         }
+        setLoading(false);
     };
 
     const submit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             if (!nama || !no_identitas || !tgl_lahir) alert('Nama, No Identitas, dan Tanggal Lahir harus diisi.');
             else {
                 axios.defaults.withCredentials = true;
                 axios.defaults.withXSRFToken = true;
-                const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`);
+                const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                    withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                });
                 const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/setup`, {
                     nama: nama,
                     no_identitas: no_identitas,
@@ -93,9 +100,11 @@ export default function PesertaTes() {
                     tgl_lahir: tgl_lahir,
                     asal: asal,
                 }, {
+                    withCredentials: true,  // Mengirimkan cookie dalam permintaan
                     headers: {
                         'XSRF-TOKEN': csrfToken,
                         'Content-Type': 'application/json',
+                        'tokenlogin': fun.random('combwisp', 50),
                     }
                 });
 
@@ -127,12 +136,21 @@ export default function PesertaTes() {
             console.error('Terjadi Kesalahan', err);
             alert('Terjadi Kesalahan');
         }
+        setLoading(false);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
         checkData();
     }, []);
+
+    if(loading) {
+        return (
+            <div className='text-center p-8'>
+                <p><span className='font-bold text-2lg'>Loading...</span></p>
+            </div>
+        );
+    }
 
     return (
         <Layoutpeserta>

@@ -16,6 +16,7 @@ const Appbarku = dynamic(() => import('@/components/Appbarku'), {
 const ListPeserta = dynamic(() => import('@/components/ListPeserta'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
+import fun from '@/libraries/myfunction';
 
 export default function AdminPeserta() {
     const [data, setData] = React.useState([]);
@@ -36,7 +37,32 @@ export default function AdminPeserta() {
                 
                 // Cek waktu atau versi data di server jika memungkinkan
                 try {
-                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta`);
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                        withCredentials: true
+                    });
+                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'XSRF-TOKEN': csrfToken,
+                            'islogin' : fun.readable(localStorage.getItem('islogin')),
+                            'isadmin' : fun.readable(localStorage.getItem('isadmin')),
+                            'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
+                            'remember-token': fun.readable(localStorage.getItem('remember-token')),
+                            'tokenlogin': fun.random('combwisp', 50),
+                            'email' : fun.readable(localStorage.getItem('email')),
+                            '--unique--': 'I am unique!',
+                            'isvalid': 'VALID!',
+                            'isallowed': true,
+                            'key': 'key',
+                            'values': 'values',
+                            'isdumb': 'no',
+                            'challenger': 'of course',
+                            'pranked': 'absolutely'
+                        }
+                    });
                     const apiData = apiResponse.data.data;
                     
                     // Cek apakah ada pembaruan data
@@ -66,7 +92,32 @@ export default function AdminPeserta() {
                 console.log('Data tidak ditemukan di cache');
                 
                 try {
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta`);
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    });
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'XSRF-TOKEN': csrfToken,
+                            'islogin' : fun.readable(localStorage.getItem('islogin')),
+                            'isadmin' : fun.readable(localStorage.getItem('isadmin')),
+                            'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
+                            'remember-token': fun.readable(localStorage.getItem('remember-token')),
+                            'tokenlogin': fun.random('combwisp', 50),
+                            'email' : fun.readable(localStorage.getItem('email')),
+                            '--unique--': 'I am unique!',
+                            'isvalid': 'VALID!',
+                            'isallowed': true,
+                            'key': 'key',
+                            'values': 'values',
+                            'isdumb': 'no',
+                            'challenger': 'of course',
+                            'pranked': 'absolutely'
+                        }
+                    });
                     const data = response.data.data;
                     setData(data);  // Menyimpan data ke state
                     
@@ -98,21 +149,33 @@ export default function AdminPeserta() {
 
     console.table('tabel peserta', filteredData);
 
-    return (
-        <Layoutadmin>
+    const MemoHelmet = React.memo(function Memo() {
+        return(
             <Myhelmet
                 title={`Peserta | Admin | Psikotest Online App`}
                 description={`Halaman Peserta dengan otoritas sebagai Admin.`}
                 pathURL={`admin/peserta`}
             />
-            <Appbarku headTitle={'Peserta'} />
+        );
+    });
+
+    const MemoAppbarku = React.memo(function Memo() {
+        return(
+            <Appbarku headTitle="Peserta" />
+        );
+    });
+
+    return (
+        <Layoutadmin>
+            <MemoHelmet />
+            <MemoAppbarku />
             <main className="p-5 mb-14">
                 {loading ? (
                     <div className='text-center'>
                         <p><span className='font-bold text-2lg'>Loading...</span></p>
                     </div>
                 ) : (
-                    <ListPeserta listpeserta={filteredData} />
+                    <ListPeserta listpeserta={data} />
                 )}
             </main>
         </Layoutadmin>

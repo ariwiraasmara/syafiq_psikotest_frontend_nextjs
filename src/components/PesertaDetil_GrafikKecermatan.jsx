@@ -8,6 +8,7 @@ import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
 // Registrasi komponen Chart.js
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend);
+import fun from '@/libraries/myfunction';
 
 PesertaDetil_GrafikKecermatan.propTypes = {
     peserta_id: PropTypes.number,
@@ -20,7 +21,30 @@ export default function PesertaDetil_GrafikKecermatan(props) {
 
     const getDataHasilPsikotesKecermatan = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/semua/${props.peserta_id}`);
+            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
+            });
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/semua/${props.peserta_id}`, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                headers: {
+                    'Content-Type': 'application/json',
+                    'XSRF-TOKEN': csrfToken,
+                    'islogin' : localStorage.getItem('islogin'),
+                    'isadmin' : localStorage.getItem('isadmin'),
+                    'Authorization': `Bearer ${localStorage.getItem('pat')}`,
+                    'remember-token': localStorage.getItem('remember-token'),
+                    'tokenlogin': fun.random('combwisp', 50),
+                    'email' : localStorage.getItem('email'),
+                    '--unique--': 'I am unique!',
+                    'isvalid': 'VALID!',
+                    'isallowed': true,
+                    'key': 'key',
+                    'values': 'values',
+                    'isdumb': 'no',
+                    'challenger': 'of course',
+                    'pranked': 'absolutely'
+                }
+            });
             setDataHasilPsikotesKecermatan(response.data.data);
             console.log('response api from getDataHasilPsikotesKecermatan', response.data);
         } catch (err) {

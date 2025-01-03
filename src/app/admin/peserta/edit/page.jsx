@@ -52,12 +52,18 @@ export default function AdminPesertaEdit() {
     const [asal, setAsal] = React.useState('');
 
     const getData = () => {
-        setIdpeserta(sessionStorage.getItem('admid_peserta'));
-        setNama(sessionStorage.getItem('admnama_peserta'));
-        setNo_identitas(sessionStorage.getItem('admnoidentitas_peserta'));
-        setEmail(sessionStorage.getItem('admemail_peserta'));
-        setTgl_lahir(sessionStorage.getItem('admtgllahir_peserta'));
-        setAsal(sessionStorage.getItem('admasal_peserta'));
+        try {
+            setIdpeserta(sessionStorage.getItem('admid_peserta'));
+            setNama(sessionStorage.getItem('admnama_peserta'));
+            setNo_identitas(sessionStorage.getItem('admnoidentitas_peserta'));
+            setEmail(sessionStorage.getItem('admemail_peserta'));
+            setTgl_lahir(sessionStorage.getItem('admtgllahir_peserta'));
+            setAsal(sessionStorage.getItem('admasal_peserta'));
+        }
+        catch(err) {
+            console.error(err);
+            return err;
+        }
     }
 
     const submit = async (e) => {
@@ -65,15 +71,32 @@ export default function AdminPesertaEdit() {
         try {
             axios.defaults.withCredentials = true;
             axios.defaults.withXSRFToken = true;
-            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`);
+            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
+            });
             const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/${idpeserta}`, {
                 email: email,
                 tgl_lahir: tgl_lahir,
                 asal: asal
             }, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
                 headers: {
-                    'XSRF-TOKEN': csrfToken,
                     'Content-Type': 'application/json',
+                    'XSRF-TOKEN': csrfToken,
+                    'islogin' : fun.readable(localStorage.getItem('islogin')),
+                    'isadmin' : fun.readable(localStorage.getItem('isadmin')),
+                    'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
+                    'remember-token': fun.readable(localStorage.getItem('remember-token')),
+                    'tokenlogin': fun.random('combwisp', 50),
+                    'email' : fun.readable(localStorage.getItem('email')),
+                    '--unique--': 'I am unique!',
+                    'isvalid': 'VALID!',
+                    'isallowed': true,
+                    'key': 'key',
+                    'values': 'values',
+                    'isdumb': 'no',
+                    'challenger': 'of course',
+                    'pranked': 'absolutely'
                 }
             });
             if(response.data.success) {
@@ -113,14 +136,26 @@ export default function AdminPesertaEdit() {
         getData();
     }, []);
 
-    return(
-        <Layoutadmindetil>
+    const MemoHelmet = React.memo(function Memo() {
+        return(
             <Myhelmet
                 title={`Detil Peserta | Admin | Psikotest Online App`}
                 description={`Halaman Edit Peserta dengan otoritas sebagai Admin.`}
                 pathURL={`admin/peserta/edit`}
             />
-            <Appbarku headTitle={'Update Peserta'} />
+        );
+    });
+
+    const MemoAppbarku = React.memo(function Memo() {
+        return(
+            <Appbarku headTitle="Update Peserta" />
+        );
+    });
+
+    return(
+        <Layoutadmindetil>
+            <MemoHelmet />
+            <MemoAppbarku />
             <main className="p-5 mb-14">
                 <div>
                     <p><span className='font-bold'>Nama</span>: {nama}</p>
@@ -130,6 +165,7 @@ export default function AdminPesertaEdit() {
                     sx={{ '& > :not(style)': { m: 2, p: 1, width: '100%' },
                         p: 3
                     }}
+                    onSubmit={(e) => submit(e)}
                     noValidate
                     autoComplete="off">
                     <TextField  type="text" id="Email" variant="outlined" focused
@@ -149,15 +185,14 @@ export default function AdminPesertaEdit() {
                                 onChange = {(event)=> setAsal(event.target.value)}
                                 defaultValue={asal}
                                 fullWidth sx={styledTextField} />
-
                     <Box sx={{ m: 1 }}>
                         <div>
-                            <Button variant="contained" size="large" color="primary" fullWidth onClick={(e) => submit(e)} >
+                            <Button variant="contained" size="large" color="primary" fullWidth type="submit" >
                                 Simpan
                             </Button>
                         </div>
                         <div className="mt-4">
-                            <Button variant="contained" size="large" color="secondary" fullWidth onClick={(e) => cancel(e)} sx={{marginTop: 2}} >
+                            <Button variant="contained" size="large" color="secondary" fullWidth onClick={(e) => cancel(e)} sx={{marginTop: 2}} type="button">
                                 Batal
                             </Button>
                         </div>

@@ -7,6 +7,7 @@ import axios from 'axios';
 import * as React from 'react';
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation';
+import { For } from 'million/react';
 import dynamic from 'next/dynamic';
 import Swal from 'sweetalert2'
 
@@ -28,6 +29,7 @@ const Appbarku = dynamic(() => import('@/components/Appbarku'), {
 const Paging = dynamic(() => import('@/components/Paging'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
+import fun from '@/libraries/myfunction';
 
 export default function DetilPsikotestKecermatan() {
     const router = useRouter();
@@ -72,7 +74,32 @@ export default function DetilPsikotestKecermatan() {
                 
                 // Cek waktu atau versi data di server jika memungkinkan
                 try {
-                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/kecermatan/soaljawaban/all/${pkid}?page=${currentpage}`);
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    });
+                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/kecermatan/soaljawaban/all/${pkid}?page=${currentpage}`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'XSRF-TOKEN': csrfToken,
+                            'islogin' : localStorage.getItem('islogin'),
+                            'isadmin' : localStorage.getItem('isadmin'),
+                            'Authorization': `Bearer ${localStorage.getItem('pat')}`,
+                            'remember-token': localStorage.getItem('remember-token'),
+                            'tokenlogin': fun.random('combwisp', 50),
+                            'email' : localStorage.getItem('email'),
+                            '--unique--': 'I am unique!',
+                            'isvalid': 'VALID!',
+                            'isallowed': true,
+                            'key': 'key',
+                            'values': 'values',
+                            'isdumb': 'no',
+                            'challenger': 'of course',
+                            'pranked': 'absolutely'
+                        }
+                    });
                     const apiData = apiResponse.data;
                     const responseStore = {
                         data: apiData,
@@ -105,10 +132,35 @@ export default function DetilPsikotestKecermatan() {
                 }
             } else {
                 // Jika data tidak ditemukan di cache, ambil dari API
-                console.error('Data tidak ditemukan di cache');
+                console.info('Data tidak ditemukan di cache');
                 
                 try {
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/kecermatan/soaljawaban/all/${pkid}?page=${currentpage}`);
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    });
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/kecermatan/soaljawaban/all/${pkid}?page=${currentpage}`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'XSRF-TOKEN': csrfToken,
+                            'islogin' : localStorage.getItem('islogin'),
+                            'isadmin' : localStorage.getItem('isadmin'),
+                            'Authorization': `Bearer ${localStorage.getItem('pat')}`,
+                            'remember-token': localStorage.getItem('remember-token'),
+                            'tokenlogin': fun.random('combwisp', 50),
+                            'email' : localStorage.getItem('email'),
+                            '--unique--': 'I am unique!',
+                            'isvalid': 'VALID!',
+                            'isallowed': true,
+                            'key': 'key',
+                            'values': 'values',
+                            'isdumb': 'no',
+                            'challenger': 'of course',
+                            'pranked': 'absolutely'
+                        }
+                    });
                     setDataPertanyaan(response.data.data.pertanyaan[0]);
                     setDataSoalJawaban(response.data.data.soaljawaban.data);
                     setLastpage(response.data.data.soaljawaban.last_page);
@@ -201,11 +253,30 @@ export default function DetilPsikotestKecermatan() {
                 try {
                     axios.defaults.withCredentials = true;
                     axios.defaults.withXSRFToken = true;
-                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`);
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`,  {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    });
                     await axios.delete(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/kecermatan/soaljawaban/${pkid}/${id}`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
                         headers: {
-                            'XSRF-TOKEN': csrfToken,
                             'Content-Type': 'application/json',
+                            'XSRF-TOKEN': csrfToken,
+                            'islogin' : fun.readable(localStorage.getItem('islogin')),
+                            'isadmin' : fun.readable(localStorage.getItem('isadmin')),
+                            'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
+                            'remember-token': fun.readable(localStorage.getItem('remember-token')),
+                            'tokenlogin': fun.random('combwisp', 50),
+                            'email' : fun.readable(localStorage.getItem('email')),
+                            '--unique--': 'I am unique!',
+                            'isvalid': 'VALID!',
+                            'isallowed': true,
+                            'key': 'key',
+                            'values': 'values',
+                            'isdumb': 'no',
+                            'challenger': 'of course',
+                            'pranked': 'absolutely'
                         }
                     });
                 } catch (error) {
@@ -227,22 +298,41 @@ export default function DetilPsikotestKecermatan() {
         });
     }
 
-    return (
-        <Layoutadmindetil>
+    const MemoHelmet = React.memo(function Memo() {
+        return(
             <Myhelmet
                 title={`Detil Psikotest Kecermatan | Admin | Psikotest`}
                 description={`Halaman Detil Psikotest Kecermatan dengan otoritas sebagai Admin.`}
                 pathURL={`admin/psikotest/kecermatan/detil`}
             />
+        );
+    });
+
+    const MemoAppbarku = React.memo(function Memo() {
+        return(
             <Appbarku headTitle="Detil Psikotest Kecermatan" isback={true} url={`/admin/psikotest/kecermatan`} />
+        );
+    });
+
+    return (
+        <Layoutadmindetil>
+            <MemoHelmet />
+            <MemoAppbarku />
             <main className="p-5 mb-14" key={1}>
                 {loading ? (
                     <div className='text-center'>
                         <p><span className='font-bold text-2lg'>Loading...</span></p>
+                        <p><span className='font-bold text-2lg'>Sedang memproses...</span></p>
                     </div>
                 ) : (
                 <div className="text-white">
-                    <span className="font-bold">Pertanyaan {filteredDataPertanyaan.kolom_x}</span> : [{filteredDataPertanyaan.nilai_A}, {filteredDataPertanyaan.nilai_B}, {filteredDataPertanyaan.nilai_C}, {filteredDataPertanyaan.nilai_D}, {filteredDataPertanyaan.nilai_E}]
+                    <span className="font-bold">Pertanyaan {dataPertanyaan.kolom_x}</span> : [
+                        {dataPertanyaan.nilai_A},
+                        {dataPertanyaan.nilai_B},
+                        {dataPertanyaan.nilai_C},
+                        {dataPertanyaan.nilai_D},
+                        {dataPertanyaan.nilai_E}
+                    ]
                     <table className="border-collapse border-2 border-white-500 w-full rounded-lg mt-4">
                         <thead>
                             <tr>
@@ -252,7 +342,8 @@ export default function DetilPsikotestKecermatan() {
                                 <th colSpan="2"><span className="text-lg">Edit / Delete</span></th>
                             </tr>
                         </thead>
-                        {filteredDataSoalJawaban.map((data, index) => (
+                        <For each={dataSoalJawaban}>
+                        {(data, index) => (
                             <tbody key={index}>
                                 <tr className="border-t-2">
                                     <td className="p-2 border-r-2 text-center ml-2">
@@ -280,7 +371,8 @@ export default function DetilPsikotestKecermatan() {
                                     </td>
                                 </tr>
                             </tbody>
-                        ))}
+                        )}
+                        </For>
                     </table>
                     <div className='mt-4 text-center'>
                         <IconButton onClick={(e) => toAdd(e)} aria-label="tambah" size="large" sx={{ border: 2, borderColor: 'white', rounded: 100, color: 'white' }}>
@@ -297,7 +389,7 @@ export default function DetilPsikotestKecermatan() {
                                     <ChevronLeftIcon />
                                 </Link>
                             </span>
-                            {[...Array(filteredLastPage).keys()].map(x => (
+                            {[...Array(lastpage).keys()].map(x => (
                                 <Paging key={x} current={currentpage} page={x} />
                             ))}
                             <span>

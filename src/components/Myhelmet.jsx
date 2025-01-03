@@ -3,9 +3,10 @@
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
 import * as React from 'react';
+import Head from 'next/head';
 import {Helmet} from "react-helmet";
 import axios from 'axios';
-import { setCookie } from 'cookies-next/client';
+import Cookies from 'js-cookie'
 import PropTypes from 'prop-types';
 
 Myhelmet.propTypes = {
@@ -30,7 +31,7 @@ export default function Myhelmet(props) {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
             });
             setCsrf(response2);
-            setCookie('XSRF-TOKEN', response2);
+            Cookies.set('XSRF-TOKEN', response2, { expires: 1, path: '/', secure: true, sameSite: 'strict' })
         } catch (err) {
             console.error(err);
             return err;
@@ -43,7 +44,7 @@ export default function Myhelmet(props) {
         }
     }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
 
-    const headContent = React.memo(function SomeComponent(props) {
+    const MemoMeta = React.memo(function Memo(props) {
         return(
             <>
                 <meta charset="utf-8" />
@@ -60,25 +61,25 @@ export default function Myhelmet(props) {
     if(props.onetime) {
         return(
             <React.StrictMode>
-                <Helmet>
+                <Head>
                     <meta name="XSRF-TOKEN" content={csrf} />
                     <meta name="__token__" content={token} />
                     <meta name="__unique__" content={unique} />
                     <title>{props.title}</title>
                     <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONTEND}/${props.pathURL}`} />
-                    <headContent />
-                </Helmet>
+                    <MemoMeta />
+                </Head>
             </React.StrictMode>
         );
     }
 
     return(
         <React.StrictMode>
-            <Helmet>
+            <Head>
                 <title>{props.title}</title>
                 <link rel="canonical" href={`${process.env.NEXT_PUBLIC_FRONTEND}/${props.pathURL}`} />
-                <headContent />
-            </Helmet>
+                <MemoMeta />
+            </Head>
         </React.StrictMode>
     );
 }

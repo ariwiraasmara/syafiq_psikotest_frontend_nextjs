@@ -3,15 +3,24 @@ import axios from 'axios';
 
 export default {
     readable: (str) => {
-        let textarea = document.createElement('textarea');
-        textarea.textContent = str;
-        return textarea.innerHTML;
+        if (str === null) return null;
+    
+        // Langkah pertama: Menggunakan browser API untuk mendekode entitas HTML
+        let decodedString = str.replace(/&[^;]+;/g, (match) => {
+            let element = document.createElement('div');
+            element.innerHTML = match;
+            return element.innerText || element.textContent;
+        });
+
+        // Langkah kedua: Mengonversi karakter khusus HTML menjadi karakter asli
+        return decodedString
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&quot;/g, '"')
+                .replace(/&amp;/g, '&')
+                .replace(/&#39;/g, "'");
     },
-    csrfToken: async() => {
-        axios.defaults.withCredentials = true;
-        axios.defaults.withXSRFToken = true;
-        return await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`);
-    },
+    
     encrypt: async (text, key) => {
         const iv = window.crypto.getRandomValues(new Uint8Array(12));
         const encodedData = new TextEncoder().encode(text);

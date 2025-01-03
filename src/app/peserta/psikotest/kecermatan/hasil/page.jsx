@@ -46,7 +46,19 @@ export default function PesertaPsikotestKecermatanHasil() {
 
                 // Cek waktu atau versi data di server jika memungkinkan
                 try {
-                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/${paramIdentitas}/${paramTgl_tes}`);
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    });
+                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/${paramIdentitas}/${paramTgl_tes}`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                        headers: {
+                            'XSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json',
+                            'tokenlogin': fun.random('combwisp', 50),
+                        }
+                    });
                     const apiData = apiResponse.data.data;
 
                     // Cek apakah ada pembaruan data
@@ -77,7 +89,19 @@ export default function PesertaPsikotestKecermatanHasil() {
                 console.log('Data tidak ditemukan di cache');
 
                 try {
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/${paramIdentitas}/${paramTgl_tes}`);
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    });
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/${paramIdentitas}/${paramTgl_tes}`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                        headers: {
+                            'XSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json',
+                            'tokenlogin': fun.random('combwisp', 50),
+                        }
+                    });
                     const data = response.data.data;
                     // Menyimpan data ke state
                     setDataPeserta(response.data.data.peserta[0]);

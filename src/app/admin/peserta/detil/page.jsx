@@ -48,7 +48,32 @@ export default function AdminPesertaDetil() {
                 
                 // Cek waktu atau versi data di server jika memungkinkan
                 try {
-                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/${safeID}`);
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    });
+                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/${safeID}`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'XSRF-TOKEN': csrfToken,
+                            'islogin' : fun.readable(localStorage.getItem('islogin')),
+                            'isadmin' : fun.readable(localStorage.getItem('isadmin')),
+                            'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
+                            'remember-token': fun.readable(localStorage.getItem('remember-token')),
+                            'tokenlogin': fun.random('combwisp', 50),
+                            'email' : fun.readable(localStorage.getItem('email')),
+                            '--unique--': 'I am unique!',
+                            'isvalid': 'VALID!',
+                            'isallowed': true,
+                            'key': 'key',
+                            'values': 'values',
+                            'isdumb': 'no',
+                            'challenger': 'of course',
+                            'pranked': 'absolutely'
+                        }
+                    });
                     const apiData = apiResponse.data.data[0];
                     const responseStore = {
                         data: apiData,
@@ -82,7 +107,32 @@ export default function AdminPesertaDetil() {
                 console.log('Data tidak ditemukan di cache');
                 
                 try {
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/${safeID}`);
+                    axios.defaults.withCredentials = true;
+                    axios.defaults.withXSRFToken = true;
+                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    });
+                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/${safeID}`, {
+                        withCredentials: true,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'XSRF-TOKEN': csrfToken,
+                            'islogin' : fun.readable(localStorage.getItem('islogin')),
+                            'isadmin' : fun.readable(localStorage.getItem('isadmin')),
+                            'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
+                            'remember-token': fun.readable(localStorage.getItem('remember-token')),
+                            'tokenlogin': fun.random('combwisp', 50),
+                            'email' : fun.readable(localStorage.getItem('email')),
+                            '--unique--': 'I am unique!',
+                            'isvalid': 'VALID!',
+                            'isallowed': true,
+                            'key': 'key',
+                            'values': 'values',
+                            'isdumb': 'no',
+                            'challenger': 'of course',
+                            'pranked': 'absolutely'
+                        }
+                    });
                     const data = response.data.data[0];
                     setData(data);  // Menyimpan data ke state
                     const responseStore = {
@@ -93,7 +143,25 @@ export default function AdminPesertaDetil() {
                     // Menyimpan data ke cache setelah berhasil mendapatkan data
                     const cache = await caches.open('peserta/detil');
                     const cacheResponse = new Response(JSON.stringify(responseStore), {
-                        headers: { 'Content-Type': 'application/json' }
+                        withCredentials: true,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'XSRF-TOKEN': csrfToken,
+                            'islogin' : localStorage.getItem('islogin'),
+                            'isadmin' : localStorage.getItem('isadmin'),
+                            'Authorization': `Bearer ${localStorage.getItem('pat')}`,
+                            'remember-token': localStorage.getItem('remember-token'),
+                            'tokenlogin': fun.random('combwisp', 50),
+                            'email' : localStorage.getItem('email'),
+                            '--unique--': 'I am unique!',
+                            'isvalid': 'VALID!',
+                            'isallowed': true,
+                            'key': 'key',
+                            'values': 'values',
+                            'isdumb': 'no',
+                            'challenger': 'of course',
+                            'pranked': 'absolutely'
+                        }
                     });
                     await cache.put('peserta/detil', cacheResponse);
                     // console.log('Data disimpan ke cache');
@@ -135,14 +203,26 @@ export default function AdminPesertaDetil() {
         }
     };
 
-    return (
-        <Layoutadmindetil>
+    const MemoHelmet = React.memo(function Memo() {
+        return(
             <Myhelmet
                 title={`Detil Peserta | Admin | Psikotest Online App`}
                 description={`Halaman Detil Peserta dengan otoritas sebagai Admin.`}
                 pathURL={`admin/peserta/detil`}
             />
+        );
+    });
+
+    const MemoAppbarku = React.memo(function Memo() {
+        return(
             <Appbarku headTitle={'Detil Peserta'}  isback={true} url={`/admin/peserta`} />
+        );
+    });
+
+    return (
+        <Layoutadmindetil>
+            <MemoHelmet />
+            <MemoAppbarku />
             <main className="p-5 mb-14">
                 {loading ? (
                     <div className='text-center'>
@@ -151,14 +231,14 @@ export default function AdminPesertaDetil() {
                 ) : (
                     <div>
                         <div>
-                            <p><span className="font-bold">Nama :</span> {filteredData.nama}</p>
-                            <p><span className="font-bold">No. Identitas :</span> {filteredData.no_identitas}</p>
-                            <p><span className="font-bold">Email :</span> {filteredData.email}</p>
-                            <p><span className="font-bold">Tanggal Lahir :</span> {filteredData.tgl_lahir}</p>
-                            <p><span className="font-bold">Usia :</span> {filteredData.usia}</p>
-                            <p><span className="font-bold">Asal : </span> {filteredData.asal}</p>
+                            <p><span className="font-bold">Nama :</span> {data.nama}</p>
+                            <p><span className="font-bold">No. Identitas :</span> {data.no_identitas}</p>
+                            <p><span className="font-bold">Email :</span> {data.email}</p>
+                            <p><span className="font-bold">Tanggal Lahir :</span> {data.tgl_lahir}</p>
+                            <p><span className="font-bold">Usia :</span> {data.usia}</p>
+                            <p><span className="font-bold">Asal : </span> {data.asal}</p>
                             <p>
-                                <Link onClick={(e) => toEdit(e, filteredData.id, filteredData.nama, filteredData.no_identitas, filteredData.email, filteredData.tgl_lahir, filteredData.asal)}>
+                                <Link onClick={(e) => toEdit(e, data.id, data.nama, data.no_identitas, filteredData.email, filteredData.tgl_lahir, filteredData.asal)}>
                                     <EditIcon />
                                 </Link>
                             </p>

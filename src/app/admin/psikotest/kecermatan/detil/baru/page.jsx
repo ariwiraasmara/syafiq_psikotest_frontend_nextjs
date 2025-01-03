@@ -94,16 +94,32 @@ export default function PsikotestKecermatanDetilBaru() {
                 soal: [[parseInt(soalA), parseInt(soalB), parseInt(soalC), parseInt(soalD)]],
                 jawaban: parseInt(jawaban)
             };
-            console.log('soaljawaban', soaljawaban);
             axios.defaults.withCredentials = true;
             axios.defaults.withXSRFToken = true;
-            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`);
+            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
+            });
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/kecermatan/soaljawaban/${pkid}`, {
                 soal_jawaban: soaljawaban,
             }, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
                 headers: {
-                    'XSRF-TOKEN': csrfToken,
                     'Content-Type': 'application/json',
+                    'XSRF-TOKEN': csrfToken,
+                    'islogin' : fun.readable(localStorage.getItem('islogin')),
+                    'isadmin' : fun.readable(localStorage.getItem('isadmin')),
+                    'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
+                    'remember-token': fun.readable(localStorage.getItem('remember-token')),
+                    'tokenlogin': fun.random('combwisp', 50),
+                    'email' : fun.readable(localStorage.getItem('email')),
+                    '--unique--': 'I am unique!',
+                    'isvalid': 'VALID!',
+                    'isallowed': true,
+                    'key': 'key',
+                    'values': 'values',
+                    'isdumb': 'no',
+                    'challenger': 'of course',
+                    'pranked': 'absolutely'
                 }
             });
             if(response.data.success) {
@@ -124,20 +140,33 @@ export default function PsikotestKecermatanDetilBaru() {
         return router.push(`/admin/psikotest/kecermatan/detil/?page=${lastpage}`);
     };
 
-    return(
-        <Layoutadmindetil>
+    const MemoHelmet = React.memo(function Memo() {
+        return(
             <Myhelmet
                 title={`Detil Psikotest Kecermatan Baru | Admin | Psikotest`}
                 description={`Halaman Menambah data baru pada Detil Kecermatan dengan otoritas sebagai Admin.`}
                 pathURL={`admin/psikotest/kecermatan/detil/edit`}
             />
+        );
+    });
+
+    const MemoAppbarku = React.memo(function Memo() {
+        return(
             <Appbarku headTitle="Detil Psikotest Kecermatan" />
+        );
+    });
+
+    return(
+        <Layoutadmindetil>
+            <MemoHelmet />
+            <MemoAppbarku />
             <main className="p-5 mb-14">
                 <div className="font-bold text-center text-lg">Data Baru</div>
                 <Box component="form"
                     sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' },
                         p: 3
                     }}
+                    onSubmit={(e) => submit(e)}
                     noValidate
                     autoComplete="off">
                     <TextField id={`soala`} label="Soal A"
@@ -152,24 +181,22 @@ export default function PsikotestKecermatanDetilBaru() {
                                 onChange={handleChange_soalC} focused
                                 defaultValue={soalC} variant="outlined"
                                 sx={styledTextField} />
-
                     <TextField id={`soald`} label="Soal D"
                                 onChange={handleChange_soalD} focused
                                 defaultValue={soalD} variant="outlined"
                                 sx={styledTextField} />
-
                     <TextField id={`jawaban`} label="Jawaban"
                                 onChange={handleChange_jawaban} focused
                                 defaultValue={jawaban} variant="outlined"
                                 sx={styledTextField} />
                     <Box sx={{ m: 1 }}>
                         <div>
-                            <Button variant="contained" size="large" color="primary" fullWidth onClick={(e) => submit(e)} >
+                            <Button variant="contained" size="large" color="primary" fullWidth type="submit">
                                 Simpan
                             </Button>
                         </div>
                         <div className="mt-4">
-                            <Button variant="contained" size="large" color="secondary" fullWidth onClick={(e) => cancel(e)} sx={{marginTop: 2}} >
+                            <Button variant="contained" size="large" color="secondary" fullWidth onClick={(e) => cancel(e)} sx={{marginTop: 2}} type="button">
                                 Batal
                             </Button>
                         </div>
@@ -178,5 +205,4 @@ export default function PsikotestKecermatanDetilBaru() {
             </main>
         </Layoutadmindetil>
     );
-
 }
