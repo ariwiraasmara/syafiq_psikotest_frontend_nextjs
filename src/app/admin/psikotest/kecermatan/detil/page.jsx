@@ -42,6 +42,7 @@ export default function DetilPsikotestKecermatan() {
 
     // paging
     let currentpage = params.get('page');
+    console.log('currentPage', currentpage);
     const [lastpage, setLastpage] = React.useState(1);
     let numbertable = 0;
     if(currentpage == 1) numbertable = 1;
@@ -342,8 +343,7 @@ export default function DetilPsikotestKecermatan() {
                                 <th colSpan="2"><span className="text-lg">Edit / Delete</span></th>
                             </tr>
                         </thead>
-                        <For each={dataSoalJawaban}>
-                        {(data, index) => (
+                        {dataSoalJawaban.map((data, index) => (
                             <tbody key={index}>
                                 <tr className="border-t-2">
                                     <td className="p-2 border-r-2 text-center ml-2">
@@ -371,8 +371,7 @@ export default function DetilPsikotestKecermatan() {
                                     </td>
                                 </tr>
                             </tbody>
-                        )}
-                        </For>
+                        ))}
                     </table>
                     <div className='mt-4 text-center'>
                         <IconButton onClick={(e) => toAdd(e)} aria-label="tambah" size="large" sx={{ border: 2, borderColor: 'white', rounded: 100, color: 'white' }}>

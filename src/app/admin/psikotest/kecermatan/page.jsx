@@ -105,16 +105,16 @@ export default function PsikotestKecermatan() {
                         </div>
                     ) : (
                         dataPsikotestKecermatan.map((data, index) => (
-                            <div key={index} className='border-b-2 p-3'>
-                                <div className="static mt-3 flex flex-row justify-between">
-                                    <div className="order-first">
-                                        <Link onClick={() => onDetil(data.id)}>
+                            <Link onClick={() => onDetil(data.id)}>
+                                <div key={index} className='border-b-2 p-3'>
+                                    <div className="static mt-3 flex flex-row justify-between">
+                                        <div className="order-first">
                                             <p>{data.kolom_x}</p>
-                                        </Link>
+                                        </div>
+                                        <div className="order-last"></div>
                                     </div>
-                                    <div className="order-last"></div>
                                 </div>
-                            </div>
+                            </Link>
                         ))
                     )}
                 </div>

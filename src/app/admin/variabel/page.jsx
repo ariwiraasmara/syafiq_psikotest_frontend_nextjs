@@ -280,15 +280,21 @@ export default function VariabelSetting() {
                             {(data, index) =>
                             <div key={index} className='border-b-2 p-3'>
                                 <div className="static mt-3 flex flex-row justify-between">
-                                    <div className="order-first">
-                                        <p>
-                                            {data.variabel} = {data.values} detik
-                                        </p>
-                                    </div>
+                                    <Link
+                                        sx={linkStyle}
+                                        className="mr-4"
+                                        onClick={(e) => toEdit(e, data.id, data.variabel, data.values)}
+                                    >
+                                        <div className="order-first">
+                                            <p>
+                                                {data.variabel} = {data.values} detik
+                                            </p>
+                                        </div>
+                                    </Link>
                                     <div className="order-last">
                                         <Link
                                             sx={linkStyle}
-                                            className="mr-4"
+                                            className="mr-6"
                                             onClick={(e) => toEdit(e, data.id, data.variabel, data.values)}
                                         >
                                             <EditIcon />

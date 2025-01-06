@@ -10,9 +10,9 @@ Layoutpeserta.propTypes = {
 };
 
 export default function Layoutpeserta({ children }) {
-  return (
-    <div>
-        {children}
-    </div>
-  );
+    return (
+        <div>
+            {children}
+        </div>
+    );
 }
