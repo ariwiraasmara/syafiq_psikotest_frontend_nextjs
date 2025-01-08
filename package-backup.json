@@ -32,7 +32,7 @@
     },
     "homepage": "https://github.com/ariwiraasmara/syafiq_psikotest_frontend_nextjs#readme",
     "scripts": {
-        "dev": "next dev --turbopack",
+        "dev": "next dev",
         "build": "next build",
         "start": "next start",
         "lint": "next lint"
@@ -43,26 +43,26 @@
         "@million/lint": "^1.0.14",
         "@mui/icons-material": "^6.1.9",
         "@mui/material": "^6.1.9",
-        "@preact/compat": "^18.3.1",
         "axios": "^1.7.9",
         "chart.js": "^4.4.7",
         "js-cookie": "^3.0.5",
         "lodash.debounce": "^4.0.8",
         "million": "^3.1.11",
         "next": "^15.1.2",
+        "react": "18.3.1",
+        "react-auth-kit": "^3.1.3",
         "react-chartjs-2": "^5.2.0",
+        "react-dom": "18.3.1",
+        "react-helmet": "^6.1.0",
+        "react-window": "^1.8.11",
         "sweetalert2": "^11.6.13"
     },
     "devDependencies": {
-        "@eslint/eslintrc": "^3",
-        "@types/node": "^20",
-        "@types/react": "^19",
-        "@types/react-dom": "^19",
         "eslint": "^8.57.1",
         "eslint-config-next": "15.0.3",
-        "eslint-plugin-preact": "0.1.0",
+        "eslint-plugin-react": "^7.37.2",
         "postcss": "^8",
-        "preact-devtools": "^0.0.1",
+        "react-devtools": "^1.0.5",
         "tailwindcss": "^3.4.1"
     }
 }

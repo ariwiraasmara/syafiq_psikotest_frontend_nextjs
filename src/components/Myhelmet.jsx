@@ -4,7 +4,7 @@
 'use client';
 import * as React from 'react';
 import Head from 'next/head';
-import {Helmet} from "react-helmet";
+// import {Helmet} from "react-helmet";
 import axios from 'axios';
 import Cookies from 'js-cookie'
 import PropTypes from 'prop-types';
