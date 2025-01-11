@@ -1,5 +1,8 @@
+// ! Copyright @
+// ! Syafiq
+// ! Syahri Ramadhan Wiraasmara (ARI)
 'use client'
-import Layoutadmindetil from '../../../../../layoutadmindetil';
+import Layoutadmindetil from '@/components/layout/Layoutadmindetil';
 import axios from 'axios';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
@@ -15,6 +18,13 @@ const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
 const Appbarku = dynamic(() => import('@/components/Appbarku'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
+const NavBreadcrumb = dynamic(() => import('@/components/NavBreadcrumb'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Footer = dynamic(() => import('@/components/Footer'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+import { readable, random } from '@/libraries/myfunction';
 
 const styledTextField = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -109,12 +119,12 @@ export default function PsikotestKecermatanDetilEdit() {
                 headers: {
                     'Content-Type': 'application/json',
                     'XSRF-TOKEN': csrfToken,
-                    'islogin' : fun.readable(localStorage.getItem('islogin')),
-                    'isadmin' : fun.readable(localStorage.getItem('isadmin')),
-                    'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
-                    'remember-token': fun.readable(localStorage.getItem('remember-token')),
-                    'tokenlogin': fun.random('combwisp', 50),
-                    'email' : fun.readable(localStorage.getItem('email')),
+                    'islogin' : readable(localStorage.getItem('islogin')),
+                    'isadmin' : readable(localStorage.getItem('isadmin')),
+                    'Authorization': `Bearer ${readable(localStorage.getItem('pat'))}`,
+                    'remember-token': readable(localStorage.getItem('remember-token')),
+                    'tokenlogin': random('combwisp', 50),
+                    'email' : readable(localStorage.getItem('email')),
                     '--unique--': 'I am unique!',
                     'isvalid': 'VALID!',
                     'isallowed': true,
@@ -163,8 +173,8 @@ export default function PsikotestKecermatanDetilEdit() {
         return(
             <Myhelmet
                 title={`Edit Detil Psikotest Kecermatan | Admin | Psikotest`}
-                description={`Halaman Edit Detil Psikotest Kecermatan dengan otoritas sebagai Admin.`}
                 pathURL={`admin/psikotest/kecermatan/detil/edit`}
+                robots={`follow, index`}
             />
         );
     });
@@ -175,11 +185,27 @@ export default function PsikotestKecermatanDetilEdit() {
         );
     });
 
+    const MemoNavBreadcrumb = React.memo(function Memo() {
+        return(
+            <NavBreadcrumb content={`Admin / Psikotest / Kecermatan / Detil / Edit`} hidden={`hidden`} />
+        );
+    });
+
+    const MemoFooter = React.memo(function Memo() {
+        return(
+            <Footer hidden={`hidden`} />
+        );
+    });
+
     return(
+    <>
+        <MemoHelmet />
         <Layoutadmindetil>
-            <MemoHelmet />
             <MemoAppbarku />
-            <main className="p-5 mb-14">
+            <MemoNavBreadcrumb />
+            <div className="p-5 mb-14">
+                <h1 className='hidden'>Halaman Edit Psikotest Kecermatan Detil | Admin </h1>
+                <h2 className="font-bold text-center">Data Edit Detil Psikotest Kecermatan</h2>
                 <div className="font-bold">
                     Edit Soal dan Jawaban<br/>
                     ID : {idsoal}
@@ -224,8 +250,10 @@ export default function PsikotestKecermatanDetilEdit() {
                         </div>
                     </Box>
                 </Box>
-            </main>
+            </div>
+            <MemoFooter />
         </Layoutadmindetil>
+    </>
     );
 
 }

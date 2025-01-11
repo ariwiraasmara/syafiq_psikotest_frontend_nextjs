@@ -51,7 +51,6 @@ export default function Appbarku(props) {
     }
 
     return (
-    <div>
         <React.StrictMode>
             <ElevationScroll {...props}>
                 <AppBar sx={{ background: '#000' }}>
@@ -59,12 +58,12 @@ export default function Appbarku(props) {
                         <Typography variant="h5" component="div" className="font-bold">
                             {linkBack(props.isback, props.url)}
                             <span className="font-bold">{props.headTitle}</span>
+                            <nav id="breadcrumb">{props.path}</nav>
                         </Typography>
                     </Toolbar>
                 </AppBar>
             </ElevationScroll>
             <Toolbar />
         </React.StrictMode>
-    </div>
     );
 }

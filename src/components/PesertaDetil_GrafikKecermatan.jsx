@@ -8,7 +8,7 @@ import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
 // Registrasi komponen Chart.js
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend);
-import fun from '@/libraries/myfunction';
+import { random } from '@/libraries/myfunction';
 
 PesertaDetil_GrafikKecermatan.propTypes = {
     peserta_id: PropTypes.number,
@@ -33,7 +33,7 @@ export default function PesertaDetil_GrafikKecermatan(props) {
                     'isadmin' : localStorage.getItem('isadmin'),
                     'Authorization': `Bearer ${localStorage.getItem('pat')}`,
                     'remember-token': localStorage.getItem('remember-token'),
-                    'tokenlogin': fun.random('combwisp', 50),
+                    'tokenlogin': random('combwisp', 50),
                     'email' : localStorage.getItem('email'),
                     '--unique--': 'I am unique!',
                     'isvalid': 'VALID!',

@@ -2,20 +2,30 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
-import Layout from './layout';
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import NavigasiBawah from '@/components/BottomNavigation';
+import localFont from "next/font/local";
+import "../../app/globals.css";
 
-Layoutadmin.propTypes = {
+const geistSans = localFont({
+  src: "../../app/fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+});
+
+const geistMono = localFont({
+  src: "../../app/fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+});
+
+Layoutadmindetil.propTypes = {
     children: PropTypes.any,
 };
 
-export default function Layoutadmin({ children }) {
-    const router = useRouter();
+export default function Layoutadmindetil({ children }) {
     const [loading, setLoading] = React.useState(true);
     const [islogin, setIslogin] = React.useState();
     const [isadmin, setIsadmin] = React.useState();
@@ -42,47 +52,39 @@ export default function Layoutadmin({ children }) {
 
     React.useEffect(() => {
         getData();
-    }, [router, islogin, isadmin, ispeserta]);
+    }, [islogin, isadmin, ispeserta]);
 
     if(loading) {
         return (
-            <Layout>
-                <div className='text-center p-8'>
-                    <p><span className='font-bold text-2lg'>Loading...</span></p>
-                </div>
-            </Layout>
+            <h2 className='text-center p-8'>
+                <p><span className='font-bold text-2lg'>Loading...</span></p>
+                <p>Sedang memuat data... Harap Tunggu...</p>
+            </h2>
         );
     }
 
     if(ispeserta) return window.location.href = '/peserta';
 
     if(islogin && isadmin) {
-        const MemoNavigasiBawah = React.memo(function Memo() {
-            return <NavigasiBawah />;
-        });
         return (
-            <Layout>
+            <React.StrictMode>
                 {children}
-                <MemoNavigasiBawah />
-            </Layout>
+            </React.StrictMode>
         );
     }
     else {
         return (
-            <Layout>
-                <div className='text-center p-20'>
-                    <h1 className='text-2xl text-bold uppercase font-bold'>Unauthorized!</h1>
-                    <p className='mt-4 uppercase font-bold'>Tidak diperkenankan untuk mengakses halaman ini!</p>
-                    <div className='mt-6'>
-                        <Box sx={{ '& button': {width: '100%' } }}>
-                            <Button variant="contained" size="large" onClick={() => router.push('/admin')}>
-                                Kembali
-                            </Button>
-                        </Box>
-                    </div>
+            <div className='text-center p-20'>
+                <h1 className='text-2xl text-bold uppercase font-bold'>Unauthorized!</h1>
+                <p className='mt-4 uppercase font-bold'>Tidak diperkenankan untuk mengakses halaman ini!</p>
+                <div className='mt-6'>
+                    <Box sx={{ '& button': {width: '100%' } }}>
+                        <Button variant="contained" size="large" onClick={() => router.push('/admin')}>
+                            Kembali
+                        </Button>
+                    </Box>
                 </div>
-            </Layout>
+            </div>
         );
     }
-    
 }

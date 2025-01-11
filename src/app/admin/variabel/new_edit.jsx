@@ -8,7 +8,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
-import fun from '@/libraries/myfunction';
+import { readable, random } from '@/libraries/myfunction';
 
 const styledTextField = {
     '& .MuiStandardInput-notchedStandard': {
@@ -62,12 +62,12 @@ export default function NewOrEdit() {
                 headers: {
                     'Content-Type': 'application/json',
                     'XSRF-TOKEN': csrfToken,
-                    'islogin' : fun.readable(localStorage.getItem('islogin')),
-                    'isadmin' : fun.readable(localStorage.getItem('isadmin')),
-                    'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
-                    'remember-token': fun.readable(localStorage.getItem('remember-token')),
-                    'tokenlogin': fun.random('combwisp', 50),
-                    'email' : fun.readable(localStorage.getItem('email')),
+                    'islogin' : readable(localStorage.getItem('islogin')),
+                    'isadmin' : readable(localStorage.getItem('isadmin')),
+                    'Authorization': `Bearer ${readable(localStorage.getItem('pat'))}`,
+                    'remember-token': readable(localStorage.getItem('remember-token')),
+                    'tokenlogin': random('combwisp', 50),
+                    'email' : readable(localStorage.getItem('email')),
                     '--unique--': 'I am unique!',
                     'isvalid': 'VALID!',
                     'isallowed': true,

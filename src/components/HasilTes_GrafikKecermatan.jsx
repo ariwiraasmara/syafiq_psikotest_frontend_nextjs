@@ -39,9 +39,9 @@ export default function HasilTes_GrafikKecermatan(props) {
                 props.hasilnilai_kolom_5,
             ],
             fill: false,
-            borderColor: 'rgba(100, 100, 255, 1)',
+            borderColor: 'rgba(200, 200, 255, 1)',
             tension: 0.1,
-            pointBackgroundColor: 'rgba(100, 100, 255, 1)',
+            pointBackgroundColor: 'rgba(200, 200, 255, 1)',
             pointRadius: 5,
         },],
     };

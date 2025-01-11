@@ -1,5 +1,8 @@
+// ! Copyright @
+// ! Syafiq
+// ! Syahri Ramadhan Wiraasmara (ARI)
 'use client'
-import Layoutadmindetil from '../../../../../layoutadmindetil';
+import Layoutadmindetil from '@/components/layout/Layoutadmindetil';
 import axios from 'axios';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
@@ -15,6 +18,13 @@ const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
 const Appbarku = dynamic(() => import('@/components/Appbarku'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
+const NavBreadcrumb = dynamic(() => import('@/components/NavBreadcrumb'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Footer = dynamic(() => import('@/components/Footer'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+import { readable, random } from '@/libraries/myfunction';
 
 const styledTextField = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -106,12 +116,12 @@ export default function PsikotestKecermatanDetilBaru() {
                 headers: {
                     'Content-Type': 'application/json',
                     'XSRF-TOKEN': csrfToken,
-                    'islogin' : fun.readable(localStorage.getItem('islogin')),
-                    'isadmin' : fun.readable(localStorage.getItem('isadmin')),
-                    'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
-                    'remember-token': fun.readable(localStorage.getItem('remember-token')),
-                    'tokenlogin': fun.random('combwisp', 50),
-                    'email' : fun.readable(localStorage.getItem('email')),
+                    'islogin' : readable(localStorage.getItem('islogin')),
+                    'isadmin' : readable(localStorage.getItem('isadmin')),
+                    'Authorization': `Bearer ${readable(localStorage.getItem('pat'))}`,
+                    'remember-token': readable(localStorage.getItem('remember-token')),
+                    'tokenlogin': random('combwisp', 50),
+                    'email' : readable(localStorage.getItem('email')),
                     '--unique--': 'I am unique!',
                     'isvalid': 'VALID!',
                     'isallowed': true,
@@ -144,8 +154,8 @@ export default function PsikotestKecermatanDetilBaru() {
         return(
             <Myhelmet
                 title={`Detil Psikotest Kecermatan Baru | Admin | Psikotest`}
-                description={`Halaman Menambah data baru pada Detil Kecermatan dengan otoritas sebagai Admin.`}
-                pathURL={`admin/psikotest/kecermatan/detil/edit`}
+                pathURL={`admin/psikotest/kecermatan/detil/baru`}
+                robots={`follow, index`}
             />
         );
     });
@@ -156,12 +166,27 @@ export default function PsikotestKecermatanDetilBaru() {
         );
     });
 
+    const MemoNavBreadcrumb = React.memo(function Memo() {
+        return(
+            <NavBreadcrumb content={`Admin / Psikotest / Kecermatan / Detil / Baru`} hidden={`hidden`} />
+        );
+    });
+
+    const MemoFooter = React.memo(function Memo() {
+        return(
+            <Footer hidden={`hidden`} />
+        );
+    });
+
     return(
+    <>
+        <MemoHelmet />
         <Layoutadmindetil>
-            <MemoHelmet />
             <MemoAppbarku />
-            <main className="p-5 mb-14">
-                <div className="font-bold text-center text-lg">Data Baru</div>
+            <MemoNavBreadcrumb />
+            <div className="p-5 mb-14">
+                <h1 className='hidden'>Halaman Psikotest Kecermatan Detil Baru | Admin </h1>
+                <h2 className="font-bold text-center text-lg">Data Detil Psikotest Kecermatan Baru</h2>
                 <Box component="form"
                     sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' },
                         p: 3
@@ -202,7 +227,9 @@ export default function PsikotestKecermatanDetilBaru() {
                         </div>
                     </Box>
                 </Box>
-            </main>
+            </div>
+            <MemoFooter />
         </Layoutadmindetil>
+    </>
     );
 }

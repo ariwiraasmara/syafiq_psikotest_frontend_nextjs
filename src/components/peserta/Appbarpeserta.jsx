@@ -45,7 +45,11 @@ export default function Appbarpeserta(props) {
             <ElevationScroll {...props}>
                 <AppBar sx={{ background: '#000' }}>
                     <Toolbar>
+                        <h2 className='hidden'>Pertanyaan Psikotest Kecermatan {props.kolom_x}</h2>
                         <table align="center">
+                            <thead className='hidden'>
+                                <tr><th><h3>Table Pertanyaan Psikotest Kecermatan {props.kolom_x}</h3></th></tr>
+                            </thead>
                             <tbody>
                                 <tr>
                                     <th colSpan="5">{props.kolom_x}</th>

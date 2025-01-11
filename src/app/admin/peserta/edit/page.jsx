@@ -2,7 +2,7 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
-import Layoutadmindetil from '../../../layoutadmindetil';
+import Layoutadmindetil from '@/components/layout/Layoutadmindetil';
 import axios from 'axios';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
@@ -18,6 +18,13 @@ const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
 const Appbarku = dynamic(() => import('@/components/Appbarku'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
+const NavBreadcrumb = dynamic(() => import('@/components/NavBreadcrumb'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Footer = dynamic(() => import('@/components/Footer'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+import { readable, random } from '@/libraries/myfunction';
 
 const styledTextField = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -83,12 +90,12 @@ export default function AdminPesertaEdit() {
                 headers: {
                     'Content-Type': 'application/json',
                     'XSRF-TOKEN': csrfToken,
-                    'islogin' : fun.readable(localStorage.getItem('islogin')),
-                    'isadmin' : fun.readable(localStorage.getItem('isadmin')),
-                    'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
-                    'remember-token': fun.readable(localStorage.getItem('remember-token')),
-                    'tokenlogin': fun.random('combwisp', 50),
-                    'email' : fun.readable(localStorage.getItem('email')),
+                    'islogin' : readable(localStorage.getItem('islogin')),
+                    'isadmin' : readable(localStorage.getItem('isadmin')),
+                    'Authorization': `Bearer ${readable(localStorage.getItem('pat'))}`,
+                    'remember-token': readable(localStorage.getItem('remember-token')),
+                    'tokenlogin': random('combwisp', 50),
+                    'email' : readable(localStorage.getItem('email')),
                     '--unique--': 'I am unique!',
                     'isvalid': 'VALID!',
                     'isallowed': true,
@@ -139,24 +146,39 @@ export default function AdminPesertaEdit() {
     const MemoHelmet = React.memo(function Memo() {
         return(
             <Myhelmet
-                title={`Detil Peserta | Admin | Psikotest Online App`}
-                description={`Halaman Edit Peserta dengan otoritas sebagai Admin.`}
+                title={`Edit Peserta | Admin | Psikotest Online App`}
                 pathURL={`admin/peserta/edit`}
+                robots={`follow, index`}
             />
         );
     });
 
     const MemoAppbarku = React.memo(function Memo() {
         return(
-            <Appbarku headTitle="Update Peserta" />
+            <Appbarku headTitle="Edit Peserta" />
+        );
+    });
+
+    const MemoNavBreadcrumb = React.memo(function Memo() {
+        return(
+            <NavBreadcrumb content={`Admin / Peserta / Edit`} hidden={`hidden`} />
+        );
+    });
+
+    const MemoFooter = React.memo(function Memo() {
+        return(
+            <Footer hidden={`hidden`} />
         );
     });
 
     return(
+        <>
+        <MemoHelmet />
         <Layoutadmindetil>
-            <MemoHelmet />
             <MemoAppbarku />
-            <main className="p-5 mb-14">
+            <MemoNavBreadcrumb />
+            <div className="p-5 mb-14">
+                <h1 className='hidden'>Halaman Edit Peserta | Admin</h1>
                 <div>
                     <p><span className='font-bold'>Nama</span>: {nama}</p>
                     <p><span className='font-bold'>Nomor Identitas</span>: {no_identitas}</p>
@@ -198,7 +220,9 @@ export default function AdminPesertaEdit() {
                         </div>
                     </Box>
                 </Box>
-            </main>
+            </div>
+            <MemoFooter />
         </Layoutadmindetil>
+        </>
     );
 }

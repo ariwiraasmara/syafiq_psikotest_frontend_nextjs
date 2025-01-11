@@ -2,7 +2,7 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
-import Layoutpeserta from '../../../../layoutpeserta';
+import Layoutpeserta from '@/components/layout/Layout';
 import * as React from 'react';
 import { useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic';
@@ -14,13 +14,23 @@ const Appbarku = dynamic(() => import('@/components/Appbarku'), {
 const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
+const NavBreadcrumb = dynamic(() => import('@/components/NavBreadcrumb'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Footer = dynamic(() => import('@/components/Footer'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 const HasilTes_GrafikKecermatan = dynamic(() => import('@/components/HasilTes_GrafikKecermatan'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
+import { random } from '@/libraries/myfunction';
 
 export default function PesertaPsikotestKecermatanHasil() {
-    const [paramIdentitas, setParamIdentitas] = React.useState(0);
-    const [paramTgl_tes, setParamTgl_tes] = React.useState('');
+    const searchParams = useSearchParams();
+    // const [paramIdentitas, setParamIdentitas] = React.useState(0);
+    let paramIdentitas = 0;
+    // const [paramTgl_tes, setParamTgl_tes] = React.useState();
+    let paramTgl_tes = '';
 
     const [dataPeserta, setDataPeserta] = React.useState({});
     const [dataHasiltes, setDataHasiltes] = React.useState({});
@@ -28,9 +38,12 @@ export default function PesertaPsikotestKecermatanHasil() {
 
     const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
-        const searchParams = useSearchParams();
-        setParamIdentitas(searchParams.get('identitas'));
-        setParamTgl_tes(searchParams.get('tgl_tes'));
+        // setParamIdentitas(searchParams.get('identitas'));
+        paramIdentitas = parseInt(searchParams.get('identitas'));
+        console.info('paramIdentitas', paramIdentitas);
+        // setParamTgl_tes(searchParams.get('tgl_tes'));
+        paramTgl_tes = searchParams.get('tgl_tes');
+        console.info('paramTgl_tes', paramTgl_tes);
         try {
             const cacheResponse = await caches.match('peserta/psikotest/kecermatan/hasil-tes');
 
@@ -56,7 +69,7 @@ export default function PesertaPsikotestKecermatanHasil() {
                         headers: {
                             'XSRF-TOKEN': csrfToken,
                             'Content-Type': 'application/json',
-                            'tokenlogin': fun.random('combwisp', 50),
+                            'tokenlogin': random('combwisp', 50),
                         }
                     });
                     const apiData = apiResponse.data.data;
@@ -99,7 +112,7 @@ export default function PesertaPsikotestKecermatanHasil() {
                         headers: {
                             'XSRF-TOKEN': csrfToken,
                             'Content-Type': 'application/json',
-                            'tokenlogin': fun.random('combwisp', 50),
+                            'tokenlogin': random('combwisp', 50),
                         }
                     });
                     const data = response.data.data;
@@ -141,15 +154,42 @@ export default function PesertaPsikotestKecermatanHasil() {
     console.table('Data Peserta', dataPeserta);
     console.table('Data Hasil Psikotest Kecermatan Peserta', dataHasiltes);
 
-    return(
-        <Layoutpeserta>
+    const MemoHelmet = React.memo(function Memo() {
+        return(
             <Myhelmet
-                title='Hasil Psikotest Kecermatan | Psikotest Online App'
-                description={`Halaman Hasil Psikotest Kecermatan Peserta ${filteredDataPeserta.nama}`}
-                pathURL='peserta/psikotest/kecermatan/hasil'
+                title={`Hasil Psikotest Kecermatan | Psikotest Online App`}
+                pathURL={`peserta/psikotest/kecermatan/hasil?identitas=${searchParams.get('identitas')}&tgl_tes=${searchParams.get('tgl_tes')}`}
+                robots={`index, follow`}
             />
-            <Appbarku headTitle="Hasil Psikotest Kecermatan" />
-            <main className="p-4">
+        );
+    });
+
+    const MemoAppbarku = React.memo(function Memo() {
+        return(
+            <Appbarku headTitle="Hasil Psikotest Kecermatan" isback={true} url={`/`} />
+        );
+    });
+
+    const MemoNavBreadcrumb = React.memo(function Memo() {
+        return(
+            <NavBreadcrumb content={`Peserta / Psikotest / Kecermatan / Hasil`} hidden={`hidden`} />
+        );
+    });
+
+    const MemoFooter = React.memo(function Memo() {
+        return(
+            <Footer hidden={`hidden`} />
+        );
+    });
+
+    return(
+    <>
+        <MemoHelmet />
+        <Layoutpeserta>
+            <MemoAppbarku />
+            <MemoNavBreadcrumb />
+            <div className="p-4">
+                <h1 className='hidden'>Halaman Hasil Psikotest Kecermatan Peserta {filteredDataPeserta.nama}</h1>
                 {loading ? (
                     <div className='text-center'>
                         <p><span className='font-bold text-2lg'>Loading...</span></p>
@@ -157,15 +197,17 @@ export default function PesertaPsikotestKecermatanHasil() {
                 ) : (
                     <div>
                         <div>
-                            <p><span className="font-bold">Nama :</span> {filteredDataPeserta.nama}</p>
-                            <p><span className="font-bold">No. Identitas :</span> {filteredDataPeserta.no_identitas}</p>
-                            <p><span className="font-bold">Email :</span> {filteredDataPeserta.email}</p>
-                            <p><span className="font-bold">Tanggal Lahir :</span> {filteredDataPeserta.tgl_lahir}</p>
-                            <p><span className="font-bold">Usia :</span> {filteredDataPeserta.usia}</p>
-                            <p><span className="font-bold">Asal : </span> {filteredDataPeserta.asal}</p>
-                            <p><span className="font-bold">Tanggal Tes : </span> {paramTgl_tes}</p>
+                            <h2 className='font-bold underline text-lg'>Profil Peserta</h2>
+                            <p><span className="font-bold">Nama :</span> {dataPeserta.nama}</p>
+                            <p><span className="font-bold">No. Identitas :</span> {dataPeserta.no_identitas}</p>
+                            <p><span className="font-bold">Email :</span> {dataPeserta.email}</p>
+                            <p><span className="font-bold">Tanggal Lahir :</span> {dataPeserta.tgl_lahir}</p>
+                            <p><span className="font-bold">Usia :</span> {dataPeserta.usia}</p>
+                            <p><span className="font-bold">Asal : </span> {dataPeserta.asal}</p>
+                            <p><span className="font-bold">Tanggal Tes : </span> {dataHasiltes.tgl_ujian}</p>
                         </div>
                         <div className="mt-4">
+                            <h2 className='hidden'>Grafik Hasil Psikotes Kecermatan</h2>
                             <HasilTes_GrafikKecermatan
                                 tgl_tes={paramTgl_tes}
                                 hasilnilai_kolom_1={filteredDataHasilTes.hasilnilai_kolom_1}
@@ -182,7 +224,8 @@ export default function PesertaPsikotestKecermatanHasil() {
                         </div>
                     </div>
                 )}
-            </main>
+            </div>
         </Layoutpeserta>
+    </>
     );
 }

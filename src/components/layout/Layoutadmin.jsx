@@ -2,7 +2,7 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
-import Layout from './layout';
+import Layout from '../../app/layout';
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/navigation';
@@ -46,11 +46,10 @@ export default function Layoutadmin({ children }) {
 
     if(loading) {
         return (
-            <Layout>
-                <div className='text-center p-8'>
-                    <p><span className='font-bold text-2lg'>Loading...</span></p>
-                </div>
-            </Layout>
+            <h2 className='text-center p-8'>
+                <p><span className='font-bold text-2lg'>Loading...</span></p>
+                <p>Sedang memuat data... Harap Tunggu...</p>
+            </h2>
         );
     }
 
@@ -61,28 +60,25 @@ export default function Layoutadmin({ children }) {
             return <NavigasiBawah />;
         });
         return (
-            <Layout>
+            <React.StrictMode>
                 {children}
                 <MemoNavigasiBawah />
-            </Layout>
+            </React.StrictMode>
         );
     }
     else {
         return (
-            <Layout>
-                <div className='text-center p-20'>
-                    <h1 className='text-2xl text-bold uppercase font-bold'>Unauthorized!</h1>
-                    <p className='mt-4 uppercase font-bold'>Tidak diperkenankan untuk mengakses halaman ini!</p>
-                    <div className='mt-6'>
-                        <Box sx={{ '& button': {width: '100%' } }}>
-                            <Button variant="contained" size="large" onClick={() => router.push('/admin')}>
+            <div className='text-center p-20'>
+                <h1 className='text-2xl text-bold uppercase font-bold'>Unauthorized!</h1>
+                <p className='mt-4 uppercase font-bold'>Tidak diperkenankan untuk mengakses halaman ini!</p>
+                <div className='mt-6'>
+                    <Box sx={{ '& button': {width: '100%' } }}>
+                        <Button variant="contained" size="large" onClick={() => router.push('/admin')}>
                                 Kembali
-                            </Button>
-                        </Box>
-                    </div>
+                        </Button>
+                    </Box>
                 </div>
-            </Layout>
+            </div>
         );
     }
-    
 }

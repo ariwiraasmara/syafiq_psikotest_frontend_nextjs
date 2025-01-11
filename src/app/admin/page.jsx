@@ -2,6 +2,7 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
+import Layout from '@/components/layout/Layout';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import axios from 'axios';
@@ -18,7 +19,13 @@ import LockPersonIcon from '@mui/icons-material/LockPerson';
 const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
-import fun from '@/libraries/myfunction';
+const NavBreadcrumb = dynamic(() => import('@/components/NavBreadcrumb'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Footer = dynamic(() => import('@/components/Footer'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+import { random } from '@/libraries/myfunction';
 import { generateKey, encryptData } from '@/libraries/crypto';
 import { ErrorOutlineOutlined } from '@mui/icons-material';
 
@@ -53,7 +60,7 @@ export default function Admin() {
     const submit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        if(!localStorage.getItem('ispeserta')) {
+        if(localStorage.getItem('ispeserta') != 'true' || localStorage.getItem('ispeserta') == 'false' || !localStorage.getItem('ispeserta')) {
             try {
                 axios.defaults.withCredentials = true;
                 axios.defaults.withXSRFToken = true;
@@ -68,7 +75,7 @@ export default function Admin() {
                     headers: {
                         'Content-Type': 'application/json',
                         'XSRF-TOKEN': csrfToken,
-                        'tokenlogin': fun.random('combwisp', 50)
+                        'tokenlogin': random('combwisp', 50)
                     }
                 });
 
@@ -78,19 +85,21 @@ export default function Admin() {
                     // Cookies.set('isadmin', true, { expires: 6, path: 'syafiq.psikotest', secure: true, sameSite: 'strict' })
                     localStorage.setItem('islogin', true);
                     localStorage.setItem('isadmin', true);
+                    localStorage.setItem('ispeserta', false);
                     localStorage.setItem('email', emaillogin);
                     localStorage.setItem('nama', response.data.data.nama);
                     localStorage.setItem('pat', response.data.data.token_1);
                     localStorage.setItem('remember-token', response.data.data.token_2);
                     localStorage.setItem('csrfToken', csrfToken);
-                    sessionStorage.setItem('nav_id', 1);
                     return router.push('/admin/dashboard');
                 }
-                return alert('Email / Password Salah!');
+                alert('Email / Password Salah!');
+                setLoading(false);
             }
             catch(err) {
-                console.error(err);
-                return alert('Terjadi Kesalahan!');
+                console.info(err);
+                alert('Terjadi Kesalahan!');
+                setLoading(false);
             }
         }
         alert('Tidak Bisa Login!');
@@ -101,17 +110,6 @@ export default function Admin() {
         if(localStorage.getItem('islogin') && localStorage.getItem('isAdmin')) window.location.href= '/admin/dashboard';
     }, []);
 
-    const MemoHelmet = React.memo(function Memo() {
-        return(
-            <Myhelmet
-                title={`Login Admin | Psikotest Online App`}
-                description={`Halaman Login Admin.`}
-                pathURL={`admin`}
-                onetime={true}
-            />
-        );
-    });
-
     if(loading) {
         return (
             <div className='text-center p-8'>
@@ -120,11 +118,35 @@ export default function Admin() {
         );
     }
 
+    const MemoHelmet = React.memo(function Memo() {
+        return(
+            <Myhelmet
+                title={`Login Admin | Psikotest Online App`}
+                pathURL={`admin`}
+                robots={`index, follow`}
+                onetime={true}
+            />
+        );
+    });
+
+    const MemoNavBreadcrumb = React.memo(function Memo() {
+        return(
+            <NavBreadcrumb content={`Admin`} hidden={`hidden`} />
+        );
+    });
+
+    const MemoFooter = React.memo(function Memo() {
+        return(
+            <Footer />
+        );
+    });
+
     return (
-        <div>
+        <>
             <MemoHelmet />
-            <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-                <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+            <MemoNavBreadcrumb />
+            <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]" >
+                <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
                     <Box component="form"
                         onSubmit={(e) => submit(e)}
                         sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' },
@@ -136,7 +158,8 @@ export default function Admin() {
                         }}
                         noValidate
                         autoComplete="off">
-                        <h1 className="text-2xl text-bold uppercase font-bold">L o g i n</h1>
+                        <h1 className="hidden">Halaman Login | Admin</h1>
+                        <span className="text-2xl text-bold uppercase font-bold">Login Admin</span>
                         <TextField  type="email" id="email-login" variant="outlined"
                                     placeholder="Email..."
                                     fullWidth sx={styledTextField}
@@ -144,11 +167,11 @@ export default function Admin() {
                                     onChange = {(event)=> setEmaillogin(event.target.value)}
                                     slotProps={{
                                         input: {
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <EmailIcon sx={{ color: 'white' }} />
-                                            </InputAdornment>
-                                        ),
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <EmailIcon sx={{ color: 'white' }} />
+                                                </InputAdornment>
+                                            ),
                                         },
                                     }} />
                         <TextField  type="password" id="pass-login" variant="outlined"
@@ -171,8 +194,9 @@ export default function Admin() {
                             </Button>
                         </Box>
                     </Box>
-                </main>
+                </div>
             </div>
-        </div>
+            <MemoFooter />
+        </>
     );
 }

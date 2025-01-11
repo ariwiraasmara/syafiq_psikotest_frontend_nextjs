@@ -1,10 +1,7 @@
 import axios from 'axios';
-import fun from '@/libraries/myfunction';
-const dbVersion = 5;
-
-const coba = () => {
-    return 1;
-}
+import { random } from '@/libraries/myfunction';
+const dbName = 'syafiq_psikotest';
+const dbVersion = 1;
 
 const checkCompatibility = () => {
     if (!window.indexedDB) {
@@ -16,10 +13,10 @@ const checkCompatibility = () => {
     return true;
 }
 
-const openDB = async () => {
+const openDB = async (version) => {
     try {
         return new Promise((resolve, reject) => {
-            const request = window.indexedDB.open("syafiq_psikotest", dbVersion);
+            const request = window.indexedDB.open(dbName, dbVersion);
 
             // Membuat object store dan indeks saat pertama kali membuka atau mengupgrade database
             request.onupgradeneeded = function(event) {
@@ -87,7 +84,7 @@ const getPertanyaan = async () => {
                 'XSRF-TOKEN': csrfToken,
                 'Content-Type': 'application/json',
                 'indexeddb' : 'syafiq_psikotest',
-                'tokenlogin': fun.random('combwisp', 50),
+                'tokenlogin': random('combwisp', 50),
                 '--unique--': 'I am unique!',
                 'isvalid': 'VALID!',
                 'isallowed': true,
@@ -119,7 +116,7 @@ const getSoalJawaban = async () => {
                 'XSRF-TOKEN': csrfToken,
                 'Content-Type': 'application/json',
                 'indexeddb' : 'syafiq_psikotest',
-                'tokenlogin': fun.random('combwisp', 50),
+                'tokenlogin': random('combwisp', 50),
                 '--unique--': 'I am unique!',
                 'isvalid': 'VALID!',
                 'isallowed': true,
@@ -239,7 +236,7 @@ const saveDataToDB = async() => {
     const readPertanyaan = async (id) => {
         try {
             return new Promise((resolve, reject) => {
-                let request = window.indexedDB.open("syafiq_psikotest", dbVersion);
+                let request = window.indexedDB.open(dbName, dbVersion);
                 request.onsuccess = function(event) {
                     let db = event.target.result;
                     let transaction = db.transaction("pertanyaan_soalpsikotest_kecermatan", "readonly");
@@ -285,7 +282,7 @@ const saveDataToDB = async() => {
     const readSoalJawaban = (id) => {
         try {
             return new Promise((resolve, reject) => {
-                let request = window.indexedDB.open("syafiq_psikotest", dbVersion);
+                let request = window.indexedDB.open(dbName, dbVersion);
                 request.onsuccess = function(event) {
                     let db = event.target.result;
                     let transaction = db.transaction("soaljawaban_soalpsikotest_kecermatan", "readonly");
@@ -331,7 +328,7 @@ const saveDataToDB = async() => {
     const readKunciJawaban = (id) => {
         try {
             return new Promise((resolve, reject) => {
-                let request = window.indexedDB.open("syafiq_psikotest", dbVersion);
+                let request = window.indexedDB.open(dbName, dbVersion);
                 request.onsuccess = function(event) {
                     let db = event.target.result;
                     let transaction = db.transaction("kuncijawaban_soalpsikotest_kecermatan", "readonly");
@@ -372,7 +369,6 @@ const saveDataToDB = async() => {
 //? }
 
 export {
-    coba,
     checkCompatibility,
     openDB,
     saveDataToDB,

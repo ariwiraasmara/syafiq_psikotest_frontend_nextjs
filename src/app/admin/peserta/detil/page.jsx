@@ -2,7 +2,7 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
-import Layoutadmindetil from '../../../layoutadmindetil';
+import Layoutadmindetil from '@/components/layout/Layoutadmindetil';
 import axios from 'axios';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
@@ -17,15 +17,21 @@ const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
 const Appbarku = dynamic(() => import('@/components/Appbarku'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
+const NavBreadcrumb = dynamic(() => import('@/components/NavBreadcrumb'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Footer = dynamic(() => import('@/components/Footer'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 const TabHasilPsikotestPeserta = dynamic(() => import('@/components/TabHasilPsikotestPeserta'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
-import fun from '@/libraries/myfunction';
+import { readable, random } from '@/libraries/myfunction';
 
 export default function AdminPesertaDetil() {
     const router = useRouter();
     const [sessionID, setSessionID] = React.useState(sessionStorage.getItem('admid_peserta'));
-    const safeID = fun.readable(sessionID);
+    const safeID = readable(sessionID);
 
     const [data, setData] = React.useState({});
     const [loading, setLoading] = React.useState(true);
@@ -58,12 +64,12 @@ export default function AdminPesertaDetil() {
                         headers: {
                             'Content-Type': 'application/json',
                             'XSRF-TOKEN': csrfToken,
-                            'islogin' : fun.readable(localStorage.getItem('islogin')),
-                            'isadmin' : fun.readable(localStorage.getItem('isadmin')),
-                            'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
-                            'remember-token': fun.readable(localStorage.getItem('remember-token')),
-                            'tokenlogin': fun.random('combwisp', 50),
-                            'email' : fun.readable(localStorage.getItem('email')),
+                            'islogin' : readable(localStorage.getItem('islogin')),
+                            'isadmin' : readable(localStorage.getItem('isadmin')),
+                            'Authorization': `Bearer ${readable(localStorage.getItem('pat'))}`,
+                            'remember-token': readable(localStorage.getItem('remember-token')),
+                            'tokenlogin': random('combwisp', 50),
+                            'email' : readable(localStorage.getItem('email')),
                             '--unique--': 'I am unique!',
                             'isvalid': 'VALID!',
                             'isallowed': true,
@@ -117,12 +123,12 @@ export default function AdminPesertaDetil() {
                         headers: {
                             'Content-Type': 'application/json',
                             'XSRF-TOKEN': csrfToken,
-                            'islogin' : fun.readable(localStorage.getItem('islogin')),
-                            'isadmin' : fun.readable(localStorage.getItem('isadmin')),
-                            'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
-                            'remember-token': fun.readable(localStorage.getItem('remember-token')),
-                            'tokenlogin': fun.random('combwisp', 50),
-                            'email' : fun.readable(localStorage.getItem('email')),
+                            'islogin' : readable(localStorage.getItem('islogin')),
+                            'isadmin' : readable(localStorage.getItem('isadmin')),
+                            'Authorization': `Bearer ${readable(localStorage.getItem('pat'))}`,
+                            'remember-token': readable(localStorage.getItem('remember-token')),
+                            'tokenlogin': random('combwisp', 50),
+                            'email' : readable(localStorage.getItem('email')),
                             '--unique--': 'I am unique!',
                             'isvalid': 'VALID!',
                             'isallowed': true,
@@ -151,7 +157,7 @@ export default function AdminPesertaDetil() {
                             'isadmin' : localStorage.getItem('isadmin'),
                             'Authorization': `Bearer ${localStorage.getItem('pat')}`,
                             'remember-token': localStorage.getItem('remember-token'),
-                            'tokenlogin': fun.random('combwisp', 50),
+                            'tokenlogin': random('combwisp', 50),
                             'email' : localStorage.getItem('email'),
                             '--unique--': 'I am unique!',
                             'isvalid': 'VALID!',
@@ -207,49 +213,66 @@ export default function AdminPesertaDetil() {
         return(
             <Myhelmet
                 title={`Detil Peserta | Admin | Psikotest Online App`}
-                description={`Halaman Detil Peserta dengan otoritas sebagai Admin.`}
                 pathURL={`admin/peserta/detil`}
+                robots={`follow, index`}
             />
         );
     });
 
     const MemoAppbarku = React.memo(function Memo() {
         return(
-            <Appbarku headTitle={'Detil Peserta'}  isback={true} url={`/admin/peserta`} />
+            <Appbarku headTitle={'Detil Peserta'} isback={true} url={`/admin/peserta`} />
+        );
+    });
+
+    const MemoNavBreadcrumb = React.memo(function Memo() {
+        return(
+            <NavBreadcrumb content={`Admin / Peserta / Detil`} hidden={`hidden`} />
+        );
+    });
+
+    const MemoFooter = React.memo(function Memo() {
+        return(
+            <Footer hidden={`hidden`} />
         );
     });
 
     return (
-        <Layoutadmindetil>
+        <>
             <MemoHelmet />
-            <MemoAppbarku />
-            <main className="p-5 mb-14">
-                {loading ? (
-                    <div className='text-center'>
-                        <p><span className='font-bold text-2lg'>Loading...</span></p>
-                    </div>
-                ) : (
-                    <div>
+            <Layoutadmindetil>
+                <MemoAppbarku />
+                <MemoNavBreadcrumb />
+                <div className="p-5 mb-14">
+                    <h1 className='hidden'>Halaman Detil Peserta | Admin</h1>
+                    {loading ? (
+                        <div className='text-center'>
+                            <p><span className='font-bold text-2lg'>Loading...</span></p>
+                        </div>
+                    ) : (
                         <div>
-                            <p><span className="font-bold">Nama :</span> {data.nama}</p>
-                            <p><span className="font-bold">No. Identitas :</span> {data.no_identitas}</p>
-                            <p><span className="font-bold">Email :</span> {data.email}</p>
-                            <p><span className="font-bold">Tanggal Lahir :</span> {data.tgl_lahir}</p>
-                            <p><span className="font-bold">Usia :</span> {data.usia}</p>
-                            <p><span className="font-bold">Asal : </span> {data.asal}</p>
-                            <p>
-                                <Link onClick={(e) => toEdit(e, data.id, data.nama, data.no_identitas, filteredData.email, filteredData.tgl_lahir, filteredData.asal)}>
-                                    <EditIcon />
-                                </Link>
-                            </p>
-                        </div>
+                            <div>
+                                <p><span className="font-bold">Nama :</span> {data.nama}</p>
+                                <p><span className="font-bold">No. Identitas :</span> {data.no_identitas}</p>
+                                <p><span className="font-bold">Email :</span> {data.email}</p>
+                                <p><span className="font-bold">Tanggal Lahir :</span> {data.tgl_lahir}</p>
+                                <p><span className="font-bold">Usia :</span> {data.usia}</p>
+                                <p><span className="font-bold">Asal : </span> {data.asal}</p>
+                                <p>
+                                    <Link onClick={(e) => toEdit(e, data.id, data.nama, data.no_identitas, filteredData.email, filteredData.tgl_lahir, filteredData.asal)}>
+                                        <EditIcon />
+                                    </Link>
+                                </p>
+                            </div>
 
-                        <div className="mt-4">
-                            <TabHasilPsikotestPeserta peserta_id={safeID} />
+                            <div className="mt-4">
+                                <TabHasilPsikotestPeserta peserta_id={safeID} />
+                            </div>
                         </div>
-                    </div>
-                )}
-            </main>
-        </Layoutadmindetil>
+                    )}
+                </div>
+                <MemoFooter />
+            </Layoutadmindetil>
+        </>
     );
 }

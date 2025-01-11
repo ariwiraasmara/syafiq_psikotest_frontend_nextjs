@@ -2,7 +2,7 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
-import Layoutadmin from '../../layoutadmin';
+import Layoutadmin from '@/components/layout/Layoutadmin';
 import axios from 'axios';
 import * as React from 'react';
 import dynamic from 'next/dynamic';
@@ -14,10 +14,16 @@ const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
 const Appbarku = dynamic(() => import('@/components/Appbarku'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
+const NavBreadcrumb = dynamic(() => import('@/components/NavBreadcrumb'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 const ListPeserta = dynamic(() => import('@/components/ListPeserta'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
-import fun from '@/libraries/myfunction';
+const Footer = dynamic(() => import('@/components/Footer'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+import { readable, random } from '@/libraries/myfunction';
 
 export default function AdminDashboard() {
     const [nama, setNama] =  React.useState('');
@@ -49,12 +55,12 @@ export default function AdminDashboard() {
                         headers: {
                             'Content-Type': 'application/json',
                             'XSRF-TOKEN': csrfToken,
-                            'islogin' : fun.readable(localStorage.getItem('islogin')),
-                            'isadmin' : fun.readable(localStorage.getItem('isadmin')),
-                            'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
-                            'remember-token': fun.readable(localStorage.getItem('remember-token')),
-                            'tokenlogin': fun.random('combwisp', 50),
-                            'email' : fun.readable(localStorage.getItem('email')),
+                            'islogin' : readable(localStorage.getItem('islogin')),
+                            'isadmin' : readable(localStorage.getItem('isadmin')),
+                            'Authorization': `Bearer ${readable(localStorage.getItem('pat'))}`,
+                            'remember-token': readable(localStorage.getItem('remember-token')),
+                            'tokenlogin': random('combwisp', 50),
+                            'email' : readable(localStorage.getItem('email')),
                             '--unique--': 'I am unique!',
                             'isvalid': 'VALID!',
                             'isallowed': true,
@@ -108,7 +114,7 @@ export default function AdminDashboard() {
                             'isadmin' : localStorage.getItem('isadmin'),
                             'Authorization': `Bearer ${localStorage.getItem('pat')}`,
                             'remember-token': localStorage.getItem('remember-token'),
-                            'tokenlogin': fun.random('combwisp', 50),
+                            'tokenlogin': random('combwisp', 50),
                             'email' : localStorage.getItem('email'),
                             '--unique--': 'I am unique!',
                             'isvalid': 'VALID!',
@@ -152,9 +158,8 @@ export default function AdminDashboard() {
         return(
             <Myhelmet
                 title={`Dashboard | Psikotest Online App`}
-                description={`Halaman Dashboard dengan otoritas sebagai Admin.`}
-                keywords={`Psikotest, Javascript, ReactJS, NextJS, MUI, Material UI, Tailwind`}
                 pathURL={`admin/dashboard`}
+                robots={`index, follow`}
             />
         );
     });
@@ -165,25 +170,42 @@ export default function AdminDashboard() {
         );
     });
 
+    const MemoNavBreadcrumb = React.memo(function Memo() {
+        return(
+            <NavBreadcrumb content={`Admin / Dashboard`} hidden={`hidden`} />
+        );
+    });
+
+    const MemoFooter = React.memo(function Memo() {
+        return(
+            <Footer hidden={`hidden`} />
+        );
+    });
+
     return (
-        <Layoutadmin>
+        <>
             <MemoHelmet />
-            <MemoAppbarku />
-            <main className="p-4 mb-14">
-                <div>
-                    <h1 className="text-xl font-bold">Selamat Datang, {nama}</h1>
+            <Layoutadmin>
+                <MemoAppbarku />
+                <MemoNavBreadcrumb />
+                <div className="p-4 mb-14">
+                    <div>
+                        <h1 className="hidden">Halaman Dashboard | Admin</h1>
+                        <h2 className="text-xl font-bold">Selamat Datang, {nama}</h2>
+                    </div>
+                    <div className="mt-4">
+                        <h2 className="font-bold">Daftar Tes Psikotest Terbaru</h2>
+                        {loading ? (
+                            <div className='text-center'>
+                                <p><span className='font-bold text-2lg'>Loading...</span></p>
+                            </div>
+                        ) : (
+                            <ListPeserta listpeserta={data} isLatest={true} />
+                        )}
+                    </div>
                 </div>
-                <div className="mt-4">
-                    <p><span className="font-bold">Daftar Tes Psikotest Terbaru</span></p>
-                    {loading ? (
-                        <div className='text-center'>
-                            <p><span className='font-bold text-2lg'>Loading...</span></p>
-                        </div>
-                    ) : (
-                        <ListPeserta listpeserta={data} isLatest={true} />
-                    )}
-                </div>
-            </main>
-        </Layoutadmin>
+                <MemoFooter />
+            </Layoutadmin>
+        </>
     )
 }

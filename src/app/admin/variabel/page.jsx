@@ -1,5 +1,5 @@
 'use client';
-import Layoutadmin from '../../layoutadmin';
+import Layoutadmin from '@/components/layout/Layoutadmin';
 import axios from 'axios';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
@@ -21,10 +21,16 @@ const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
 const Appbarku = dynamic(() => import('@/components/Appbarku'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
+const NavBreadcrumb = dynamic(() => import('@/components/NavBreadcrumb'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 const NewOrEdit = dynamic(() => import('./new_edit'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
-import fun from '@/libraries/myfunction';
+const Footer = dynamic(() => import('@/components/Footer'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+import { readable, random } from '@/libraries/myfunction';
 
 const linkStyle = {
     color: '#fff'
@@ -70,7 +76,7 @@ export default function VariabelSetting() {
                             'isadmin' : localStorage.getItem('isadmin'),
                             'Authorization': `Bearer ${localStorage.getItem('pat')}`,
                             'remember-token': localStorage.getItem('remember-token'),
-                            'tokenlogin': fun.random('combwisp', 50),
+                            'tokenlogin': random('combwisp', 50),
                             'email' : localStorage.getItem('email'),
                             '--unique--': 'I am unique!',
                             'isvalid': 'VALID!',
@@ -130,7 +136,7 @@ export default function VariabelSetting() {
                             'isadmin' : localStorage.getItem('isadmin'),
                             'Authorization': `Bearer ${localStorage.getItem('pat')}`,
                             'remember-token': localStorage.getItem('remember-token'),
-                            'tokenlogin': fun.random('combwisp', 50),
+                            'tokenlogin': random('combwisp', 50),
                             'email' : localStorage.getItem('email'),
                             '--unique--': 'I am unique!',
                             'isvalid': 'VALID!',
@@ -207,12 +213,12 @@ export default function VariabelSetting() {
                         headers: {
                             'Content-Type': 'application/json',
                             'XSRF-TOKEN': csrfToken,
-                            'islogin' : fun.readable(localStorage.getItem('islogin')),
-                            'isadmin' : fun.readable(localStorage.getItem('isadmin')),
-                            'Authorization': `Bearer ${fun.readable(localStorage.getItem('pat'))}`,
-                            'remember-token': fun.readable(localStorage.getItem('remember-token')),
-                            'tokenlogin': fun.random('combwisp', 50),
-                            'email' : fun.readable(localStorage.getItem('email')),
+                            'islogin' : readable(localStorage.getItem('islogin')),
+                            'isadmin' : readable(localStorage.getItem('isadmin')),
+                            'Authorization': `Bearer ${readable(localStorage.getItem('pat'))}`,
+                            'remember-token': readable(localStorage.getItem('remember-token')),
+                            'tokenlogin': random('combwisp', 50),
+                            'email' : readable(localStorage.getItem('email')),
                             '--unique--': 'I am unique!',
                             'isvalid': 'VALID!',
                             'isallowed': true,
@@ -240,12 +246,20 @@ export default function VariabelSetting() {
         });
     };
 
+    if(loading) {
+        return (
+            <div className='text-center p-8'>
+                <p><span className='font-bold text-2lg'>Loading...</span></p>
+            </div>
+        );
+    }
+
     const MemoHelmet = React.memo(function Memo() {
         return(
             <Myhelmet
                 title={`Variabel | Admin | Psikotest`}
-                description={`Halamana Variabel dengan otoritas sebagai Admin.`}
                 pathURL={`admin/variabel`}
+                robots={'follow, index'}
             />
         );
     });
@@ -256,28 +270,34 @@ export default function VariabelSetting() {
         );
     });
 
-    if(loading) {
-        return (
-            <div className='text-center p-8'>
-                <p><span className='font-bold text-2lg'>Loading...</span></p>
-            </div>
+    const MemoNavBreadcrumb = React.memo(function Memo() {
+        return(
+            <NavBreadcrumb content={`Admin / Variabel`} hidden={`hidden`} />
         );
-    }
+    });
+
+    const MemoFooter = React.memo(function Memo() {
+        return(
+            <Footer hidden={`hidden`} />
+        );
+    });
 
     return (
+    <>
+        <MemoHelmet />
         <Layoutadmin>
-            <MemoHelmet />
             <MemoAppbarku  />
-            <main className="p-5 mb-14">
-                <div>
-                    {loading ? (
-                        <div className='text-center'>
-                            <p><span className='font-bold text-2lg'>Loading...</span></p>
-                            <p><span className='font-bold text-2lg'>Sedang memproses...</span></p>
-                        </div>
-                    ) : (
-                        <For each={data}>
-                            {(data, index) =>
+            <MemoNavBreadcrumb />
+            <div className="p-5 mb-14">
+                <h1 className="hidden">Halaman Variabel | Admin</h1>
+                {loading ? (
+                    <div className='text-center'>
+                        <p><span className='font-bold text-2lg'>Loading...</span></p>
+                        <p><span className='font-bold text-2lg'>Sedang memproses...</span></p>
+                    </div>
+                ) : (
+                    <For each={data}>
+                        {(data, index) =>
                             <div key={index} className='border-b-2 p-3'>
                                 <div className="static mt-3 flex flex-row justify-between">
                                     <Link
@@ -307,15 +327,15 @@ export default function VariabelSetting() {
                                         </Link>
                                     </div>
                                 </div>
-                            </div>}
-                        </For>
-                    )}
-                </div>
+                            </div>
+                        }
+                    </For>
+                )}
                 <div id="newdata" className="mt-6 border-2 p-2 rounded-lg hidden">
-                    <h3 className="font-bold border-b-2">Tambah Variabel Baru</h3>
+                    <h2 className="font-bold border-b-2">Tambah Variabel Baru</h2>
                     <NewOrEdit />
                 </div>
-            </main>
+            </div>
             <Fab sx={{
                 position: 'absolute',
                 bottom: '13%',
@@ -323,6 +343,8 @@ export default function VariabelSetting() {
             }} color="primary" aria-label="add" onClick={() => opencloseEdit('newdata')} >
                 <AddIcon />
             </Fab>
+            <MemoFooter />
         </Layoutadmin>
+    </>
     );
 }

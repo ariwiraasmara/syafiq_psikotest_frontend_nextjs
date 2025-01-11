@@ -41,5 +41,6 @@ export default function RootLayout({ children }) {
                 </React.StrictMode>
             </body>
         </html>
+      
     );
 }

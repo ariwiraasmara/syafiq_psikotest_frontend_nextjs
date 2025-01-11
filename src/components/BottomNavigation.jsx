@@ -12,7 +12,7 @@ import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import AppSettingsAltOutlinedIcon from '@mui/icons-material/AppSettingsAltOutlined';
 
-import fun from '@/libraries/myfunction';
+import { random } from '@/libraries/myfunction';
 
 export default function NavigasiBawah() {
     const router = useRouter();
@@ -29,7 +29,7 @@ export default function NavigasiBawah() {
                 headers: {
                     'Content-Type': 'application/json',
                     'XSRF-TOKEN': csrfToken,
-                    'tokenlogin': fun.random('combwisp', 50)
+                    'tokenlogin': random('combwisp', 50)
                 }
             });
             if(response.data.success) {
@@ -40,6 +40,7 @@ export default function NavigasiBawah() {
                 localStorage.removeItem('nama');
                 localStorage.removeItem('pat');
                 localStorage.removeItem('csrfToken');
+                localStorage.removeItem('remember-token');
                 sessionStorage.removeItem('nav_id');
 
                 //? Sesi Data Halaman Peserta
@@ -58,7 +59,8 @@ export default function NavigasiBawah() {
                 sessionStorage.removeItem('psikotest_kecermatan_soalC');
                 sessionStorage.removeItem('psikotest_kecermatan_soalD');
                 sessionStorage.removeItem('psikotest_kecermatan_jawaban');
-
+                sessionStorage.removeItem('psikotest_kecermatan_tabellastpage');
+                
                 //? Sesi Data Halaman Variabel
                 sessionStorage.removeItem('variabel_id');
                 sessionStorage.removeItem('variabel_variabel');
@@ -80,7 +82,7 @@ export default function NavigasiBawah() {
                 sx={{ position: 'fixed', bottom: 0, width: '100%', background: '#000' }}
             >
             <BottomNavigationAction
-                label="Beranda"
+                label="Dashboard"
                 icon={<HomeOutlinedIcon />}
                 defaultValue={0}
                 sx={{

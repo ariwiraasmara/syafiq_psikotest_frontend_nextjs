@@ -1,123 +1,146 @@
 'use client';
-import axios from 'axios';
+const readable = (str) => {
+    if (str === null) return null;
 
-export default {
-    readable: (str) => {
-        if (str === null) return null;
-    
-        // Langkah pertama: Menggunakan browser API untuk mendekode entitas HTML
-        let decodedString = str.replace(/&[^;]+;/g, (match) => {
-            let element = document.createElement('div');
-            element.innerHTML = match;
-            return element.innerText || element.textContent;
-        });
+    // Langkah pertama: Menggunakan browser API untuk mendekode entitas HTML
+    let decodedString = str.replace(/&[^;]+;/g, (match) => {
+        let element = document.createElement('div');
+        element.innerHTML = match;
+        return element.innerText || element.textContent;
+    });
 
-        // Langkah kedua: Mengonversi karakter khusus HTML menjadi karakter asli
-        return decodedString
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>')
-                .replace(/&quot;/g, '"')
-                .replace(/&amp;/g, '&')
-                .replace(/&#39;/g, "'");
-    },
-    
-    encrypt: async (text, key) => {
-        const iv = window.crypto.getRandomValues(new Uint8Array(12));
-        const encodedData = new TextEncoder().encode(text);
-        const encryptedData = await window.crypto.subtle.encrypt(
-            {
-                name: "AES-GCM",
-                iv: iv,
-            },
-            key,
-            encodedData
-        );
+    // Langkah kedua: Mengonversi karakter khusus HTML menjadi karakter asli
+    return decodedString
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&amp;/g, '&')
+            .replace(/&#39;/g, "'");
+};
 
-        return { encryptedData, iv };
-    },
-    decrypt: async (cipher, key) => {
-        const decryptedData = await window.crypto.subtle.decrypt(
-            {
-                name: "AES-GCM",
-                iv: cipher.iv,
-            },
-            key,
-            cipher.encryptedData
-        );
+const readableDate = (dateStr) => {
+    const date = new Date(dateStr);
 
-        return new TextDecoder().decode(decryptedData);
-    },
-    generateKey: async () => {
-        const key = await window.crypto.subtle.generateKey(
-            {
-                name: "AES-GCM",
-                length: 256,
-            },
-            true,
-            ["encrypt", "decrypt"]
-        );
-        return key;
-    },
-    enval: (str, isencrypt = false) => {
-        const encoded = btoa(str);
-        const hexEncoded = Buffer.from(encoded, 'utf8').toString('hex');
+    // Menggunakan toLocaleDateString untuk format tanggal
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = date.toLocaleDateString('id-ID', options);
 
-        if (isencrypt) {
-            return this.encrypt(hexEncoded);
+    console.log(formattedDate); // Output: 24 Desember 2024
+
+}
+
+const encrypt = async (text, key) => {
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));
+    const encodedData = new TextEncoder().encode(text);
+    const encryptedData = await window.crypto.subtle.encrypt(
+        {
+            name: "AES-GCM",
+            iv: iv,
+        },
+        key,
+        encodedData
+    );
+
+    return { encryptedData, iv };
+};
+
+const decrypt = async (cipher, key) => {
+    const decryptedData = await window.crypto.subtle.decrypt(
+        {
+            name: "AES-GCM",
+            iv: cipher.iv,
+        },
+        key,
+        cipher.encryptedData
+    );
+
+    return new TextDecoder().decode(decryptedData);
+};
+
+const generateKey = async () => {
+    const key = await window.crypto.subtle.generateKey(
+        {
+            name: "AES-GCM",
+            length: 256,
+        },
+        true,
+        ["encrypt", "decrypt"]
+    );
+    return key;
+};
+
+const enval = (str, isencrypt = false) => {
+    const encoded = btoa(str);
+    const hexEncoded = Buffer.from(encoded, 'utf8').toString('hex');
+
+    if (isencrypt) {
+        return this.encrypt(hexEncoded);
+    }
+
+    return hexEncoded;
+};
+
+const denval = (str, isencrypt = false) => {
+    let decodedHex;
+
+    if (isencrypt) {
+        const decrypted = this.decrypt(str);
+        decodedHex = Buffer.from(decrypted, 'hex').toString('utf8');
+    } else {
+        decodedHex = Buffer.from(str, 'hex').toString('utf8');
+    }
+
+    return atob(decodedHex);
+};
+
+const random = (str, length = 10) => {
+    try {
+        let seed;
+
+        switch (str) {
+            case 'char':
+                seed = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+                break;
+            case 'numb':
+                seed = '0123456789'.split('');
+                break;
+            case 'numbwize':
+                seed = '123456789'.split('');
+                break;
+            case 'pass':
+                seed = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[{]}|;:,<.>?'.split('');
+                break;
+            case 'spec':
+                seed = '`~!@#$%^&*()-_=+[{]}|;:,<.>/?/'.split('');
+                break;
+            case 'combwisp':
+                seed = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789'.split('');
+                break;
+            default:
+                seed = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~!@#$%^&*()-_=+[{]}|;:,<.>/?/'.split('');
         }
 
-        return hexEncoded;
-    },
-    denval: (str, isencrypt = false) => {
-        let decodedHex;
+        seed = seed.sort(() => Math.random() - 0.5);
 
-        if (isencrypt) {
-            const decrypted = this.decrypt(str);
-            decodedHex = Buffer.from(decrypted, 'hex').toString('utf8');
-        } else {
-            decodedHex = Buffer.from(str, 'hex').toString('utf8');
+        let rand = '';
+        for (let i = 0; i < length; i++) {
+            rand += seed[Math.floor(Math.random() * seed.length)];
         }
 
-        return atob(decodedHex);
-    },
-    random: (str, length = 10) => {
-        try {
-            let seed;
+        return rand;
+    } catch (e) {
+        console.error('function random() Error: ', e);
+    }
+};
 
-            switch (str) {
-                case 'char':
-                    seed = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-                    break;
-                case 'numb':
-                    seed = '0123456789'.split('');
-                    break;
-                case 'numbwize':
-                    seed = '123456789'.split('');
-                    break;
-                case 'pass':
-                    seed = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+[{]}|;:,<.>?'.split('');
-                    break;
-                case 'spec':
-                    seed = '`~!@#$%^&*()-_=+[{]}|;:,<.>/?/'.split('');
-                    break;
-                case 'combwisp':
-                    seed = 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890123456789'.split('');
-                    break;
-                default:
-                    seed = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~!@#$%^&*()-_=+[{]}|;:,<.>/?/'.split('');
-            }
-
-            seed = seed.sort(() => Math.random() - 0.5);
-
-            let rand = '';
-            for (let i = 0; i < length; i++) {
-                rand += seed[Math.floor(Math.random() * seed.length)];
-            }
-
-            return rand;
-        } catch (e) {
-            console.error('function random() Error: ', e);
-        }
-    },
+export {
+    readable,
+    readableDate,
+    encrypt,
+    decrypt,
+    generateKey,
+    enval,
+    denval,
+    random,
 }
 

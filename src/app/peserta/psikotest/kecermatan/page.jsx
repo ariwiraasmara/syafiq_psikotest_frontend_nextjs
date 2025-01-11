@@ -8,12 +8,11 @@ import {
     readSoalJawaban,
     readKunciJawaban,
 } from '@/indexedDB/db';
-import Layoutpeserta from '../../../layoutpeserta';
+import Layout from '@/components/layout/Layout';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import axios from 'axios';
 import * as React from 'react';
-import { FixedSizeList as List } from 'react-window';
 
 import PropTypes from 'prop-types';
 import Radio from '@mui/material/Radio';
@@ -22,16 +21,27 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import debounce from 'lodash.debounce';
 
+import Swal from 'sweetalert2';
 const Appbarpeserta = dynamic(() => import('@/components/peserta/Appbarpeserta'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
-import fun from '@/libraries/myfunction';
+const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const NavBreadcrumb = dynamic(() => import('@/components/NavBreadcrumb'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const Footer = dynamic(() => import('@/components/Footer'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+import { readable, random } from '@/libraries/myfunction';
 
 export default function PesertaPsikotestKecermatan() {
     const router = useRouter();
     const [sessionID, setSessionID] = React.useState(parseInt(sessionStorage.getItem('sesi_psikotest_kecermatan') || 1)); // Session ID dimulai dari 1
     // const [safeID, setSafeID] = React.useState(sessionID);
-    const safeID = fun.readable(sessionID);
+    // const safeID = readable(sessionID);
+    const safeID = sessionID;
     const [dataPertanyaan, setDataPertanyaan] = React.useState([]);
     const [dataSoal, setDataSoal] = React.useState([]);
     const [dataJawaban, setDataJawaban] = React.useState([]);
@@ -87,17 +97,38 @@ export default function PesertaPsikotestKecermatan() {
     const getData = async () => {
         setLoading(true);
         try {
-            if(!checkCompatibility) {
-                alert('Browser Tidak Support');
-                return router.push(`/peserta`);
+            if(!sessionStorage.getItem('id_peserta_psikotest') ||
+                !sessionStorage.getItem('nama_peserta_psikotest') ||
+                !sessionStorage.getItem('no_identitas_peserta_psikotest') ||
+                !sessionStorage.getItem('email_peserta_psikotest') ||
+                !sessionStorage.getItem('tgl_lahir_peserta_psikotest') ||
+                !sessionStorage.getItem('asal_peserta_psikotest') ||
+                !sessionStorage.getItem('sesi_psikotest_kecermatan') ||
+                !localStorage.getItem('tgl_tes_peserta_psikotest')
+            ) {
+                Swal.fire({
+                    title: "Oooppss..",
+                    text: "Anda tidak diperkenankan untuk mengambil tes psikotest kecermatan ini!",
+                    showConfirmButton: true,
+                    confirmButtonText: "Ya",
+                    icon: "error",
+                }).then((result) => {
+                    window.location.href = '/';
+                });
             }
-            const pertanyaan = await readPertanyaan(sessionID);
-            const soal = await readSoalJawaban(sessionID);
-            const jawaban = await readKunciJawaban(sessionID);
-            setDataPertanyaan(pertanyaan);
-            setDataSoalJawaban(soal);
-            setDataJawaban(jawaban);
-            setJawabanUser({});
+            else {
+                if(!checkCompatibility) {
+                    alert('Browser Tidak Support');
+                    return router.push(`/peserta`);
+                }
+                const pertanyaan = await readPertanyaan(sessionID);
+                const soal = await readSoalJawaban(sessionID);
+                const jawaban = await readKunciJawaban(sessionID);
+                setDataPertanyaan(pertanyaan);
+                setDataSoalJawaban(soal);
+                setDataJawaban(jawaban);
+                setJawabanUser({});
+            }
         }
         catch (error) {
             console.error('Terjadi kesalahan saat memeriksa cache:', error);
@@ -131,7 +162,7 @@ export default function PesertaPsikotestKecermatan() {
                         headers: {
                             'XSRF-TOKEN': csrfToken,
                             'Content-Type': 'application/json',
-                            'tokenlogin': fun.random('combwisp', 50),
+                            'tokenlogin': random('combwisp', 50),
                         }
                     });
                     const apiData = apiResponse.data.data;
@@ -173,7 +204,7 @@ export default function PesertaPsikotestKecermatan() {
                         headers: {
                             'XSRF-TOKEN': csrfToken,
                             'Content-Type': 'application/json',
-                            'tokenlogin': fun.random('combwisp', 50),
+                            'tokenlogin': random('combwisp', 50),
                         }
                     });
                     const data = response.data.data;
@@ -226,7 +257,7 @@ export default function PesertaPsikotestKecermatan() {
                         headers: {
                             'XSRF-TOKEN': csrfToken,
                             'Content-Type': 'application/json',
-                            'tokenlogin': fun.random('combwisp', 50),
+                            'tokenlogin': random('combwisp', 50),
                         }
                     });
                     const apiData = apiResponse.data.data;
@@ -269,7 +300,7 @@ export default function PesertaPsikotestKecermatan() {
                         headers: {
                             'XSRF-TOKEN': csrfToken,
                             'Content-Type': 'application/json',
-                            'tokenlogin': fun.random('combwisp', 50),
+                            'tokenlogin': random('combwisp', 50),
                         }
                     });
                     const data = response.data.data;
@@ -302,27 +333,28 @@ export default function PesertaPsikotestKecermatan() {
             const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
             });
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/${parseInt(fun.readable(sessionStorage.getItem(`id_peserta_psikotest`)))}`, {
-                hasilnilai_kolom_1: parseInt(fun.readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom1`))),
-                hasilnilai_kolom_2: parseInt(fun.readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom2`))),
-                hasilnilai_kolom_3: parseInt(fun.readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom3`))),
-                hasilnilai_kolom_4: parseInt(fun.readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom4`))),
-                hasilnilai_kolom_5: parseInt(fun.readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom5`)))
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/${parseInt(readable(sessionStorage.getItem(`id_peserta_psikotest`)))}`, {
+                hasilnilai_kolom_1: parseInt(readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom1`))),
+                hasilnilai_kolom_2: parseInt(readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom2`))),
+                hasilnilai_kolom_3: parseInt(readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom3`))),
+                hasilnilai_kolom_4: parseInt(readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom4`))),
+                hasilnilai_kolom_5: parseInt(readable(sessionStorage.getItem(`nilai_total_psikotest_kecermatan_kolom5`)))
             }, {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
                 headers: {
                     'XSRF-TOKEN': csrfToken,
                     'Content-Type': 'application/json',
-                    'tokenlogin': fun.random('combwisp', 50),
+                    'tokenlogin': random('combwisp', 50),
                 }
             });
 
             console.info('response', response);
             if(parseInt(response.data.success)) {
+                sessionStorage.removeItem('sesi_psikotest_kecermatan');
                 router.push(`
                     /peserta/psikotest/kecermatan/hasil?
-                    identitas=${fun.readable(sessionStorage.getItem('no_identitas_peserta_psikotest'))}
-                    &tgl_tes=${fun.readable(sessionStorage.getItem('tgl_tes_peserta_psikotest'))}
+                    identitas=${readable(sessionStorage.getItem('no_identitas_peserta_psikotest'))}
+                    &tgl_tes=${readable(sessionStorage.getItem('tgl_tes_peserta_psikotest'))}
                 `);
             }
             console.error('Tidak dapat menyimpan data sesi');
@@ -414,23 +446,29 @@ export default function PesertaPsikotestKecermatan() {
     const FormControlOptimized = React.memo(({ data, index, handleChange }) => {
         return (
             <div className="border-2 mt-4 rounded-lg border-white p-4 bg-gray-700" id={`row${index}`} key={index}>
-                <div>{data[0]}, {data[1]}, {data[2]}, {data[3]}</div>
+                {/* <div>{data[0]}, {data[1]}, {data[2]}, {data[3]}</div> */}
+                <MemoSoal
+                    soal1={data[0]}
+                    soal2={data[1]}
+                    soal3={data[2]}
+                    soal4={data[3]}
+                />
                 <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
-                value={jawabanUser[index] || ''}
-                onChange={(event) => handleChange(event, index)}
+                    row
+                    aria-labelledby="demo-row-radio-buttons-group-label"
+                    name="row-radio-buttons-group"
+                    value={jawabanUser[index] || ''}
+                    onChange={(event) => handleChange(event, index)}
                 >
-                <FormControlLabel value={dataPertanyaan.nilai_A} control={<Radio />} label="A" />
-                <FormControlLabel value={dataPertanyaan.nilai_B} control={<Radio />} label="B" />
-                <FormControlLabel value={dataPertanyaan.nilai_C} control={<Radio />} label="C" />
-                <FormControlLabel value={dataPertanyaan.nilai_D} control={<Radio />} label="D" />
-                <FormControlLabel value={dataPertanyaan.nilai_E} control={<Radio />} label="E" />
+                    <FormControlLabel value={dataPertanyaan.nilai_A} control={<Radio />} label="A" />
+                    <FormControlLabel value={dataPertanyaan.nilai_B} control={<Radio />} label="B" />
+                    <FormControlLabel value={dataPertanyaan.nilai_C} control={<Radio />} label="C" />
+                    <FormControlLabel value={dataPertanyaan.nilai_D} control={<Radio />} label="D" />
+                    <FormControlLabel value={dataPertanyaan.nilai_E} control={<Radio />} label="E" />
                 </RadioGroup>
             </div>
         );
-    });
+    }, [jawabanUser]);
 
     FormControlOptimized.propTypes = {
         index: PropTypes.number,
@@ -438,90 +476,116 @@ export default function PesertaPsikotestKecermatan() {
         handleChange: PropTypes.any
     };
 
+    const MemoHelmet = React.memo(function Memo() {
+        return(
+            <Myhelmet
+                title={`Psikotest Kecermatan | Psikotest Online App`}
+                pathURL={`peserta/psikotest/kecermatan`}
+                robots={`none`}
+            />
+        );
+    });
+
+    const MemoNavBreadcrumb = React.memo(function Memo() {
+        return(
+            <NavBreadcrumb content={`Peserta / Psikotest / Kecermatan`} hidden={`hidden`} />
+        );
+    });
+
+    const MemoFooter = React.memo(function Memo() {
+        return(
+            <Footer />
+        );
+    });
+
     return (
-        <Layoutpeserta>
-            <main>
-                {loading ? (
-                    <div className='text-center p-8'>
-                        <p><span className='font-bold text-2lg'>Loading...</span></p>
+    <>
+        <MemoHelmet />
+        <MemoNavBreadcrumb />
+        <div>
+            <h1 className='hidden'>Halaman Psikotest Kecermatan Peserta</h1>
+            {loading ? (
+                <div className='text-center p-8'>
+                    <p><span className='font-bold text-2lg'>Loading...</span></p>
+                </div>
+            ) : (
+                sessionID > 5 ? (
+                    <div className="text-center p-8">
+                        <div>
+                            <span className="font-bold text-2lg">
+                                Tes Telah Berakhir!<br/>
+                                Harap Tunggu! Anda akan dialihkan ke halaman hasil!
+                            </span>
+                        </div>
                     </div>
                 ) : (
-                    sessionID > 5 ? (
-                        <div className="text-center p-8">
-                            <div>
-                                <span className="font-bold text-2lg">
-                                    Tes Telah Berakhir!<br/>
-                                    Harap Tunggu! Anda akan dialihkan ke halaman hasil!
-                                </span>
+                    <div className="text-center p-8">
+                        {loadingTimer ? (
+                            <div className='text-center p-8'>
+                                <p><span className='font-bold text-2lg'>Loading...</span></p>
                             </div>
-                        </div>
-                    ) : (
-                        <div className="text-center p-8">
-                            {loadingTimer ? (
-                                <div className='text-center p-8'>
-                                    <p><span className='font-bold text-2lg'>Loading...</span></p>
+                        ) : (
+                            <>
+                                <Appbarpeserta
+                                    kolom_x={dataPertanyaan.kolom_x}
+                                    timer={formatTime(timeLeft)}
+                                    soalA={dataPertanyaan.nilai_A}
+                                    soalB={dataPertanyaan.nilai_B}
+                                    soalC={dataPertanyaan.nilai_C}
+                                    soalD={dataPertanyaan.nilai_D}
+                                    soalE={dataPertanyaan.nilai_E}
+                                />
+                                <div className="mt-8 border-white p-4">
+                                    <h2 className='hidden'>Soal Psikotest Kecermatan {dataPertanyaan.kolom_x}</h2>
+                                    <FormControl>
+                                        {
+                                        /*dataSoal.map((data, index) => (
+                                            <FormControlOptimized
+                                                key={index}
+                                                data={data}
+                                                index={index}
+                                                handleChange={handleChange_nilaiTotal}
+                                            />
+                                        )) dataSoal */
+                                        dataSoalJawaban.map((data, index) => (
+                                            <div className="border-2 mt-4 rounded-lg border-white p-4 bg-gray-700" id={`row${index}`} key={index}>
+                                                {/* <div>
+                                                    <span className="mr-4">{data.soal_jawaban.soal[0][0]}</span>
+                                                    <span className="mr-4">{data.soal_jawaban.soal[0][1]}</span>
+                                                    <span className="mr-4">{data.soal_jawaban.soal[0][2]}</span>
+                                                    <span className="mr-4">{data.soal_jawaban.soal[0][3]}</span>
+                                                </div> */}
+                                                <MemoSoal
+                                                    soal1={data.soal_jawaban.soal[0][0]}
+                                                    soal2={data.soal_jawaban.soal[0][1]}
+                                                    soal3={data.soal_jawaban.soal[0][2]}
+                                                    soal4={data.soal_jawaban.soal[0][3]}
+                                                />
+                                                <RadioGroup
+                                                    row
+                                                    aria-labelledby="demo-row-radio-buttons-group-label"
+                                                    name="row-radio-buttons-group"
+                                                    value={jawabanUser[index] || ''}
+                                                    onChange={(event) => handleChange_nilaiTotal(event, index, dataJawaban[index].kunci_jawaban)}
+                                                >
+                                                    <FormControlLabel value={dataPertanyaan.nilai_A} control={<Radio />} label="A" />
+                                                    <FormControlLabel value={dataPertanyaan.nilai_B} control={<Radio />} label="B" />
+                                                    <FormControlLabel value={dataPertanyaan.nilai_C} control={<Radio />} label="C" />
+                                                    <FormControlLabel value={dataPertanyaan.nilai_D} control={<Radio />} label="D" />
+                                                    <FormControlLabel value={dataPertanyaan.nilai_E} control={<Radio />} label="E" />
+                                                </RadioGroup>
+                                            </div>
+                                        ))
+                                        }
+                                    </FormControl>
                                 </div>
-                            ) : (
-                                <>
-                                    <Appbarpeserta
-                                        kolom_x={dataPertanyaan.kolom_x}
-                                        timer={formatTime(timeLeft)}
-                                        soalA={dataPertanyaan.nilai_A}
-                                        soalB={dataPertanyaan.nilai_B}
-                                        soalC={dataPertanyaan.nilai_C}
-                                        soalD={dataPertanyaan.nilai_D}
-                                        soalE={dataPertanyaan.nilai_E}
-                                    />
-                                    <div className="mt-8 border-white p-4">
-                                        <FormControl>
-                                            {
-                                            /*dataSoal.map((data, index) => (
-                                                    <FormControlOptimized
-                                                        key={index}
-                                                        data={data}
-                                                        index={index}
-                                                        handleChange={handleChange_nilaiTotal}
-                                                    />
-                                            )) dataSoal */
-                                                    
-                                            dataSoalJawaban.map((data, index) => (
-                                                <div className="border-2 mt-4 rounded-lg border-white p-4 bg-gray-700" id={`row${index}`} key={index}>
-                                                    {/* <div>
-                                                        <span className="mr-4">{data.soal_jawaban.soal[0][0]}</span>
-                                                        <span className="mr-4">{data.soal_jawaban.soal[0][1]}</span>
-                                                        <span className="mr-4">{data.soal_jawaban.soal[0][2]}</span>
-                                                        <span className="mr-4">{data.soal_jawaban.soal[0][3]}</span>
-                                                    </div> */}
-                                                    <MemoSoal
-                                                        soal1={data.soal_jawaban.soal[0][0]}
-                                                        soal2={data.soal_jawaban.soal[0][1]}
-                                                        soal3={data.soal_jawaban.soal[0][2]}
-                                                        soal4={data.soal_jawaban.soal[0][3]}
-                                                    />
-                                                    <RadioGroup
-                                                        row
-                                                        aria-labelledby="demo-row-radio-buttons-group-label"
-                                                        name="row-radio-buttons-group"
-                                                        value={jawabanUser[index] || ''}
-                                                        onChange={(event) => handleChange_nilaiTotal(event, index, dataJawaban[index].kunci_jawaban)}
-                                                    >
-                                                        <FormControlLabel value={dataPertanyaan.nilai_A} control={<Radio />} label="A" />
-                                                        <FormControlLabel value={dataPertanyaan.nilai_B} control={<Radio />} label="B" />
-                                                        <FormControlLabel value={dataPertanyaan.nilai_C} control={<Radio />} label="C" />
-                                                        <FormControlLabel value={dataPertanyaan.nilai_D} control={<Radio />} label="D" />
-                                                        <FormControlLabel value={dataPertanyaan.nilai_E} control={<Radio />} label="E" />
-                                                    </RadioGroup>
-                                                </div>
-                                            ))
-                                            }
-                                        </FormControl>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    )
-                )}
-            </main>
-        </Layoutpeserta>
+                            </>
+                        )}
+                    </div>
+                )
+            )}
+        </div>
+        <MemoFooter />
+    </>
     )
 }
