@@ -3,13 +3,13 @@
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
 import * as React from 'react';
-import ReactDOMServer from 'react-dom/server';
 import dynamic from 'next/dynamic';
 import {
     checkCompatibility,
 	openDB,
     saveDataToDB
 } from '@/indexedDB/db';
+import Link from '@mui/material/Link';
 
 const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
@@ -18,6 +18,9 @@ const NavBreadcrumb = dynamic(() => import('@/components/NavBreadcrumb'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
 const Footer = dynamic(() => import('@/components/Footer'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const FooterLinkSEORel = dynamic(() => import('@/components/FooterLinkSEORel'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
 const Homepage_Header = dynamic(() => import('@/components/homepage/Homepage_Header'), {
@@ -40,7 +43,7 @@ export default function Home() {
     const UseDB = async() => {
 		try {
 			const db = await openDB();  // Tunggu hasil promise selesai
-			console.info("Database berhasil dibuka:", db);
+			// console.info("Database berhasil dibuka:", db);
 			// Anda dapat melanjutkan menggunakan db untuk operasi lebih lanjut
 		} catch (error) {
 			console.error("Terjadi kesalahan saat membuka database:", error);
@@ -51,11 +54,10 @@ export default function Home() {
 		if(checkCompatibility) {
 			UseDB();
 			saveDataToDB();
+            /*
             if ('storage' in navigator && 'persist' in navigator.storage) {
                 navigator.storage.persist().then((isPersistent) => {
-                    if (isPersistent) {
-                        console.log('Penyimpanan persisten berhasil.');
-                    } else {
+                    if (!isPersistent) {
                         console.log('Penyimpanan tidak persisten.');
                     }
                 }).catch((error) => {
@@ -64,6 +66,7 @@ export default function Home() {
             } else {
                 console.log('StorageManager API tidak didukung di browser ini');
             }
+            */
 		}
 	}
 
@@ -71,9 +74,9 @@ export default function Home() {
         return(
             <Myhelmet
                 title={`Psikotest Online App`}
-                pathURL={``}
-                robots={`index, follow`}
-                onetime={true}
+                robots={`index, follow, snippet, max-snippet:99, max-image-preview:standard, noarchive, notranslate`}
+                pathURL={'/'}
+                onetime={1}
             />
         );
     });
@@ -114,46 +117,9 @@ export default function Home() {
         );
     });
 
-    const [theHtml, setTheHtml] = React.useState('');
-    const getAllPage = async () => {
-        try {
-            const cacheResponse = await caches.match('homepage');
-            if (cacheResponse) {
-                const cachedData = await cacheResponse;
-                console.log('cachedData', cachedData);
-                setTheHtml(cachedData);
-            }
-            else {
-                const page = () => {
-                    return(
-                        <>
-                            <MemoHelmet />
-                            <MemoNavBreadcrumb />
-                            <MemoHomepageHeader />
-                            <MemoHomepageNavbar />
-                            <MemoHomepage_Welcome />
-                            <MemoHomepage_About />
-                            <MemoFooter />
-                        </>
-                    );
-                }
-                const cache = await caches.open('homepage');
-                const cacheResponse = new Response(JSON.stringify(page), {
-                        headers: { 'Content-Type': 'application/json' }
-                });
-                await cache.put('homepage', cacheResponse);
-                setTheHtml(cacheResponse);
-            }
-        }
-        catch(err) {
-            console.error(err);
-        }
-    }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
         indexedDB();
-        getAllPage();
     }, []);
 
     return(
@@ -164,6 +130,12 @@ export default function Home() {
             <MemoHomepageNavbar />
             <MemoHomepage_Welcome />
             <MemoHomepage_About />
+            <FooterLinkSEORel>
+                <Link sx={{marginRight: 2}} rel="follow" title="Beranda" href="/" >Beranda</Link>
+                <Link sx={{marginRight: 2}} rel="follow" title="Admin" href="/admin" >Admin</Link>
+                <Link sx={{marginRight: 2}} rel="follow" title="Peserta" href="/peserta" >Peserta</Link>
+                <Link sx={{marginRight: 2}} rel="follow" title="Hasil Psikotest" href="/peserta/psikotest/kecermatan/hasil" >Hasil Psikotest</Link>
+            </FooterLinkSEORel>
             <MemoFooter />
         </>
     );

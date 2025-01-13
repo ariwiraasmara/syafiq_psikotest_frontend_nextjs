@@ -29,6 +29,7 @@ export default function PesertaDetil_GrafikKecermatan(props) {
                 headers: {
                     'Content-Type': 'application/json',
                     'XSRF-TOKEN': csrfToken,
+                    'X-API-KEY': process.env.APP_FAST_API_KEY,
                     'islogin' : localStorage.getItem('islogin'),
                     'isadmin' : localStorage.getItem('isadmin'),
                     'Authorization': `Bearer ${localStorage.getItem('pat')}`,
@@ -102,7 +103,7 @@ export default function PesertaDetil_GrafikKecermatan(props) {
             setLabels(labels);
             setDatasets(dataset);
         }
-    }, [dataHasilPsikotesKecermatan]); // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dataHasilPsikotesKecermatan]);
 
     const chartData = {
         labels,

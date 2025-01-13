@@ -1,5 +1,5 @@
 import axios from 'axios';
-import fun from '@/libraries/myfunction';
+import { random } from '@/libraries/myfunction';
 const base_url = `${process.env.NEXT_PUBLIC_API_BACKEND}/api`;
 
 const csrfToken = async() => {

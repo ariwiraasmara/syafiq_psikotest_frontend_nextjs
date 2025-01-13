@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
@@ -184,6 +185,7 @@ export default function Peserta() {
                 }, {
                     withCredentials: true,  // Mengirimkan cookie dalam permintaan
                     headers: {
+                        'X-API-KEY': process.env.APP_FAST_API_KEY,
                         'XSRF-TOKEN': csrfToken,
                         'Content-Type': 'application/json',
                         'tokenlogin': random('combwisp', 50),
@@ -247,6 +249,12 @@ export default function Peserta() {
             localStorage.removeItem(`ispeserta`);
             localStorage.removeItem(`tgl_tes_peserta_psikotest`);
             sessionStorage.removeItem(`sesi_psikotest_kecermatan`);
+            sessionStorage.removeItem(`id_peserta_psikotest`);
+            sessionStorage.removeItem(`nama_peserta_psikotest`);
+            sessionStorage.removeItem(`no_identitas_peserta_psikotest`);
+            sessionStorage.removeItem(`email_peserta_psikotest`);
+            sessionStorage.removeItem(`tgl_lahir_peserta_psikotest`);
+            sessionStorage.removeItem(`asal_peserta_psikotest`);
             sessionStorage.removeItem(`nilai_total_psikotest_kecermatan_kolom1`);
             sessionStorage.removeItem(`nilai_total_psikotest_kecermatan_kolom2`);
             sessionStorage.removeItem(`nilai_total_psikotest_kecermatan_kolom3`);
@@ -269,9 +277,12 @@ export default function Peserta() {
 
     if(loading) {
         return (
-            <div className='text-center p-8'>
-                <p><span className='font-bold text-2lg'>Loading...</span></p>
-            </div>
+            <h2 className='text-center p-8'>
+                <p><span className='font-bold text-2lg'>
+                    Sedang memuat data... Mohon Harap Tunggu...
+                </span></p>
+                <CircularProgress color="info" size={50} />
+            </h2>
         );
     }
 
@@ -279,8 +290,8 @@ export default function Peserta() {
         return(
             <Myhelmet
                 title={`Formulir Peserta | Psikotest Online App`}
-                pathURL={`peserta`}
-                robots={`index, follow`}
+                pathURL={`/peserta`}
+                robots={`index, follow, snippet, max-snippet:99, max-image-preview:standard, noarchive, notranslate`}
                 onetime={true}
             />
         );
@@ -328,7 +339,7 @@ export default function Peserta() {
                                         </Button>
                                     </div>
                                     <div className='mt-4'>
-                                        <Button variant="contained" size="large" fullWidth color="secondary" onClick={(e) => onBack(e)} type="button">
+                                        <Button variant="contained" size="large" fullWidth color="secondary" onClick={(e) => onBack(e)} rel='follow' title='Kembali' href='/' type="button">
                                             Kembali
                                         </Button>
                                     </div>
@@ -341,9 +352,14 @@ export default function Peserta() {
             else {
                 return(
                     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]" >
-                        <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-                            <Link onClick={(e) => onBack(e)} sx={{ color: 'white' }}>
-                                <h1 className='font-bold underline text-2lg uppercase'>Silahkan datang esok hari lagi!</h1>
+                        <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start text-center">
+                            <Link rel='follow' title='Kembali' href='/' onClick={(e) => onBack(e)} sx={{ color: 'white' }}>
+                                <h1 className='font-bold underline text-2lg uppercase'>
+                                    Silahkan datang esok hari lagi!
+                                </h1>
+                                <h2 className='underline uppercase'>
+                                    Silahkan Klik disini untuk kembali ke halaman Beranda
+                                </h2>
                             </Link>
                         </div>
                     </div>
@@ -414,7 +430,7 @@ export default function Peserta() {
                                     </Button>
                                 </div>
                                 <div className='mt-4'>
-                                    <Button variant="contained" size="large" fullWidth color="secondary" onClick={(e) => onBack(e)} type="button">
+                                    <Button variant="contained" size="large" fullWidth color="secondary" onClick={(e) => onBack(e)} rel="follow" title="Beranda" href="/" type="button">
                                         Kembali
                                     </Button>
                                 </div>

@@ -29,8 +29,8 @@ export default function Psikotest() {
         return(
             <Myhelmet
                 title={`Psikotest | Admin | Psikotest`}
-                pathURL={`admin/psikotest`}
-                robots={`follow, index`}
+                pathURL={`/admin/psikotest`}
+                robots={`index, follow, snippet, max-snippet:99, noarchive, notranslate`}
             />
         );
     });
@@ -55,14 +55,14 @@ export default function Psikotest() {
 
     return (
         <>
-            <MemoHelmet />
             <Layoutadmin>
+                <MemoHelmet />
                 <MemoAppbarku />
                 <MemoNavBreadcrumb />
                 <div className="p-5 mb-14" key={1}>
                     <h1 className='hidden'>Halaman Psikotest | Admin</h1>
                     {typePsikotest.map((data, index) => (
-                        <Link href={`/admin/psikotest/${data}`} sx={{color: '#fff'}} key={index}>
+                        <Link rel='follow' title={`Psikotest ${data}`} href={`/admin/psikotest/${data}`} sx={{color: '#fff'}} key={index}>
                             <div className='border-b-2 p-3 capitalize'>
                                 {data}
                             </div>

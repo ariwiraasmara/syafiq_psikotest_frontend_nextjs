@@ -6,6 +6,7 @@ import Layoutadmin from '@/components/layout/Layoutadmin';
 import axios from 'axios';
 import * as React from 'react';
 import dynamic from 'next/dynamic';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
@@ -31,7 +32,7 @@ export default function AdminPeserta() {
     const getdata = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
         try {
-            const cacheResponse = await caches.match('peserta');
+            const cacheResponse = await caches.match('/admin/peserta');
             
             if (cacheResponse) {
                 // Jika data ditemukan dalam cache
@@ -52,6 +53,7 @@ export default function AdminPeserta() {
                         withCredentials: true,  // Mengirimkan cookie dalam permintaan
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-API-KEY': process.env.APP_FAST_API_KEY,
                             'XSRF-TOKEN': csrfToken,
                             'islogin' : readable(localStorage.getItem('islogin')),
                             'isadmin' : readable(localStorage.getItem('isadmin')),
@@ -76,15 +78,15 @@ export default function AdminPeserta() {
                         // console.log('Data diperbarui. Menyimpan data baru ke cache');
                         
                         // Hapus data lama dari cache dan simpan yang baru
-                        const cache = await caches.open('peserta');
-                        await cache.delete('peserta');
+                        const cache = await caches.open('/admin/peserta');
+                        await cache.delete('/admin/peserta');
                         // console.log('Data lama dihapus dari cache');
                         
                         // Menyimpan data baru ke cache
                         const newResponse = new Response(JSON.stringify(apiData), {
                             headers: { 'Content-Type': 'application/json' }
                         });
-                        await cache.put('peserta', newResponse);
+                        await cache.put('/admin/peserta', newResponse);
                         // console.log('Data baru disimpan ke cache');
                         
                         // Update data dengan data terbaru dari API
@@ -107,6 +109,7 @@ export default function AdminPeserta() {
                         withCredentials: true,  // Mengirimkan cookie dalam permintaan
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-API-KEY': process.env.APP_FAST_API_KEY,
                             'XSRF-TOKEN': csrfToken,
                             'islogin' : readable(localStorage.getItem('islogin')),
                             'isadmin' : readable(localStorage.getItem('isadmin')),
@@ -126,13 +129,13 @@ export default function AdminPeserta() {
                     });
                     const data = response.data.data;
                     setData(data);  // Menyimpan data ke state
-                    
+
                     // Menyimpan data ke cache setelah berhasil mendapatkan data
-                    const cache = await caches.open('peserta');
+                    const cache = await caches.open('/admin/peserta');
                     const cacheResponse = new Response(JSON.stringify(data), {
                         headers: { 'Content-Type': 'application/json' }
                     });
-                    await cache.put('peserta', cacheResponse);
+                    await cache.put('/admin/peserta', cacheResponse);
                     console.log('Data disimpan ke cache');
                 } catch (error) {
                     console.error('Terjadi kesalahan saat mengambil data:', error);
@@ -144,23 +147,19 @@ export default function AdminPeserta() {
         setLoading(false);
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
         getdata();
     }, []);
 
-    const filteredData = React.useMemo(() => {
-        // return variabels.filter(item => item.values > 10); // Contoh: hanya menampilkan variabel dengan values > 10
-        return data;
-    }, [data]);
-
-    console.table('tabel peserta', filteredData);
+    console.table('tabel peserta', data);
 
     const MemoHelmet = React.memo(function Memo() {
         return(
             <Myhelmet
                 title={`Peserta | Admin | Psikotest Online App`}
-                pathURL={`admin/peserta`}
-                robots={`follow, index`}
+                pathURL={`/admin/peserta`}
+                robots={`index, follow, snippet, max-snippet:99, max-image-preview:standard, noarchive, notranslate`}
             />
         );
     });
@@ -184,23 +183,24 @@ export default function AdminPeserta() {
     });
 
     return (
-        <>
+        <Layoutadmin>
             <MemoHelmet />
-            <Layoutadmin>
-                <MemoAppbarku />
-                <MemoNavBreadcrumb />
-                <div className="p-5 mb-14">
-                    <h1 className='hidden'>Halaman Daftar Peserta | Admin</h1>
-                    {loading ? (
-                        <div className='text-center'>
-                            <p><span className='font-bold text-2lg'>Loading...</span></p>
-                        </div>
-                    ) : (
-                        <ListPeserta listpeserta={data} />
-                    )}
-                </div>
-                <MemoFooter />
-            </Layoutadmin>
-        </>
+            <MemoAppbarku />
+            <MemoNavBreadcrumb />
+            <div className="p-5 mb-14">
+                <h1 className='hidden'>Halaman Daftar Peserta | Admin</h1>
+                {loading ? (
+                    <h2 className='text-center'>
+                        <p><span className='font-bold text-2lg'>
+                            Sedang memuat data... Mohon Harap Tunggu...
+                        </span></p>
+                        <CircularProgress color="info" size={50} />
+                    </h2>
+                ) : (
+                    <ListPeserta listpeserta={data} />
+                )}
+            </div>
+            <MemoFooter />
+        </Layoutadmin>
     )
 }

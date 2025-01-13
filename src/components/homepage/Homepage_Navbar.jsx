@@ -112,7 +112,7 @@ export default function Homepage_Navbar(props) {
         e.preventDefault();
         try {
             localStorage.setItem('ispeserta', true);
-            router.push(`peserta/psikotest/kecermatan/hasil/?identitas=${noidentitas}&tgl_tes=${tglTes}`);
+            router.push(`/peserta/psikotest/kecermatan/hasil?identitas=${noidentitas}&tgl_tes=${tglTes}`);
         }
         catch(err) {
             console.error(err);

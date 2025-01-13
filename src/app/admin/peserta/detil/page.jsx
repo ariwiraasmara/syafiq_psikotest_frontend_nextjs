@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
 import Link from '@mui/material/Link';
+import CircularProgress from '@mui/material/CircularProgress';
 import EditIcon from '@mui/icons-material/Edit';
 
 const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
@@ -30,18 +31,17 @@ import { readable, random } from '@/libraries/myfunction';
 
 export default function AdminPesertaDetil() {
     const router = useRouter();
-    const [sessionID, setSessionID] = React.useState(sessionStorage.getItem('admid_peserta'));
+    const [sessionID, setSessionID] = React.useState(sessionStorage.getItem('admin_id_peserta'));
     const safeID = readable(sessionID);
 
     const [data, setData] = React.useState({});
-    const [loading, setLoading] = React.useState(true);
+    const [loading, setLoading] = React.useState(false);
 
     const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
-        // setSessionID(sessionStorage.getItem('admid_peserta'));
         const expirationTime = (Date.now() + 3600000) * 24; // 24 jam ke depan dalam milidetik
         try {
-            const cacheResponse = await caches.match('peserta/detil');
+            const cacheResponse = await caches.match(`/admin/peserta/detil/${safeID}`);
             
             if (cacheResponse) {
                 // Jika data ditemukan dalam cache
@@ -63,6 +63,7 @@ export default function AdminPesertaDetil() {
                         withCredentials: true,  // Mengirimkan cookie dalam permintaan
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-API-KEY': process.env.APP_FAST_API_KEY,
                             'XSRF-TOKEN': csrfToken,
                             'islogin' : readable(localStorage.getItem('islogin')),
                             'isadmin' : readable(localStorage.getItem('isadmin')),
@@ -91,15 +92,15 @@ export default function AdminPesertaDetil() {
                         // console.log('Data diperbarui. Menyimpan data baru ke cache');
                         
                         // Hapus data lama dari cache dan simpan yang baru
-                        const cache = await caches.open('peserta/detil');
-                        await cache.delete('peserta/detil');
+                        const cache = await caches.open(`/admin/peserta/detil/${safeID}`);
+                        await cache.delete(`/admin/peserta/detil/${safeID}`);
                         // console.log('Data lama dihapus dari cache');
                         
                         // Menyimpan data baru ke cache
                         const newResponse = new Response(JSON.stringify(responseStore), {
                             headers: { 'Content-Type': 'application/json' }
                         });
-                        await cache.put('peserta/detil', newResponse);
+                        await cache.put(`/admin/peserta/detil/${safeID}`, newResponse);
                         // console.log('Data baru disimpan ke cache');
                         
                         // Update data dengan data terbaru dari API
@@ -108,6 +109,7 @@ export default function AdminPesertaDetil() {
                 } catch (error) {
                     console.error('Terjadi kesalahan saat mengambil data terbaru:', error);
                 }
+                setLoading(false);
             } else {
                 // Jika data tidak ditemukan di cache, ambil dari API
                 console.log('Data tidak ditemukan di cache');
@@ -122,6 +124,7 @@ export default function AdminPesertaDetil() {
                         withCredentials: true,
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-API-KEY': process.env.APP_FAST_API_KEY,
                             'XSRF-TOKEN': csrfToken,
                             'islogin' : readable(localStorage.getItem('islogin')),
                             'isadmin' : readable(localStorage.getItem('isadmin')),
@@ -147,11 +150,12 @@ export default function AdminPesertaDetil() {
                     }
                     
                     // Menyimpan data ke cache setelah berhasil mendapatkan data
-                    const cache = await caches.open('peserta/detil');
+                    const cache = await caches.open(`/admin/peserta/detil/${safeID}`);
                     const cacheResponse = new Response(JSON.stringify(responseStore), {
                         withCredentials: true,
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-API-KEY': process.env.APP_FAST_API_KEY,
                             'XSRF-TOKEN': csrfToken,
                             'islogin' : localStorage.getItem('islogin'),
                             'isadmin' : localStorage.getItem('isadmin'),
@@ -169,11 +173,12 @@ export default function AdminPesertaDetil() {
                             'pranked': 'absolutely'
                         }
                     });
-                    await cache.put('peserta/detil', cacheResponse);
+                    await cache.put(`/admin/peserta/detil/${safeID}`, cacheResponse);
                     // console.log('Data disimpan ke cache');
                 } catch (error) {
                     console.error('Terjadi kesalahan saat mengambil data:', error);
                 }
+                setLoading(false);
             }
         } catch (error) {
             setData({});
@@ -182,26 +187,22 @@ export default function AdminPesertaDetil() {
         setLoading(false);
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
-        getData(); // Menjalankan fungsi setelah state sessionID di-set
-    }, []); // eslint-disable-next-line react-hooks/exhaustive-deps
+        getData();
+    }, []);
 
-    const filteredData = React.useMemo(() => {
-        // return variabels.filter(item => item.values > 10); // Contoh: hanya menampilkan variabel dengan values > 10
-        return data;
-    }, [data]);
-
-    console.table('tabel peserta detil', filteredData);
+    console.table('tabel peserta detil', data);
 
     const toEdit = (e, id, nama, no_indentitas, email, tgl, asal) => {
         e.preventDefault();
         try {
-            sessionStorage.setItem('admid_peserta', id);
-            sessionStorage.setItem('admnama_peserta', nama);
-            sessionStorage.setItem('admnoidentitas_peserta', no_indentitas);
-            sessionStorage.setItem('admemail_peserta', email);
-            sessionStorage.setItem('admtgllahir_peserta', tgl);
-            sessionStorage.setItem('admasal_peserta', asal);
+            sessionStorage.setItem('admin_id_peserta', id);
+            sessionStorage.setItem('admin_nama_peserta', nama);
+            sessionStorage.setItem('admin_noidentitas_peserta', no_indentitas);
+            sessionStorage.setItem('admin_email_peserta', email);
+            sessionStorage.setItem('admin_tgllahir_peserta', tgl);
+            sessionStorage.setItem('admin_asal_peserta', asal);
             router.push(`/admin/peserta/edit`);
         }
         catch(e) {
@@ -213,8 +214,8 @@ export default function AdminPesertaDetil() {
         return(
             <Myhelmet
                 title={`Detil Peserta | Admin | Psikotest Online App`}
-                pathURL={`admin/peserta/detil`}
-                robots={`follow, index`}
+                pathURL={`/admin/peserta/detil`}
+                robots={`index, follow, snippet, max-snippet:99, max-image-preview:standard, noarchive, notranslate`}
             />
         );
     });
@@ -239,16 +240,19 @@ export default function AdminPesertaDetil() {
 
     return (
         <>
-            <MemoHelmet />
             <Layoutadmindetil>
+                <MemoHelmet />
                 <MemoAppbarku />
                 <MemoNavBreadcrumb />
                 <div className="p-5 mb-14">
                     <h1 className='hidden'>Halaman Detil Peserta | Admin</h1>
                     {loading ? (
-                        <div className='text-center'>
-                            <p><span className='font-bold text-2lg'>Loading...</span></p>
-                        </div>
+                        <h2 className='text-center'>
+                            <p><span className='font-bold text-2lg'>
+                                Sedang memuat data... Mohon Harap Tunggu...
+                            </span></p>
+                            <CircularProgress color="info" size={50} />
+                        </h2>
                     ) : (
                         <div>
                             <div>
@@ -259,7 +263,7 @@ export default function AdminPesertaDetil() {
                                 <p><span className="font-bold">Usia :</span> {data.usia}</p>
                                 <p><span className="font-bold">Asal : </span> {data.asal}</p>
                                 <p>
-                                    <Link onClick={(e) => toEdit(e, data.id, data.nama, data.no_identitas, filteredData.email, filteredData.tgl_lahir, filteredData.asal)}>
+                                    <Link follow="nofollow" title={`Edit Data Peserta ${data.nama}`} href='#' onClick={(e) => toEdit(e, data.id, data.nama, data.no_identitas, filteredData.email, filteredData.tgl_lahir, filteredData.asal)}>
                                         <EditIcon />
                                     </Link>
                                 </p>

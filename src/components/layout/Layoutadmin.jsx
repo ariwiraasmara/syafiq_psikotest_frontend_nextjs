@@ -4,11 +4,17 @@
 'use client';
 import Layout from '../../app/layout';
 import * as React from 'react';
+import Cookies from 'js-cookie'
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import NavigasiBawah from '@/components/BottomNavigation';
+import CircularProgress from '@mui/material/CircularProgress';
+
+const NavigasiBawah = dynamic(() => import('@/components/BottomNavigation'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
 
 Layoutadmin.propTypes = {
     children: PropTypes.any,
@@ -19,18 +25,22 @@ export default function Layoutadmin({ children }) {
     const [loading, setLoading] = React.useState(true);
     const [islogin, setIslogin] = React.useState();
     const [isadmin, setIsadmin] = React.useState();
+    const [isauth, setIsauth] = React.useState();
     const [ispeserta, setIspeserta] = React.useState(false);
 
     const getData = () => {
         setLoading(true);
         try {
-            if(localStorage.getItem('islogin') === 'true') setIslogin(true);
+            if( Cookies.get('islogin') ) setIslogin(true);
             else setIslogin(false);
 
-            if(localStorage.getItem('isadmin') === 'true') setIsadmin(true);
+            if( Cookies.get('isadmin') ) setIsadmin(true);
             else setIsadmin(false);
 
-            if(localStorage.getItem('ispeserta') === 'false') setIspeserta(false);
+            if( Cookies.get('isauth') ) setIsauth(true);
+            else setIsauth(false);
+
+            if( Cookies.get('ispeserta') ) setIspeserta(true);
             else setIspeserta(false);
         }
         catch(err) {
@@ -40,22 +50,25 @@ export default function Layoutadmin({ children }) {
         setLoading(false);
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
         getData();
-    }, [router, islogin, isadmin, ispeserta]);
+    }, [router, islogin, isadmin, isauth, ispeserta]);
 
     if(loading) {
         return (
             <h2 className='text-center p-8'>
-                <p><span className='font-bold text-2lg'>Loading...</span></p>
-                <p>Sedang memuat data... Harap Tunggu...</p>
+                <p><span className='font-bold text-2lg'>
+                    Sedang memuat data... Harap Tunggu...
+                </span></p>
+                <CircularProgress color="info" size={50} />
             </h2>
         );
     }
 
     if(ispeserta) return window.location.href = '/peserta';
 
-    if(islogin && isadmin) {
+    if(islogin && isadmin && isauth) {
         const MemoNavigasiBawah = React.memo(function Memo() {
             return <NavigasiBawah />;
         });

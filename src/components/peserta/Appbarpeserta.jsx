@@ -2,7 +2,6 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 import * as React from 'react';
-import { findDOMNode } from 'react-dom';
 import AppBar from '@mui/material/AppBar';
 import PropTypes from 'prop-types';
 import Toolbar from '@mui/material/Toolbar';
@@ -40,7 +39,6 @@ Appbarpeserta.propTypes = {
 
 export default function Appbarpeserta(props) {
     return (
-    <div>
         <React.StrictMode>
             <ElevationScroll {...props}>
                 <AppBar sx={{ background: '#000' }}>
@@ -78,6 +76,5 @@ export default function Appbarpeserta(props) {
             </ElevationScroll>
             <Toolbar />
         </React.StrictMode>
-    </div>
     );
 }

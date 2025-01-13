@@ -50,8 +50,8 @@ const styledTextField = {
 
 export default function PsikotestKecermatanDetilBaru() {
     const router = useRouter();
-    const [pkid, setPkid] = React.useState(sessionStorage.getItem('psikotest_kecermatan_id'));
-    const [lastpage, setLastpage] = React.useState(sessionStorage.getItem('psikotest_kecermatan_tabellastpage'));
+    const [pkid, setPkid] = React.useState(sessionStorage.getItem('admin_psikotest_kecermatan_id'));
+    const [lastpage, setLastpage] = React.useState(sessionStorage.getItem('admin_psikotest_kecermatan_tabellastpage'));
 
     const [soalA, setSoalA] = React.useState(0);
     const handleChange_soalA = (event) => {
@@ -85,17 +85,18 @@ export default function PsikotestKecermatanDetilBaru() {
 
     const getData = () => {
         try {
-            setPkid(sessionStorage.getItem('psikotest_kecermatan_id'));
-            setLastpage(sessionStorage.getItem('psikotest_kecermatan_tabellastpage'));
+            setPkid(sessionStorage.getItem('admin_psikotest_kecermatan_id'));
+            setLastpage(sessionStorage.getItem('admin_psikotest_kecermatan_tabellastpage'));
         }
         catch(e) {
             console.log(e);
         }
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
-        // getData();
-    });
+        getData();
+    }, []);
 
     const submit = async(e) => {
         e.preventDefault();
@@ -115,6 +116,7 @@ export default function PsikotestKecermatanDetilBaru() {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-API-KEY': process.env.APP_FAST_API_KEY,
                     'XSRF-TOKEN': csrfToken,
                     'islogin' : readable(localStorage.getItem('islogin')),
                     'isadmin' : readable(localStorage.getItem('isadmin')),
@@ -155,7 +157,7 @@ export default function PsikotestKecermatanDetilBaru() {
             <Myhelmet
                 title={`Detil Psikotest Kecermatan Baru | Admin | Psikotest`}
                 pathURL={`admin/psikotest/kecermatan/detil/baru`}
-                robots={`follow, index`}
+                robots={`none, nosnippet, noarchive, notranslate, noimageindex`}
             />
         );
     });
@@ -180,17 +182,25 @@ export default function PsikotestKecermatanDetilBaru() {
 
     return(
     <>
-        <MemoHelmet />
         <Layoutadmindetil>
+            <MemoHelmet />
             <MemoAppbarku />
             <MemoNavBreadcrumb />
             <div className="p-5 mb-14">
                 <h1 className='hidden'>Halaman Psikotest Kecermatan Detil Baru | Admin </h1>
-                <h2 className="font-bold text-center text-lg">Data Detil Psikotest Kecermatan Baru</h2>
+                <h2 className="font-bold text-center text-lg">Tambah Soal dan Jawaban Psikotest Kecermatan ${kolom_x} Baru</h2>
+                <h3 className='mt-4'>
+                    <span className='font-bold mr-2'>Soal :</span>
+                    [
+                        <span className='ml-2 mr-2'>{soalA}</span>
+                        <span className='mr-2'>{soalB}</span>
+                        <span className='mr-2'>{soalC}</span>
+                        <span className='mr-2'>{soalD}</span>
+                    ]
+                </h3>
+                <h3 className='mt-2'><span className='font-bold'>Jawaban :</span> {jawaban}</h3>
                 <Box component="form"
-                    sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' },
-                        p: 3
-                    }}
+                    sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' } }}
                     onSubmit={(e) => submit(e)}
                     noValidate
                     autoComplete="off">

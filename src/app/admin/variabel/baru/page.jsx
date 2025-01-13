@@ -7,10 +7,10 @@ import axios from 'axios';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
@@ -46,45 +46,46 @@ const styledTextField = {
     '&:hover .MuiInputLabel-root': {
         color: 'white', // warna hover
     },
-    '& marginTop': 5
 }
 
-export default function AdminPesertaEdit() {
+export default function VariabelBaru() {
     const router = useRouter();
-    const [idpeserta, setIdpeserta] = React.useState(0);
-    const [nama, setNama] = React.useState('');
-    const [no_identitas, setNo_identitas] = React.useState('');
-    const [email, setEmail] = React.useState('');
-    const [tgl_lahir, setTgl_lahir] = React.useState('');
-    const [asal, setAsal] = React.useState('');
+    const [loading, setLoading] = React.useState(false);
+    const [nvariabel, setNvariabel] = React.useState('');
+    const handleChange_Nvariable = (event) => {
+        event.preventDefault();
+        setNvariabel(event.target.value);
+    };
 
-    const getData = () => {
-        try {
-            setIdpeserta(sessionStorage.getItem('admid_peserta'));
-            setNama(sessionStorage.getItem('admnama_peserta'));
-            setNo_identitas(sessionStorage.getItem('admnoidentitas_peserta'));
-            setEmail(sessionStorage.getItem('admemail_peserta'));
-            setTgl_lahir(sessionStorage.getItem('admtgllahir_peserta'));
-            setAsal(sessionStorage.getItem('admasal_peserta'));
-        }
-        catch(err) {
-            console.error(err);
-            return err;
-        }
+    const [nvalues, setNvalues] = React.useState();
+    const handleChange_Nvalues = (event) => {
+        event.preventDefault();
+        setNvalues(event.target.value);
+    };
+
+    if(loading) {
+        return (
+            <h2 className='text-center p-8'>
+                <p><span className='font-bold text-2lg'>
+                    Sedang memuat data... Mohon Harap Tunggu...
+                </span></p>
+                <CircularProgress color="info" size={50} />
+            </h2>
+        );
     }
 
     const submit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             axios.defaults.withCredentials = true;
             axios.defaults.withXSRFToken = true;
             const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
             });
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/${idpeserta}`, {
-                email: email,
-                tgl_lahir: tgl_lahir,
-                asal: asal
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting`, {
+                variabel: nvariabel,
+                values: nvalues
             }, {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
                 headers: {
@@ -107,48 +108,40 @@ export default function AdminPesertaEdit() {
                     'pranked': 'absolutely'
                 }
             });
+    
+            console.log('response', response);
             if(response.data.success) {
-                sessionStorage.removeItem('admnama_peserta');
-                sessionStorage.removeItem('admnoidentitas_peserta');
-                sessionStorage.removeItem('admemail_peserta');
-                sessionStorage.removeItem('admtgllahir_peserta');
-                sessionStorage.removeItem('admasal_peserta');
-                return router.push('/admin/peserta/detil/');
+                router.push('/admin/variabel');
             }
             else {
-                console.log('response', response);
-                return alert('Terjadi Kesalahan Variabel');
+                alert('Terjadi Kesalahan Variabel');
             }
         }
-        catch(e) {
-            console.log('Gagal Mengirim Update Data Peserta', );
+        catch(er) {
+            console.log('Terjadi Kesalahan Mengirim Data Variabel', er);
+            alert('Terjadi Kesalahan Mengirim Data Variabel');
         }
+        setLoading(false);
     };
 
     const cancel = (e) => {
         e.preventDefault();
         try {
-            sessionStorage.removeItem('admnama_peserta');
-            sessionStorage.removeItem('admnoidentitas_peserta');
-            sessionStorage.removeItem('admemail_peserta');
-            sessionStorage.removeItem('admtgllahir_peserta');
-            sessionStorage.removeItem('admasal_peserta');
-            return router.push('/admin/peserta/detil/');
+            sessionStorage.removeItem('variabel_id');
+            sessionStorage.removeItem('variabel_variabel');
+            sessionStorage.removeItem('variabel_values');
+            return router.push('/admin/variabel');
         }
-        catch(e) {
-            console.log('Gagal Membatalkan Update Data Peserta', );
+        catch(err) {
+            console.log('Terjadi Kesalahan Membatalkan Update Variabel', err);
         }
     };
-
-    React.useEffect(() => {
-        getData();
-    }, []);
-
+    
     const MemoHelmet = React.memo(function Memo() {
         return(
             <Myhelmet
-                title={`Edit Peserta | Admin | Psikotest Online App`}
-                pathURL={`admin/peserta/edit`}
+                title={`Tambah Variabel Baru | Admin | Psikotest`}
+                pathURL={`/admin/variabel/baru`}
                 robots={`none, nosnippet, noarchive, notranslate, noimageindex`}
             />
         );
@@ -156,13 +149,13 @@ export default function AdminPesertaEdit() {
 
     const MemoAppbarku = React.memo(function Memo() {
         return(
-            <Appbarku headTitle="Edit Peserta" />
+            <Appbarku headTitle="Variabel Baru" />
         );
     });
 
     const MemoNavBreadcrumb = React.memo(function Memo() {
         return(
-            <NavBreadcrumb content={`Admin / Peserta / Edit`} hidden={`hidden`} />
+            <NavBreadcrumb content={`Admin / Variabel / Baru`} hidden={`hidden`} />
         );
     });
 
@@ -172,48 +165,37 @@ export default function AdminPesertaEdit() {
         );
     });
 
-    return(
-        <>
+    return (
+    <>
         <Layoutadmindetil>
             <MemoHelmet />
-            <MemoAppbarku />
             <MemoNavBreadcrumb />
+            <MemoAppbarku />
             <div className="p-5 mb-14">
-                <h1 className='hidden'>Halaman Edit Peserta | Admin</h1>
-                <div>
-                    <p><span className='font-bold'>Nama</span>: {nama}</p>
-                    <p><span className='font-bold'>Nomor Identitas</span>: {no_identitas}</p>
-                </div>
+                <h1 className='hidden'>Halaman Tambah Variabel Baru | Admin</h1>
                 <Box component="form"
-                    sx={{ '& > :not(style)': { m: 2, p: 1, width: '100%' },
-                        p: 3
-                    }}
+                    sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' } }}
                     onSubmit={(e) => submit(e)}
                     noValidate
                     autoComplete="off">
-                    <TextField  type="text" id="Email" variant="outlined" focused
-                                placeholder="Email..." label="Email..."
-                                onChange = {(event)=> setEmail(event.target.value)}
-                                defaultValue={email}
-                                fullWidth sx={styledTextField} />
-                    <TextField  type="date" id="tgl_lahir" variant="outlined" required focused
-                                placeholder="Tanggal Lahir..." label="Tanggal Lahir..."
-                                onChange = {(event)=> setTgl_lahir(event.target.value)}
-                                defaultValue={tgl_lahir}
-                                fullWidth sx={styledTextField} />
-                    <TextField  type="text" id="asal" variant="outlined" focused
-                                placeholder="Asal..." label="Asal..."
-                                onChange = {(event)=> setAsal(event.target.value)}
-                                defaultValue={asal}
-                                fullWidth sx={styledTextField} />
+                    <TextField  type="text" id="variabel" variant="outlined" focused
+                                placeholder="Variabel..." label="Variabel..."
+                                fullWidth sx={styledTextField}
+                                onChange={handleChange_Nvariable}
+                                defaultValue={nvariabel} />
+                    <TextField  type="text" id="values" variant="outlined" focused
+                                placeholder="Nilai..." label="Nilai..."
+                                fullWidth sx={styledTextField}
+                                onChange={handleChange_Nvalues}
+                                defaultValue={nvalues} />
                     <Box sx={{ m: 1 }}>
                         <div>
-                            <Button variant="contained" size="large" color="primary" fullWidth type="submit" >
+                            <Button variant="contained" size="large" fullWidth color="primary" type="submit">
                                 Simpan
                             </Button>
                         </div>
                         <div className="mt-4">
-                            <Button variant="contained" size="large" color="secondary" fullWidth onClick={(e) => cancel(e)} sx={{marginTop: 2}} type="button">
+                            <Button variant="contained" size="large" fullWidth color="secondary" onClick={(e) => cancel(e)} rel='follow' title='Kembali' href='/admin/variabel' type="button">
                                 Batal
                             </Button>
                         </div>
@@ -222,6 +204,6 @@ export default function AdminPesertaEdit() {
             </div>
             <MemoFooter />
         </Layoutadmindetil>
-        </>
-    );
+    </>
+    )
 }

@@ -4,7 +4,8 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 Footer.propTypes = {
-    hidden: PropTypes.string
+    hidden: PropTypes.string,
+    children: PropTypes.any
 };
 export default function Footer(props) {
     const date = new Date();
@@ -15,6 +16,8 @@ export default function Footer(props) {
                 <h2 className='font-bold'>Copyright @ {year} dan Authorship : </h2>
                 <h3 className=''>
                     <address><strong>Syafiq (syafiq@gmail.com, +6285311487755)</strong></address>
+                </h3>
+                <h3>
                     <address><strong>Syahri Ramadhan Wiraasmara (ariwiraasmara.sc37@gmail.com, +628176896353)</strong></address>
                 </h3>
             </div>

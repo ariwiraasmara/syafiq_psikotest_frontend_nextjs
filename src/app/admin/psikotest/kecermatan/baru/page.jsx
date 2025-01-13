@@ -48,40 +48,46 @@ const styledTextField = {
     },
 }
 
-export default function EditVariabel() {
+export default function PsikotestKecermatan() {
     const router = useRouter();
     const [loading, setLoading] = React.useState(false);
-    const [nid, setNid] = React.useState(readable(sessionStorage.getItem('admin_variabel_id')));
-    
-    const [nvariabel, setNvariabel] = React.useState('');
-    const handleChange_Nvariable = (event) => {
-        event.preventDefault();
-        setNvariabel(event.target.value);
-    };
 
-    const [nvalues, setNvalues] = React.useState();
-    const handleChange_Nvalues = (event) => {
+    const [kolom_x, setKolom_x] = React.useState('');
+    const handleChange_kolom_x = (event) => {
         event.preventDefault();
-        setNvalues(event.target.value);
-    };
-
-    const getData = () => {
-        setLoading(true);
-        try {
-            // setNid(readable(sessionStorage.getItem('admin_variabel_id')));
-            setNvariabel(readable(sessionStorage.getItem('admin_variabel_variabel')));
-            setNvalues(readable(sessionStorage.getItem('admin_variabel_values')));
-        } catch (err) {
-            console.error('Eror getData Edit Variabel', err);
-        }
-        setLoading(false);
+        setKolom_x(event.target.value);
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    React.useEffect(() => {
-        getData();
-    }, []);
-
+    
+    const [nilai_A, setNilai_A] = React.useState(0);
+    const handleChange_nilai_A = (event) => {
+        event.preventDefault();
+        setNilai_A(event.target.value);
+    }
+    
+    const [nilai_B, setNilai_B] = React.useState(0);
+    const handleChange_nilai_B = (event) => {
+        event.preventDefault();
+        setNilai_B(event.target.value);
+    }
+    
+    const [nilai_C, setNilai_C] = React.useState(0);
+    const handleChange_nilai_C = (event) => {
+        event.preventDefault();
+        setNilai_C(event.target.value);
+    }
+    
+    const [nilai_D, setNilai_D] = React.useState(0);
+    const handleChange_nilai_D = (event) => {
+        event.preventDefault();
+        setNilai_D(event.target.value);
+    }
+    
+    const [nilai_E, setNilai_E] = React.useState(0);
+    const handleChange_nilai_E = (event) => {
+        event.preventDefault();
+        setNilai_E(event.target.value);
+    }
+    
     if(loading) {
         return (
             <h2 className='text-center p-8'>
@@ -95,15 +101,20 @@ export default function EditVariabel() {
 
     const submit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             axios.defaults.withCredentials = true;
             axios.defaults.withXSRFToken = true;
             const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
             });
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting/${nid}`, {
-                variabel: nvariabel,
-                values: nvalues
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/kecermatan/kolompertanyaan`, {
+                kolom_x: kolom_x,
+                nilai_A: nilai_A,
+                nilai_B: nilai_B,
+                nilai_C: nilai_C,
+                nilai_D: nilai_D,
+                nilai_E: nilai_E,
             }, {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
                 headers: {
@@ -127,27 +138,29 @@ export default function EditVariabel() {
                 }
             });
             if(response.data.success) {
-                sessionStorage.removeItem('admin_variabel_id');
-                sessionStorage.removeItem('admin_variabel_variabel');
-                sessionStorage.removeItem('admin_variabel_values');
-                return router.push('/admin/variabel');
+                return router.push('/admin/psikotest/kecermatan');
             }
             else {
                 console.log('response', response);
-                return alert('Terjadi Kesalahan Variabel');
+                return alert('Terjadi Kesalahan Psikotest Kecermatan');
             }
         }
         catch(er) {
-            console.log('Terjadi Kesalahan Mengirim Data Update Variabel', er);
+            console.log('Terjadi Kesalahan Mengirim Data Update Psikotest Kecermatan', er);
         }
+        setLoading(false);
     };
 
     const cancel = (e) => {
         e.preventDefault();
         try {
-            sessionStorage.removeItem('admin_variabel_id');
-            sessionStorage.removeItem('admin_variabel_variabel');
-            sessionStorage.removeItem('admin_variabel_values');
+           // setNid(sessionStorage('admin_psikotest_kecermatan_id'));
+            // setKolom_x(sessionStorage('admin_psikotest_kecermatan_kolom_x'));
+            setNilai_A(sessionStorage.getItem('admin_psikotest_kecermatan_nilai_A'));
+            setNilai_B(sessionStorage.getItem('admin_psikotest_kecermatan_nilai_B'));
+            setNilai_C(sessionStorage.getItem('admin_psikotest_kecermatan_nilai_C'));
+            setNilai_D(sessionStorage.getItem('admin_psikotest_kecermatan_nilai_D'));
+            setNilai_E(sessionStorage.getItem('admin_psikotest_kecermatan_nilai_E'));
             return router.push('/admin/variabel');
         }
         catch(err) {
@@ -158,8 +171,8 @@ export default function EditVariabel() {
     const MemoHelmet = React.memo(function Memo() {
         return(
             <Myhelmet
-                title={`Edit Variabel | Admin | Psikotest`}
-                pathURL={`/admin/variabel/edit`}
+                title={`Tambah Psikotest Kecermatan Baru | Admin | Psikotest`}
+                pathURL={`/admin/psikotest/kecermatan/baru`}
                 robots={`none, nosnippet, noarchive, notranslate, noimageindex`}
             />
         );
@@ -167,13 +180,13 @@ export default function EditVariabel() {
 
     const MemoAppbarku = React.memo(function Memo() {
         return(
-            <Appbarku headTitle="Edit Variabel" />
+            <Appbarku headTitle="Psikotest Kecermatan Baru" />
         );
     });
 
     const MemoNavBreadcrumb = React.memo(function Memo() {
         return(
-            <NavBreadcrumb content={`Admin / Variabel / Edit`} hidden={`hidden`} />
+            <NavBreadcrumb content={`Admin / Psikotest/ Kecermatan / Baru`} hidden={`hidden`} />
         );
     });
 
@@ -183,29 +196,49 @@ export default function EditVariabel() {
         );
     });
 
-    return (
+    return(
     <>
         <Layoutadmindetil>
             <MemoHelmet />
             <MemoNavBreadcrumb />
             <MemoAppbarku />
             <div className="p-5 mb-14">
-                <h1 className='hidden'>Halaman Edit Variabel | Admin</h1>
+                <h1 className='hidden'>Halaman Tambah Psikotest Kecermatan Baru | Admin</h1>
                 <Box component="form"
                     sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' } }}
                     onSubmit={(e) => submit(e)}
                     noValidate
                     autoComplete="off">
-                    <TextField  type="text" id="variabel" variant="outlined" focused
-                                placeholder="Variabel..." label="Variabel..."
+                    <TextField  type="text" id="kolom_x" variant="outlined" focused
+                                placeholder="Kolom..." label="Kolom..."
                                 fullWidth sx={styledTextField}
-                                onChange={handleChange_Nvariable}
-                                defaultValue={nvariabel} />
-                    <TextField  type="text" id="values" variant="outlined" focused
-                                placeholder="Nilai..." label="Nilai..."
+                                onChange={handleChange_kolom_x}
+                                defaultValue={kolom_x} />
+                    <TextField  type="number" id="nilai_a" variant="outlined" focused
+                                placeholder="Nilai A..." label="Nilai A..."
                                 fullWidth sx={styledTextField}
-                                onChange={handleChange_Nvalues}
-                                defaultValue={nvalues} />
+                                onChange={handleChange_nilai_A}
+                                defaultValue={nilai_A} />
+                    <TextField  type="number" id="nilai_b" variant="outlined" focused
+                                placeholder="Nilai B..." label="Nilai B..."
+                                fullWidth sx={styledTextField}
+                                onChange={handleChange_nilai_B}
+                                defaultValue={nilai_B} />
+                    <TextField  type="number" id="nilai_c" variant="outlined" focused
+                                placeholder="Nilai C..." label="Nilai C..."
+                                fullWidth sx={styledTextField}
+                                onChange={handleChange_nilai_C}
+                                defaultValue={nilai_C} />
+                    <TextField  type="number" id="nilai_d" variant="outlined" focused
+                                placeholder="Nilai D..." label="Nilai D..."
+                                fullWidth sx={styledTextField}
+                                onChange={handleChange_nilai_D}
+                                defaultValue={nilai_D} />
+                    <TextField  type="number" id="nilai_e" variant="outlined" focused
+                                placeholder="Nilai E..." label="Nilai E..."
+                                fullWidth sx={styledTextField}
+                                onChange={handleChange_nilai_E}
+                                defaultValue={nilai_E} />
                     <Box sx={{ m: 1 }}>
                         <div>
                             <Button variant="contained" size="large" fullWidth color="primary" type="submit">
@@ -213,7 +246,7 @@ export default function EditVariabel() {
                             </Button>
                         </div>
                         <div className="mt-4">
-                            <Button variant="contained" size="large" fullWidth color="secondary" onClick={(e) => cancel(e)} rel='follow' title='Kembali' href='/admin/variabel' type="button">
+                            <Button variant="contained" size="large" fullWidth color="secondary" onClick={(e) => cancel(e)} rel='follow' title='Kembali' href='/admin/psikotest/kecermatan' type="button">
                                 Batal
                             </Button>
                         </div>
@@ -223,5 +256,5 @@ export default function EditVariabel() {
             <MemoFooter />
         </Layoutadmindetil>
     </>
-    )
+    );
 }

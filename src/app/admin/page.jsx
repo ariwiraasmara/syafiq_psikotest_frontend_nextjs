@@ -7,11 +7,12 @@ import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import axios from 'axios';
 import * as React from 'react';
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
 import EmailIcon from '@mui/icons-material/Email';
 import LockPersonIcon from '@mui/icons-material/LockPerson';
@@ -26,8 +27,6 @@ const Footer = dynamic(() => import('@/components/Footer'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
 import { random } from '@/libraries/myfunction';
-import { generateKey, encryptData } from '@/libraries/crypto';
-import { ErrorOutlineOutlined } from '@mui/icons-material';
 
 const styledTextField = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -74,20 +73,28 @@ export default function Admin() {
                     withCredentials: true,  // Mengirimkan cookie dalam permintaan
                     headers: {
                         'Content-Type': 'application/json',
+                        'X-API-KEY': 'lBvYGhtKWqbQ6ZspV8txNRTcINTHEJSg24q5lpUjPF2dYkKIG3evFCniewMbwPuLzrmcJzkAXOf1HUEj767Q9onCmdR30s9XWLig',
                         'XSRF-TOKEN': csrfToken,
                         'tokenlogin': random('combwisp', 50)
                     }
                 });
 
+                console.info(response.data.pesan);
                 if(response.data.success) {
-                    console.info(response.data.pesan);
-                    // Cookies.set('islogin', true, { expires: 6, path: 'syafiq.psikotest', secure: true, sameSite: 'strict' })
-                    // Cookies.set('isadmin', true, { expires: 6, path: 'syafiq.psikotest', secure: true, sameSite: 'strict' })
+                    Cookies.set('islogin', true, { expires: 6, path: 'syafiq.psikotest', secure: true, sameSite: 'strict' });
+                    Cookies.set('isadmin', true, { expires: 6, path: 'syafiq.psikotest', secure: true, sameSite: 'strict' });
+                    Cookies.set('isauth', true, { expires: 6, path: 'syafiq.psikotest', secure: true, sameSite: 'strict' });
                     localStorage.setItem('islogin', true);
                     localStorage.setItem('isadmin', true);
                     localStorage.setItem('ispeserta', false);
-                    localStorage.setItem('email', emaillogin);
+                    // localStorage.setItem('authUser', JSON.stringify({
+                    //     nama: response.data.data.nama,
+                    //     email: emaillogin,
+                    //     pat: response.data.data.token_1,
+                    //     rememberToken: response.data.data.token_2
+                    // }));
                     localStorage.setItem('nama', response.data.data.nama);
+                    localStorage.setItem('email', emaillogin);
                     localStorage.setItem('pat', response.data.data.token_1);
                     localStorage.setItem('remember-token', response.data.data.token_2);
                     localStorage.setItem('csrfToken', csrfToken);
@@ -106,15 +113,19 @@ export default function Admin() {
         setLoading(false);
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
-        if(localStorage.getItem('islogin') && localStorage.getItem('isAdmin')) window.location.href= '/admin/dashboard';
+        if(localStorage.getItem('islogin') && localStorage.getItem('isadmin')) window.location.href= '/admin/dashboard';
     }, []);
 
     if(loading) {
         return (
-            <div className='text-center p-8'>
-                <p><span className='font-bold text-2lg'>Loading...</span></p>
-            </div>
+            <h2 className='text-center'>
+                <p><span className='font-bold text-2lg'>
+                    Sedang memuat data... Mohon Harap Tunggu...
+                </span></p>
+                <CircularProgress color="info" size={50} />
+            </h2>
         );
     }
 
@@ -122,9 +133,9 @@ export default function Admin() {
         return(
             <Myhelmet
                 title={`Login Admin | Psikotest Online App`}
-                pathURL={`admin`}
-                robots={`index, follow`}
-                onetime={true}
+                pathURL={`/admin`}
+                robots={`index, follow, snippet, max-snippet:99, max-image-preview:standard, noarchive, notranslate`}
+                onetime={null}
             />
         );
     });
@@ -189,9 +200,16 @@ export default function Admin() {
                                         },
                                     }} />
                         <Box sx={{ m: 1 }}>
-                            <Button variant="contained" size="large" fullWidth type="submit">
-                                Login
-                            </Button>
+                            <div>
+                                <Button variant="contained" size="large" color="primary" fullWidth type="submit">
+                                    Login
+                                </Button>
+                            </div>
+                            <div className='mt-4'>
+                                <Button variant="contained" size="large" color="secondary" fullWidth href="/" title="Beranda" rel="follow" type="button">
+                                    Kembali
+                                </Button>
+                            </div>
                         </Box>
                     </Box>
                 </div>

@@ -6,6 +6,7 @@ import Layoutadmin from '@/components/layout/Layoutadmin';
 import axios from 'axios';
 import * as React from 'react';
 import dynamic from 'next/dynamic';
+import CircularProgress from '@mui/material/CircularProgress';
 import { block } from 'million/react';
 
 const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
@@ -33,7 +34,7 @@ export default function AdminDashboard() {
     const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
         try {
-            const cacheResponse = await caches.match('peserta/terbaru');
+            const cacheResponse = await caches.match('/admin/dashboard');
 
             if (cacheResponse) {
                 // Jika data ditemukan dalam cache
@@ -54,6 +55,7 @@ export default function AdminDashboard() {
                         withCredentials: true,  // Mengirimkan cookie dalam permintaan
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-API-KEY': process.env.APP_FAST_API_KEY,
                             'XSRF-TOKEN': csrfToken,
                             'islogin' : readable(localStorage.getItem('islogin')),
                             'isadmin' : readable(localStorage.getItem('isadmin')),
@@ -78,15 +80,15 @@ export default function AdminDashboard() {
                         // console.log('Data diperbarui. Menyimpan data baru ke cache');
 
                         // Hapus data lama dari cache dan simpan yang baru
-                        const cache = await caches.open('peserta/terbaru');
-                        await cache.delete('peserta/terbaru');
+                        const cache = await caches.open('/admin/dashboard');
+                        await cache.delete('/admin/dashboard');
                         // console.log('Data lama dihapus dari cache');
 
                         // Menyimpan data baru ke cache
                         const newResponse = new Response(JSON.stringify(apiData), {
                             headers: { 'Content-Type': 'application/json' }
                         });
-                        await cache.put('peserta/terbaru', newResponse);
+                        await cache.put('/admin/dashboard', newResponse);
                         // console.log('Data baru disimpan ke cache');
 
                         // Update data dengan data terbaru dari API
@@ -109,6 +111,7 @@ export default function AdminDashboard() {
                         withCredentials: true,
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-API-KEY': process.env.APP_FAST_API_KEY,
                             'XSRF-TOKEN': csrfToken,
                             'islogin' : localStorage.getItem('islogin'),
                             'isadmin' : localStorage.getItem('isadmin'),
@@ -130,11 +133,11 @@ export default function AdminDashboard() {
                     setData(data);  // Menyimpan data ke state
 
                     // Menyimpan data ke cache setelah berhasil mendapatkan data
-                    const cache = await caches.open('peserta/terbaru');
+                    const cache = await caches.open('/admin/dashboard');
                     const cacheResponse = new Response(JSON.stringify(data), {
                         headers: { 'Content-Type': 'application/json' }
                     });
-                    await cache.put('peserta/terbaru', cacheResponse);
+                    await cache.put('/admin/dashboard', cacheResponse);
                     console.info('Data disimpan ke cache');
                 } catch (error) {
                     console.error('Terjadi kesalahan saat mengambil data:', error);
@@ -146,6 +149,7 @@ export default function AdminDashboard() {
         setLoading(false);
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
         getData();
         setNama(localStorage.getItem('nama'));
@@ -158,8 +162,9 @@ export default function AdminDashboard() {
         return(
             <Myhelmet
                 title={`Dashboard | Psikotest Online App`}
-                pathURL={`admin/dashboard`}
-                robots={`index, follow`}
+                pathURL={`/admin/dashboard`}
+                robots={`index, follow, snippet, max-snippet:99, max-image-preview:standard, noarchive, notranslate`}
+                onetime={false}
             />
         );
     });
@@ -184,8 +189,8 @@ export default function AdminDashboard() {
 
     return (
         <>
-            <MemoHelmet />
             <Layoutadmin>
+                <MemoHelmet />
                 <MemoAppbarku />
                 <MemoNavBreadcrumb />
                 <div className="p-4 mb-14">
@@ -196,9 +201,12 @@ export default function AdminDashboard() {
                     <div className="mt-4">
                         <h2 className="font-bold">Daftar Tes Psikotest Terbaru</h2>
                         {loading ? (
-                            <div className='text-center'>
-                                <p><span className='font-bold text-2lg'>Loading...</span></p>
-                            </div>
+                            <h2 className='text-center'>
+                                <p><span className='font-bold text-2lg'>
+                                    Sedang memuat data... Mohon Harap Tunggu...
+                                </span></p>
+                                <CircularProgress color="info" size={50} />
+                            </h2>
                         ) : (
                             <ListPeserta listpeserta={data} isLatest={true} />
                         )}

@@ -1,6 +1,5 @@
-'use client'
+'use client';
 import {
-	coba,
     checkCompatibility,
 	openDB,
     saveDataToDB,

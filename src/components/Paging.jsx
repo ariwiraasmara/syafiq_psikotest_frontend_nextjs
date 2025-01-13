@@ -17,7 +17,7 @@ export default function Paging(props) {
         return (
             <React.StrictMode>
                 <span className='mr-4 ml-4 bg-red-700 p-2 rounded-xl font-bold underline underline-offset-8'>
-                    <Link href={`/admin/psikotest/kecermatan/detil/?page=${xr}`} sx={{ color: 'white' }}>
+                    <Link rel='follow' title={props.title} href={`/admin/psikotest/kecermatan/detil?page=${xr}`} sx={{ color: 'white' }}>
                         {xr}
                     </Link>
                 </span>
@@ -28,7 +28,7 @@ export default function Paging(props) {
         return (
             <React.StrictMode>
                 <span className='mr-4 ml-4'>
-                    <Link href={`/admin/psikotest/kecermatan/detil/?page=${xr}`} sx={{ color: 'white' }}>
+                    <Link rel='follow' title={props.title} href={`/admin/psikotest/kecermatan/detil/?page=${xr}`} sx={{ color: 'white' }}>
                         {xr}
                     </Link>
                 </span>

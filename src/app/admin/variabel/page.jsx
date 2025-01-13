@@ -9,9 +9,9 @@ import Swal from 'sweetalert2';
 
 import Fab from '@mui/material/Fab';
 import Link from '@mui/material/Link';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import AddIcon from '@mui/icons-material/Add';
-import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -39,17 +39,13 @@ const linkStyle = {
 export default function VariabelSetting() {
     const router = useRouter();
     const [data, setData] = React.useState([]);
-    const [loading, setLoading] = React.useState(true);
-
-    const opencloseEdit = (varid) => {
-        document.getElementById(varid).classList.toggle('hidden');
-    }
+    const [loading, setLoading] = React.useState(false);
             
     const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
         const expirationTime = (Date.now() + 3600000) * 24; // 24 jam ke depan dalam milidetik
         try {
-            const cacheResponse = await caches.match('variabel');
+            const cacheResponse = await caches.match('/admin/variabel');
             
             if (cacheResponse) {
                 // Jika data ditemukan dalam cache
@@ -99,21 +95,22 @@ export default function VariabelSetting() {
                         // console.log('Data diperbarui. Menyimpan data baru ke cache');
                         
                         // Hapus data lama dari cache dan simpan yang baru
-                        const cache = await caches.open('variabel');
-                        await cache.delete('variabel');
+                        const cache = await caches.open('/admin/variabel');
+                        await cache.delete('/admin/variabel');
                         // console.log('Data lama dihapus dari cache');
                         
                         // Menyimpan data baru ke cache
                         const newResponse = new Response(JSON.stringify(responseStore), {
                             headers: { 'Content-Type': 'application/json' }
                         });
-                        await cache.put('variabel', newResponse);
+                        await cache.put('/admin/variabel', newResponse);
                         // console.log('Data baru disimpan ke cache');
                         
                         // Update dataPeserta dengan data terbaru dari API
                         setData(apiResponse.data.data);
                     }
                     console.info('Get Data Dari Cache');
+                    setLoading(false);
                 } catch (error) {
                     console.error('Terjadi kesalahan saat mengambil data terbaru:', error);
                 }
@@ -156,12 +153,13 @@ export default function VariabelSetting() {
                     }
                     
                     // Menyimpan data ke cache setelah berhasil mendapatkan data
-                    const cache = await caches.open('variabel');
+                    const cache = await caches.open('/admin/variabel');
                     const cacheResponse = new Response(JSON.stringify(responseStore), {
                         headers: { 'Content-Type': 'application/json' }
                     });
-                    await cache.put('variabel', cacheResponse);
+                    await cache.put('/admin/variabel', cacheResponse);
                     console.log('Data disimpan ke cache');
+                    setLoading(false);
                 } catch (error) {
                     console.error('Terjadi kesalahan saat mengambil data:', error);
                 }
@@ -172,23 +170,23 @@ export default function VariabelSetting() {
         setLoading(false);
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
         getData();
     }, []);
-    
-    // Filter data menggunakan useMemo (hanya jika ada operasi pengolahan data)
-    const filteredData = React.useMemo(() => {
-        // return variabels.filter(item => item.values > 10); // Contoh: hanya menampilkan variabel dengan values > 10
-        return data;
-    }, []);
 
-    console.table('tabel data variabel', filteredData);
+    console.table('tabel data variabel', data);
+
+    const toAdd = (e) => {
+        e.preventDefault();
+        return router.push('/admin/variabel/baru');
+    }
 
     const toEdit = (e, id, nvariabel, nvalue) => {
         e.preventDefault();
-        sessionStorage.setItem('variabel_id', id);
-        sessionStorage.setItem('variabel_variabel', nvariabel);
-        sessionStorage.setItem('variabel_values', nvalue);
+        sessionStorage.setItem('admin_variabel_id', id);
+        sessionStorage.setItem('admin_variabel_variabel', nvariabel);
+        sessionStorage.setItem('admin_variabel_values', nvalue);
         return router.push('/admin/variabel/edit');
     };
 
@@ -248,9 +246,12 @@ export default function VariabelSetting() {
 
     if(loading) {
         return (
-            <div className='text-center p-8'>
-                <p><span className='font-bold text-2lg'>Loading...</span></p>
-            </div>
+            <h2 className='text-center p-8'>
+                <p><span className='font-bold text-2lg'>
+                    Sedang memuat data... Mohon Harap Tunggu...
+                </span></p>
+                <CircularProgress color="info" size={50} />
+            </h2>
         );
     }
 
@@ -258,8 +259,8 @@ export default function VariabelSetting() {
         return(
             <Myhelmet
                 title={`Variabel | Admin | Psikotest`}
-                pathURL={`admin/variabel`}
-                robots={'follow, index'}
+                pathURL={`/admin/variabel`}
+                robots={'index, follow, snippet, max-snippet:99, max-image-preview:standard, noarchive, notranslate'}
             />
         );
     });
@@ -283,68 +284,82 @@ export default function VariabelSetting() {
     });
 
     return (
-    <>
-        <MemoHelmet />
         <Layoutadmin>
+            <MemoHelmet />
             <MemoAppbarku  />
             <MemoNavBreadcrumb />
             <div className="p-5 mb-14">
                 <h1 className="hidden">Halaman Variabel | Admin</h1>
                 {loading ? (
-                    <div className='text-center'>
-                        <p><span className='font-bold text-2lg'>Loading...</span></p>
-                        <p><span className='font-bold text-2lg'>Sedang memproses...</span></p>
-                    </div>
+                    <h2 className='text-center'>
+                        <p><span className='font-bold text-2lg'>
+                            Sedang memuat data... Mohon Harap Tunggu...
+                        </span></p>
+                        <CircularProgress color="info" size={50} />
+                    </h2>
                 ) : (
-                    <For each={data}>
-                        {(data, index) =>
-                            <div key={index} className='border-b-2 p-3'>
-                                <div className="static mt-3 flex flex-row justify-between">
-                                    <Link
-                                        sx={linkStyle}
-                                        className="mr-4"
-                                        onClick={(e) => toEdit(e, data.id, data.variabel, data.values)}
-                                    >
-                                        <div className="order-first">
-                                            <p>
-                                                {data.variabel} = {data.values} detik
-                                            </p>
-                                        </div>
-                                    </Link>
-                                    <div className="order-last">
+                    data ? (
+                        <For each={data}>
+                            {(data, index) =>
+                                <div key={index} className='border-b-2 p-3'>
+                                    <div className="static flex flex-row justify-between">
                                         <Link
                                             sx={linkStyle}
-                                            className="mr-6"
+                                            className="mr-4"
+                                            rel='nofollow'
+                                            title={`${data.variabel} = ${data.values} detik`}
                                             onClick={(e) => toEdit(e, data.id, data.variabel, data.values)}
+                                            href="#"
                                         >
-                                            <EditIcon />
+                                            <div className="order-first">
+                                                <p>
+                                                    {data.variabel} = {data.values} detik
+                                                </p>
+                                            </div>
                                         </Link>
-                                        <Link
-                                            sx={linkStyle}
-                                            onClick={(e) => fDelete(e, data.id, data.variabel, data.values)}
-                                        >
-                                            <DeleteIcon />
-                                        </Link>
+                                        <div className="order-last">
+                                            <span className='mr-6'>
+                                                <Link
+                                                    sx={linkStyle}
+                                                    className="mr-6"
+                                                    rel='nofollow'
+                                                    title={`Edit Data`}
+                                                    onClick={(e) => toEdit(e, data.id, data.variabel, data.values)}
+                                                    href="#"
+                                                >
+                                                    <EditIcon />
+                                                </Link>
+                                            </span>
+                                            <Link
+                                                sx={linkStyle}
+                                                rel='nofollow'
+                                                title={`Delete Data`}
+                                                onClick={(e) => fDelete(e, data.id, data.variabel, data.values)}
+                                                href="#"
+                                            >
+                                                <DeleteIcon />
+                                            </Link>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        }
-                    </For>
+                            }
+                        </For>
+                    ) : (
+                        <h2 className='font=bold text-center text-lg'>
+                            Belum Ada Data<br/>
+                            Data Kosong!
+                        </h2>
+                    )
                 )}
-                <div id="newdata" className="mt-6 border-2 p-2 rounded-lg hidden">
-                    <h2 className="font-bold border-b-2">Tambah Variabel Baru</h2>
-                    <NewOrEdit />
-                </div>
             </div>
             <Fab sx={{
                 position: 'absolute',
                 bottom: '13%',
                 right: '3%',
-            }} color="primary" aria-label="add" onClick={() => opencloseEdit('newdata')} >
+            }} color="primary" aria-label="add" rel='nofollow' title='Data Baru' href='#' onClick={(e) => toAdd(e)} >
                 <AddIcon />
             </Fab>
             <MemoFooter />
         </Layoutadmin>
-    </>
     );
 }

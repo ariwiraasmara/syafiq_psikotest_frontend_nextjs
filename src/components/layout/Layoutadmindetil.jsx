@@ -6,6 +6,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import localFont from "next/font/local";
 import "../../app/globals.css";
 
@@ -57,8 +58,10 @@ export default function Layoutadmindetil({ children }) {
     if(loading) {
         return (
             <h2 className='text-center p-8'>
-                <p><span className='font-bold text-2lg'>Loading...</span></p>
-                <p>Sedang memuat data... Harap Tunggu...</p>
+                <p><span className='font-bold text-2lg'>
+                    Sedang memuat data... Mohon Harap Tunggu...
+                </span></p>
+                <CircularProgress color="info" size={50} />
             </h2>
         );
     }

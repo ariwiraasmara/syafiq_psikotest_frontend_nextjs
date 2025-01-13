@@ -43,7 +43,7 @@ export default function Appbarku(props) {
     const linkBack = (isback, url) => {
         if(isback) {
             return (
-                <Link onClick={() => router.push(url)} sx={{ marginRight : '10px' }} >
+                <Link rel="follow" title={`Kembali`} href={url} onClick={() => router.push(url)} sx={{ marginRight : '10px' }}>
                     <ArrowBackIcon />
                 </Link>
             );
@@ -58,7 +58,6 @@ export default function Appbarku(props) {
                         <Typography variant="h5" component="div" className="font-bold">
                             {linkBack(props.isback, props.url)}
                             <span className="font-bold">{props.headTitle}</span>
-                            <nav id="breadcrumb">{props.path}</nav>
                         </Typography>
                     </Toolbar>
                 </AppBar>

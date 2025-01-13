@@ -7,6 +7,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { readable, random } from '@/libraries/myfunction';
 
@@ -61,6 +62,7 @@ export default function NewOrEdit() {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-API-KEY': process.env.APP_FAST_API_KEY,
                     'XSRF-TOKEN': csrfToken,
                     'islogin' : readable(localStorage.getItem('islogin')),
                     'isadmin' : readable(localStorage.getItem('isadmin')),
@@ -96,14 +98,12 @@ export default function NewOrEdit() {
 
     if(loading) {
         return (
-            <div className='text-center p-8'>
-                <p>
-                    <span className='font-bold text-2lg'>
-                        Loading...<br/>
-                        Sedang mengirim dan menyimpan data
-                    </span>
-                </p>
-            </div>
+            <h2 className='text-center p-8'>
+                <p><span className='font-bold text-2lg'>
+                    Sedang memuat data... Mohon Harap Tunggu...
+                </span></p>
+                <CircularProgress color="info" size={50} />
+            </h2>
         );
     }
 

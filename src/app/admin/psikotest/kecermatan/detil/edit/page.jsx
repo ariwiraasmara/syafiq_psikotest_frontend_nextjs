@@ -118,6 +118,7 @@ export default function PsikotestKecermatanDetilEdit() {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-API-KEY': process.env.APP_FAST_API_KEY,
                     'XSRF-TOKEN': csrfToken,
                     'islogin' : readable(localStorage.getItem('islogin')),
                     'isadmin' : readable(localStorage.getItem('isadmin')),
@@ -136,13 +137,13 @@ export default function PsikotestKecermatanDetilEdit() {
                 }
             });
             if(response.data.success) {
-                sessionStorage.removeItem('psikotest_kecermatan_idsoal');
-                sessionStorage.removeItem('psikotest_kecermatan_soalA');
-                sessionStorage.removeItem('psikotest_kecermatan_soalB');
-                sessionStorage.removeItem('psikotest_kecermatan_soalC');
-                sessionStorage.removeItem('psikotest_kecermatan_soalD');
-                sessionStorage.removeItem('psikotest_kecermatan_jawaban');
-                return router.push('/admin/psikotest/kecermatan/detil/?page=1');
+                sessionStorage.removeItem('admin_psikotest_kecermatan_idsoal');
+                sessionStorage.removeItem('admin_psikotest_kecermatan_soalA');
+                sessionStorage.removeItem('admin_psikotest_kecermatan_soalB');
+                sessionStorage.removeItem('admin_psikotest_kecermatan_soalC');
+                sessionStorage.removeItem('admin_psikotest_kecermatan_soalD');
+                sessionStorage.removeItem('admin_psikotest_kecermatan_jawaban');
+                return router.push(`/admin/psikotest/kecermatan/detil?page=${lastpage}`);
             }
             else {
                 console.log('response', response);
@@ -156,15 +157,16 @@ export default function PsikotestKecermatanDetilEdit() {
 
     const cancel = (e) => {
         e.preventDefault();
-        sessionStorage.removeItem('psikotest_kecermatan_idsoal');
-        sessionStorage.removeItem('psikotest_kecermatan_soalA');
-        sessionStorage.removeItem('psikotest_kecermatan_soalB');
-        sessionStorage.removeItem('psikotest_kecermatan_soalC');
-        sessionStorage.removeItem('psikotest_kecermatan_soalD');
-        sessionStorage.removeItem('psikotest_kecermatan_jawaban');
-        return router.push('/admin/psikotest/kecermatan/detil/?page=1');
+        sessionStorage.removeItem('admin_psikotest_kecermatan_idsoal');
+        sessionStorage.removeItem('admin_psikotest_kecermatan_soalA');
+        sessionStorage.removeItem('admin_psikotest_kecermatan_soalB');
+        sessionStorage.removeItem('admin_psikotest_kecermatan_soalC');
+        sessionStorage.removeItem('admin_psikotest_kecermatan_soalD');
+        sessionStorage.removeItem('admin_psikotest_kecermatan_jawaban');
+        return router.push(`/admin/psikotest/kecermatan/detil/?page=${lastpage}`);
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
         getData();
     }, []);
@@ -174,7 +176,7 @@ export default function PsikotestKecermatanDetilEdit() {
             <Myhelmet
                 title={`Edit Detil Psikotest Kecermatan | Admin | Psikotest`}
                 pathURL={`admin/psikotest/kecermatan/detil/edit`}
-                robots={`follow, index`}
+                robots={`none, nosnippet, noarchive, notranslate, noimageindex`}
             />
         );
     });
@@ -199,21 +201,28 @@ export default function PsikotestKecermatanDetilEdit() {
 
     return(
     <>
-        <MemoHelmet />
         <Layoutadmindetil>
+            <MemoHelmet />
             <MemoAppbarku />
             <MemoNavBreadcrumb />
             <div className="p-5 mb-14">
                 <h1 className='hidden'>Halaman Edit Psikotest Kecermatan Detil | Admin </h1>
-                <h2 className="font-bold text-center">Data Edit Detil Psikotest Kecermatan</h2>
-                <div className="font-bold">
-                    Edit Soal dan Jawaban<br/>
+                <h2 className="font-bold text-center">Edit Soal dan Jawaban Psikotest Kecermatan Kolom {pkid} </h2>
+                <div className="font-bold mt-2">
                     ID : {idsoal}
+                    <h3 className='mt-0'>
+                        <span className='font-bold mr-2'>Soal :</span>
+                        [
+                            <span className='ml-2 mr-2'>{soalA}</span>
+                            <span className='mr-2'>{soalB}</span>
+                            <span className='mr-2'>{soalC}</span>
+                            <span className='mr-2'>{soalD}</span>
+                        ]
+                    </h3>
+                    <h3 className='mt-0'><span className='font-bold'>Jawaban :</span> {jawaban}</h3>
                 </div>
                 <Box component="form"
-                    sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' },
-                        p: 3
-                    }}
+                    sx={{ '& > :not(style)': { marginTop: 3, p: 1, width: '100%' } }}
                     onSubmit={(e) => submit(e)}
                     noValidate
                     autoComplete="off">

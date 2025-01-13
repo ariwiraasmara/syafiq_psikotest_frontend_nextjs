@@ -19,6 +19,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
+import CircularProgress from '@mui/material/CircularProgress';
 import debounce from 'lodash.debounce';
 
 import Swal from 'sweetalert2';
@@ -91,7 +92,7 @@ export default function PesertaPsikotestKecermatan() {
         });
 
         console.info('handleChange_nilaiTotal: nilaiTotal', nilaiTotal);
-    }, []);
+    }); // => "[]" dihapus karena tidak terpakai
 
     // Mendapatkan data soal dan jawaban
     const getData = async () => {
@@ -233,7 +234,7 @@ export default function PesertaPsikotestKecermatan() {
     const getVariabel = async () => {
         setLoadingTimer(true); // Menandakan bahwa proses loading sedang berjalan
         try {
-            const cacheResponse = await caches.match('peserta/psikotest/kecermatan/get-variabel');
+            const cacheResponse = await caches.match('/peserta/psikotest/kecermatan/get-variabel');
 
             if (cacheResponse) {
                 // Jika data ditemukan dalam cache
@@ -255,8 +256,9 @@ export default function PesertaPsikotestKecermatan() {
                     const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting/1`, {
                         withCredentials: true,  // Mengirimkan cookie dalam permintaan
                         headers: {
-                            'XSRF-TOKEN': csrfToken,
                             'Content-Type': 'application/json',
+                            'X-API-KEY': process.env.APP_FAST_API_KEY,
+                            'XSRF-TOKEN': csrfToken,
                             'tokenlogin': random('combwisp', 50),
                         }
                     });
@@ -267,15 +269,15 @@ export default function PesertaPsikotestKecermatan() {
                         // console.log('Data diperbarui. Menyimpan data baru ke cache');
 
                         // Hapus data lama dari cache dan simpan yang baru
-                        const cache = await caches.open('peserta/psikotest/kecermatan/get-variabel');
-                        await cache.delete('peserta/psikotest/kecermatan/get-variabel');
+                        const cache = await caches.open('/peserta/psikotest/kecermatan/get-variabel');
+                        await cache.delete('/peserta/psikotest/kecermatan/get-variabel');
                         // console.log('Data lama dihapus dari cache');
 
                         // Menyimpan data baru ke cache
                         const newResponse = new Response(JSON.stringify(apiData), {
                             headers: { 'Content-Type': 'application/json' }
                         });
-                        await cache.put('peserta/psikotest/kecermatan/get-variabel', newResponse);
+                        await cache.put('/peserta/psikotest/kecermatan/get-variabell', newResponse);
                         // console.log('Data baru disimpan ke cache');
 
                         // Update data dengan data terbaru dari API
@@ -298,8 +300,9 @@ export default function PesertaPsikotestKecermatan() {
                     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting/1`, {
                         withCredentials: true,  // Mengirimkan cookie dalam permintaan
                         headers: {
-                            'XSRF-TOKEN': csrfToken,
                             'Content-Type': 'application/json',
+                            'X-API-KEY': process.env.APP_FAST_API_KEY,
+                            'XSRF-TOKEN': csrfToken,
                             'tokenlogin': random('combwisp', 50),
                         }
                     });
@@ -309,11 +312,11 @@ export default function PesertaPsikotestKecermatan() {
                     setTimeLeft(response.data.data[0].values); // Mengambil waktu awal
 
                     // Menyimpan data ke cache setelah berhasil mendapatkan data
-                    const cache = await caches.open('peserta/psikotest/kecermatan/get-variabel');
+                    const cache = await caches.open('/peserta/psikotest/kecermatan/get-variabel');
                     const cacheResponse = new Response(JSON.stringify(data), {
                         headers: { 'Content-Type': 'application/json' }
                     });
-                    await cache.put('peserta/psikotest/kecermatan/get-variabel', cacheResponse);
+                    await cache.put('/peserta/psikotest/kecermatan/get-variabel', cacheResponse);
                     console.log('Data disimpan ke cache');
                 } catch (error) {
                     console.error('Terjadi kesalahan saat mengambil data:', error);
@@ -342,8 +345,9 @@ export default function PesertaPsikotestKecermatan() {
             }, {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
                 headers: {
-                    'XSRF-TOKEN': csrfToken,
                     'Content-Type': 'application/json',
+                    'X-API-KEY': process.env.APP_FAST_API_KEY,
+                    'XSRF-TOKEN': csrfToken,
                     'tokenlogin': random('combwisp', 50),
                 }
             });
@@ -371,6 +375,7 @@ export default function PesertaPsikotestKecermatan() {
         return `${minutes} menit ${seconds} detik`;
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
         getData();
         getVariabel();
@@ -409,9 +414,10 @@ export default function PesertaPsikotestKecermatan() {
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [sessionID, router]); // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sessionID, router]);
 
-    const scrollPositionRef = React.useRef(0); // Menyimpan posisi scro
+    const scrollPositionRef = React.useRef(0); // Menyimpan posisi scroll
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
         nilaiTotalRef.current = nilaiTotal;
         console.log('Jawaban User:', jawabanUser);
@@ -423,14 +429,14 @@ export default function PesertaPsikotestKecermatan() {
         else {
             router.push(`/peserta/psikotest/kecermatan`);
         }
-    }, [scrollPositionRef.current]); // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [scrollPositionRef.current]);
     
     React.useLayoutEffect(() => {
         const savedScrollPosition = scrollPositionRef;
         if (savedScrollPosition) {
             window.scrollTo(0, scrollPositionRef.current);
         }
-    }, []); // Empty dependency array ensures this runs once on mount
+    }, []);
 
     const MemoSoal = React.memo(({ soal1, soal2, soal3, soal4 }) => {
         return(
@@ -480,8 +486,8 @@ export default function PesertaPsikotestKecermatan() {
         return(
             <Myhelmet
                 title={`Psikotest Kecermatan | Psikotest Online App`}
-                pathURL={`peserta/psikotest/kecermatan`}
-                robots={`none`}
+                pathURL={`/peserta/psikotest/kecermatan`}
+                robots={`none, nosnippet, noarchive, notranslate, noimageindex`}
             />
         );
     });
@@ -505,25 +511,30 @@ export default function PesertaPsikotestKecermatan() {
         <div>
             <h1 className='hidden'>Halaman Psikotest Kecermatan Peserta</h1>
             {loading ? (
-                <div className='text-center p-8'>
-                    <p><span className='font-bold text-2lg'>Loading...</span></p>
-                </div>
+                <h2 className='text-center p-8'>
+                    <p><span className='font-bold text-2lg'>
+                        Sedang memuat data... Mohon Harap Tunggu...
+                    </span></p>
+                    <CircularProgress color="info" size={50} />
+                </h2>
             ) : (
                 sessionID > 5 ? (
-                    <div className="text-center p-8">
-                        <div>
-                            <span className="font-bold text-2lg">
-                                Tes Telah Berakhir!<br/>
-                                Harap Tunggu! Anda akan dialihkan ke halaman hasil!
-                            </span>
-                        </div>
-                    </div>
+                    <h2 className='text-center p-8'>
+                        <p><span className='font-bold text-2lg'>
+                            Tes Telah Berakhir!<br/>
+                            Harap Tunggu! Anda akan dialihkan ke halaman hasil!
+                        </span></p>
+                        <CircularProgress color="info" size={50} />
+                    </h2>
                 ) : (
                     <div className="text-center p-8">
                         {loadingTimer ? (
-                            <div className='text-center p-8'>
-                                <p><span className='font-bold text-2lg'>Loading...</span></p>
-                            </div>
+                            <h2 className='text-center'>
+                                <p><span className='font-bold text-2lg'>
+                                    Sedang memuat data... Mohon Harap Tunggu...
+                                </span></p>
+                                <CircularProgress color="info" size={50} />
+                            </h2>
                         ) : (
                             <>
                                 <Appbarpeserta
