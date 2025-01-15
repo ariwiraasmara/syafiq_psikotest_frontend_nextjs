@@ -64,7 +64,7 @@ export default function RootLayout({ children }) {
     }, []);
 
     const OnetimeToken = () => {
-      if(onetime) {
+      if(onetime || (Cookies.get('__sysauth__') && Cookies.get('__sysel__'))) {
           <>
               <meta name="XSRF-TOKEN" content={csrf} />
               <meta name="__token__" content={token} />

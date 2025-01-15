@@ -1,3 +1,6 @@
+// ! Copyright @
+// ! Syafiq
+// ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
 import Layoutadmin from '@/components/layout/Layoutadmin';
 import axios from 'axios';

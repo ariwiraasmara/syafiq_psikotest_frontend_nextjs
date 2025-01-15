@@ -1,3 +1,6 @@
+// ! Copyright @
+// ! Syafiq
+// ! Syahri Ramadhan Wiraasmara (ARI)
 import axios from 'axios';
 import { random } from '@/libraries/myfunction';
 const dbName = 'syafiq_psikotest';
