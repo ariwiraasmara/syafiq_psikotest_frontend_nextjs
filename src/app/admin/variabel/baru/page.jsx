@@ -26,36 +26,43 @@ const Footer = dynamic(() => import('@/components/Footer'), {
 });
 import { readable, random } from '@/libraries/myfunction';
 
-const styledTextField = {
-    '& .MuiOutlinedInput-notchedOutline': {
-        border: '2px solid rgba(255, 255, 255, 0.9)',
-        color: 'white',
-    },
-    '& .MuiInputLabel-root': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-input': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-placeholder': {
-        color: 'white',
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'rgba(255, 255, 255, 0.8)', // warna hover
-    },
-    '&:hover .MuiInputLabel-root': {
-        color: 'white', // warna hover
-    },
-}
-
 export default function VariabelBaru() {
     const router = useRouter();
+    const textColor = localStorage.getItem('text-color');
+    const textColorRGB = localStorage.getItem('text-color-rgb');
+    const borderColor = localStorage.getItem('border-color');
+    const borderColorRGB = localStorage.getItem('border-color-rgb');
     const [loading, setLoading] = React.useState(false);
     const [nvariabel, setNvariabel] = React.useState('');
     const handleChange_Nvariable = (event) => {
         event.preventDefault();
         setNvariabel(event.target.value);
     };
+
+    const styledTextField = {
+        '& .MuiOutlinedInput-notchedOutline': {
+            border: `2px solid ${borderColor}`,
+            color: textColorRGB,
+        },
+        '& .MuiInputLabel-root.MuiInputLabel-shrink': {
+            color: textColorRGB,
+        },
+        '& .MuiOutlinedInput-input': {
+            color: textColorRGB,
+        },
+        '& .MuiOutlinedInput-placeholder': {
+            color: textColorRGB,
+        },
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'rgba(255, 255, 255, 0.8)', // warna hover
+        },
+        '&:hover .MuiInputLabel-root': {
+            color: textColorRGB, // warna hover
+        },
+        '& .MuiFormHelperText-root': {
+            color: textColorRGB,  // Warna helper text
+        },
+    }
 
     const [nvalues, setNvalues] = React.useState();
     const handleChange_Nvalues = (event) => {
@@ -108,33 +115,27 @@ export default function VariabelBaru() {
                     'pranked': 'absolutely'
                 }
             });
-    
             console.log('response', response);
             if(response.data.success) {
-                router.push('/admin/variabel');
+                router.push('/admin/variabel?page=1');
             }
             else {
                 alert('Terjadi Kesalahan Variabel');
             }
         }
-        catch(er) {
-            console.log('Terjadi Kesalahan Mengirim Data Variabel', er);
-            alert('Terjadi Kesalahan Mengirim Data Variabel');
+        catch(err) {
+            console.log('Terjadi Error AdminVariabel-submit:', err);
         }
         setLoading(false);
     };
 
     const cancel = (e) => {
         e.preventDefault();
-        try {
-            sessionStorage.removeItem('variabel_id');
-            sessionStorage.removeItem('variabel_variabel');
-            sessionStorage.removeItem('variabel_values');
-            return router.push('/admin/variabel');
-        }
-        catch(err) {
-            console.log('Terjadi Kesalahan Membatalkan Update Variabel', err);
-        }
+        setLoading(true);
+        sessionStorage.removeItem('variabel_id');
+        sessionStorage.removeItem('variabel_variabel');
+        sessionStorage.removeItem('variabel_values');
+        router.push('/admin/variabel?page=1');
     };
     
     const MemoHelmet = React.memo(function Memo() {
@@ -171,10 +172,10 @@ export default function VariabelBaru() {
             <MemoHelmet />
             <MemoNavBreadcrumb />
             <MemoAppbarku />
-            <div className="p-5 mb-14">
+            <div className="p-4">
                 <h1 className='hidden'>Halaman Tambah Variabel Baru | Admin</h1>
                 <Box component="form"
-                    sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' } }}
+                    sx={{ '& > :not(style)': { marginTop: 3, p: 0, width: '100%' } }}
                     onSubmit={(e) => submit(e)}
                     noValidate
                     autoComplete="off">
@@ -188,7 +189,7 @@ export default function VariabelBaru() {
                                 fullWidth sx={styledTextField}
                                 onChange={handleChange_Nvalues}
                                 defaultValue={nvalues} />
-                    <Box sx={{ m: 1 }}>
+                    <Box>
                         <div>
                             <Button variant="contained" size="large" fullWidth color="primary" type="submit">
                                 Simpan

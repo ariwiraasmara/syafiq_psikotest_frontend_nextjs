@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { useRouter } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import NavigasiBawah from '@/components/BottomNavigation';
+import NavigasiBawah from '@/components/admin/NavigasiBawah';
 
 Layoutadmin.propTypes = {
     children: PropTypes.any,

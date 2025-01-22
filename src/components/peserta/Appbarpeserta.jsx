@@ -52,19 +52,19 @@ export default function Appbarpeserta(props) {
                                 <tr>
                                     <th colSpan="5">{props.kolom_x}</th>
                                 </tr>
-                                <tr className="border-2 border-white p-6 mt-4">
-                                    <td className="border-2 border-white">{props.soalA}</td>
-                                    <td className="border-2 border-white">{props.soalB}</td>
-                                    <td className="border-2 border-white">{props.soalC}</td>
-                                    <td className="border-2 border-white">{props.soalD}</td>
-                                    <td className="border-2 border-white">{props.soalE}</td>
+                                <tr className="border-2 border-white mt-4">
+                                    <td className="p-2 border-2 border-white">{props.soalA}</td>
+                                    <td className="p-2 border-2 border-white">{props.soalB}</td>
+                                    <td className="p-2 border-2 border-white">{props.soalC}</td>
+                                    <td className="p-2 border-2 border-white">{props.soalD}</td>
+                                    <td className="p-2 border-2 border-white">{props.soalE}</td>
                                 </tr>
-                                <tr className="border-2 border-white p-6">
-                                    <td className="border-2 border-white font-bold">A</td>
-                                    <td className="border-2 border-white font-bold">B</td>
-                                    <td className="border-2 border-white font-bold">C</td>
-                                    <td className="border-2 border-white font-bold">D</td>
-                                    <td className="border-2 border-white font-bold">E</td>
+                                <tr className="border-2 border-white">
+                                    <td className="p-2 border-2 border-white font-bold">A</td>
+                                    <td className="p-2 border-2 border-white font-bold">B</td>
+                                    <td className="p-2 border-2 border-white font-bold">C</td>
+                                    <td className="p-2 border-2 border-white font-bold">D</td>
+                                    <td className="p-2 border-2 border-white font-bold">E</td>
                                 </tr>
                                 <tr className="mt-4">
                                     <th colSpan="5">{props.timer}</th>

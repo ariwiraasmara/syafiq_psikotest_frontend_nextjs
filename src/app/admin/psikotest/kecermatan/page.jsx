@@ -31,14 +31,18 @@ const Footer = dynamic(() => import('@/components/Footer'), {
 });
 import { readable, random } from '@/libraries/myfunction';
 
-const linkStyle = {
-    color: '#fff'
-}
-
 export default function PsikotestKecermatan() {
     const router = useRouter();
+    const textColor = localStorage.getItem('text-color');
+    const textColorRGB = localStorage.getItem('text-color-rgb');
+    const borderColor = localStorage.getItem('border-color');
+    const borderColorRGB = localStorage.getItem('border-color-rgb');
     const [loading, setLoading] = React.useState(false);
     const [data, setData] = React.useState([]);
+
+    const linkStyle = {
+        color: textColorRGB
+    }
 
     const getData = async () => {
         setLoading(true);
@@ -68,11 +72,10 @@ export default function PsikotestKecermatan() {
                     'pranked': 'absolutely'
                 }
             });
-            console.info('response', response);
+            // console.info('response', response);
             setData(response.data.data);
         } catch (err) {
-            console.error(err);
-            return err;
+            console.info('Terjadi Error PsikotestKecermatan-getData', err);
         }
         setLoading(false);
     }
@@ -83,6 +86,44 @@ export default function PsikotestKecermatan() {
     }, []);
 
     console.table('tabel psikotest kecermatan', data);
+
+    if(loading) {
+        return (
+            <h2 className={`text-center p-8 font-bold text-2lg text-${textColor}`}>
+                <p>Sedang memuat data...<br/></p>
+                <p>Mohon Harap Tunggu...</p>
+                <CircularProgress color="info" size={50} />
+            </h2>
+        );
+    }
+
+    const MemoHelmet = React.memo(function Memo() {
+        return(
+            <Myhelmet
+                title={`Psikotest Kecermatan | Admin | Psikotest`}
+                pathURL={`/admin/psikotest/kecermatan`}
+                robots={`index, follow, snippet, max-snippet:99, max-image-preview:standard, noarchive, notranslate`}
+            />
+        );
+    });
+
+    const MemoAppbarku = React.memo(function Memo() {
+        return(
+            <Appbarku headTitle="Psikotest Kecermatan" isback={true} url={`/admin/psikotest`} />
+        );
+    });
+
+    const MemoNavBreadcrumb = React.memo(function Memo() {
+        return(
+            <NavBreadcrumb content={`Admin / Psikotest / Kecermatan`} hidden={`hidden`} />
+        );
+    });
+
+    const MemoFooter = React.memo(function Memo() {
+        return(
+            <Footer hidden={`hidden`} />
+        );
+    });
 
     const onDetil = (id) => {
         setLoading(true);
@@ -98,6 +139,7 @@ export default function PsikotestKecermatan() {
 
     const toEdit = (e, id, kolom_x, nilai_a, nilai_b, nilai_c, nilai_d, nilai_e) => {
         e.preventDefault()
+        setLoading(true);
         sessionStorage.setItem('admin_psikotest_kecermatan_id', id);
         sessionStorage.setItem('admin_psikotest_kecermatan_kolom_x', kolom_x);
         sessionStorage.setItem('admin_psikotest_kecermatan_nilai_A', nilai_a);
@@ -148,7 +190,8 @@ export default function PsikotestKecermatan() {
                     // Hapus item dari state variabels setelah sukses
                     setData((prev) => prev.filter((item) => item.id !== id));
                 } catch (error) {
-                    Swal.showValidationMessage(`Request failed: ${error}`);
+                    console.info('Terjadi Error AdminPsikotestKecermatan-fDelete', error);
+                    // Swal.showValidationMessage(`Terjadi Error AdminPsikotestKecermatan-fDelete: ${error}`);
                 }
             }
         }).then((result) => {
@@ -162,41 +205,13 @@ export default function PsikotestKecermatan() {
         });
     };
 
-    const MemoHelmet = React.memo(function Memo() {
-        return(
-            <Myhelmet
-                title={`Psikotest Kecermatan | Admin | Psikotest`}
-                pathURL={`/admin/psikotest/kecermatan`}
-                robots={`index, follow, snippet, max-snippet:99, max-image-preview:standard, noarchive, notranslate`}
-            />
-        );
-    });
-
-    const MemoAppbarku = React.memo(function Memo() {
-        return(
-            <Appbarku headTitle="Psikotest Kecermatan" isback={true} url={`/admin/psikotest`} />
-        );
-    });
-
-    const MemoNavBreadcrumb = React.memo(function Memo() {
-        return(
-            <NavBreadcrumb content={`Admin / Psikotest / Kecermatan`} hidden={`hidden`} />
-        );
-    });
-
-    const MemoFooter = React.memo(function Memo() {
-        return(
-            <Footer hidden={`hidden`} />
-        );
-    });
-
     return (
     <>
         <Layoutadmin>
             <MemoHelmet />
             <MemoAppbarku />
             <MemoNavBreadcrumb />
-            <div className="p-5 mb-14">
+            <div className={`p-5 mb-14 text-${textColor}`}>
                 <h1 className='hidden'>Halaman Psikotest Kecermatan | Admin</h1>
                 {loading ? (
                     <h2 className='text-center'>
@@ -208,10 +223,10 @@ export default function PsikotestKecermatan() {
                 ) : (
                     data ? (
                         data.map((data, index) => (
-                            <div className='border-b-2 p-3' key={index}>
+                            <div className={`bg-slate-50 border-b-2 p-3 rounded-t-md mt-2 text-${textColor} border-${borderColor}`} key={index}>
                                 <div className="static flex flex-row justify-between">
                                     <Link rel='follow' title={`Psikotest Kecermatan ${data.kolom_x}`} onClick={() => onDetil(data.id)} href="/admin/psikotest/kecermatan/detil/?page=1" key={index}>
-                                        <div className="order-first">
+                                        <div className={`order-first text-${textColor}`}>
                                             <p>{data.kolom_x}</p>
                                         </div>
                                     </Link>

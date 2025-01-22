@@ -6,6 +6,7 @@ import * as React from 'react';
 import dynamic from 'next/dynamic';
 import {
     checkCompatibility,
+    ifExist,
 	openDB,
     saveDataToDB
 } from '@/indexedDB/db';
@@ -40,6 +41,7 @@ const Carousel = dynamic(() => import('@/components/homepage/carousel/Carousel')
 });
 
 export default function Home() {
+    const textColor = localStorage.getItem('text-color');
     const UseDB = async() => {
 		try {
 			const db = await openDB();  // Tunggu hasil promise selesai
@@ -52,8 +54,10 @@ export default function Home() {
 
     const indexedDB = () => {
 		if(checkCompatibility) {
-			UseDB();
-			saveDataToDB();
+            if(ifExist) {
+                UseDB();
+                saveDataToDB();
+            }
             /*
             if ('storage' in navigator && 'persist' in navigator.storage) {
                 navigator.storage.persist().then((isPersistent) => {

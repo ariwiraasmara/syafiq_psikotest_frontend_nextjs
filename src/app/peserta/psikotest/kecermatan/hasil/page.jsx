@@ -21,7 +21,10 @@ const NavBreadcrumb = dynamic(() => import('@/components/NavBreadcrumb'), {
 const Footer = dynamic(() => import('@/components/Footer'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
-const HasilTes_GrafikKecermatan = dynamic(() => import('@/components/HasilTes_GrafikKecermatan'), {
+const TabelHasilPsikotestKecermatan = dynamic(() => import('@/components/peserta/TabelHasilPsikotestKecermatan'), {
+    ssr: false,  // Menonaktifkan SSR untuk komponen ini
+});
+const GrafikHasilPsikotestKecermatan = dynamic(() => import('@/components/peserta/GrafikHasilPsikotestKecermatan'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
 import { random } from '@/libraries/myfunction';
@@ -33,123 +36,52 @@ export default function PesertaPsikotestKecermatanHasil() {
     // const [paramTgl_tes, setParamTgl_tes] = React.useState();
     let paramTgl_tes = '';
 
+    const textColor = localStorage.getItem('text-color');
+    const borderColor = localStorage.getItem('border-color');
     const [dataPeserta, setDataPeserta] = React.useState({});
     const [dataHasiltes, setDataHasiltes] = React.useState({});
     const [loading, setLoading] = React.useState(true);
 
     const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
-        // setParamIdentitas(searchParams.get('identitas'));
         paramIdentitas = parseInt(searchParams.get('identitas'));
-        console.info('paramIdentitas', paramIdentitas);
-        // setParamTgl_tes(searchParams.get('tgl_tes'));
         paramTgl_tes = searchParams.get('tgl_tes');
-        console.info('paramTgl_tes', paramTgl_tes);
         try {
-            const cacheResponse = await caches.match('/peserta/psikotest/kecermatan/hasil-tes');
-
-            if (cacheResponse) {
-                // Jika data ditemukan dalam cache
-                // console.log('Data ditemukan di cache:', cacheResponse);
-
-                const cachedData = await cacheResponse.json();
-                // Set data dari cache ke state
-                // Menyimpan data dari cache ke state
-                setDataPeserta(cachedData.peserta[0]);
-                setDataHasiltes(cachedData.hasiltes[0]);
-                console.log('cache data hasil test peserta', cachedData.hasiltes[0]);
-
-                // Cek waktu atau versi data di server jika memungkinkan
-                try {
-                    axios.defaults.withCredentials = true;
-                    axios.defaults.withXSRFToken = true;
-                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
-                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
-                    });
-                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/${paramIdentitas}/${paramTgl_tes}`, {
-                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-API-KEY': process.env.APP_FAST_API_KEY,
-                            'XSRF-TOKEN': csrfToken,
-                            'tokenlogin': random('combwisp', 50),
-                        }
-                    });
-                    const apiData = apiResponse.data.data;
-
-                    // Cek apakah ada pembaruan data
-                    if (JSON.stringify(cachedData) !== JSON.stringify(apiData)) {
-                        // console.log('Data diperbarui. Menyimpan data baru ke cache');
-
-                        // Hapus data lama dari cache dan simpan yang baru
-                        const cache = await caches.open('/peserta/psikotest/kecermatan/hasil-tes');
-                        await cache.delete('/peserta/psikotest/kecermatan/hasil-tes');
-                        // console.log('Data lama dihapus dari cache');
-
-                        // Menyimpan data baru ke cache
-                        const newResponse = new Response(JSON.stringify(apiData), {
-                            headers: { 'Content-Type': 'application/json' }
-                        });
-                        await cache.put('/peserta/psikotest/kecermatan/hasil-tes', newResponse);
-                        // console.log('Data baru disimpan ke cache');
-
-                        // Update data dengan data terbaru dari API
-                        setDataPeserta(apiResponse.data.data.peserta[0]);
-                        setDataHasiltes(apiResponse.data.data.hasiltes[0]);
-                    }
-                } catch (error) {
-                    console.error('Terjadi kesalahan saat mengambil data terbaru:', error);
+            axios.defaults.withCredentials = true;
+            axios.defaults.withXSRFToken = true;
+            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
+            });
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta-hasil-tes/${paramIdentitas}/${paramTgl_tes}`, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-KEY': process.env.APP_FAST_API_KEY,
+                    'XSRF-TOKEN': csrfToken,
+                    'tokenlogin': random('combwisp', 50),
                 }
-            } else {
-                // Jika data tidak ditemukan di cache, ambil dari API
-                console.log('Data tidak ditemukan di cache');
-
-                try {
-                    axios.defaults.withCredentials = true;
-                    axios.defaults.withXSRFToken = true;
-                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
-                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
-                    });
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/hasil-tes/${paramIdentitas}/${paramTgl_tes}`, {
-                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-API-KEY': process.env.APP_FAST_API_KEY,
-                            'XSRF-TOKEN': csrfToken,
-                            'tokenlogin': random('combwisp', 50),
-                        }
-                    });
-                    const data = response.data.data;
-                    console.log('response data peserta dan hasil', response);
-                    // Menyimpan data ke state
-                    setDataPeserta(response.data.data.peserta[0]);
-                    setDataHasiltes(response.data.data.hasiltes[0]);
-
-                    // Menyimpan data ke cache setelah berhasil mendapatkan data
-                    const cache = await caches.open('/peserta/psikotest/kecermatan/hasil-tes');
-                    const cacheResponse = new Response(JSON.stringify(data), {
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                    await cache.put('/peserta/psikotest/kecermatan/hasil-tes', cacheResponse);
-                    console.log('Data disimpan ke cache');
-                } catch (error) {
-                    console.error('Terjadi kesalahan saat mengambil data:', error);
-                }
-            }
-        } catch (error) {
-            console.log('Terjadi kesalahan saat memeriksa cache:', error);
+            });
+            const data = response.data.data;
+            console.log('response data peserta dan hasil', response);
+            // Menyimpan data ke state
+            setDataPeserta(response.data.data.peserta[0]);
+            setDataHasiltes(response.data.data.hasiltes[0]);
+        }
+        catch(err) {
+            console.info('Terjadi Error PesertaPsikotestKecermatanHasil-getData:', err);
         }
         setLoading(false);
     };
+
+    const filteredMemo_dataHasiltes = React.memo(dataHasiltes, [dataHasiltes]);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
         getData();
     }, []);
-    const filteredMemo_dataHasiltes = React.memo(dataHasiltes, [dataHasiltes]);
 
-    console.table('Data Peserta', dataPeserta);
-    console.table('Data Hasil Psikotest Kecermatan Peserta', filteredMemo_dataHasiltes.type);
+    // console.table('Data Peserta', dataPeserta);
+    // console.table('Data Hasil Psikotest Kecermatan Peserta', filteredMemo_dataHasiltes.type);
 
     const MemoHelmet = React.memo(function Memo() {
         return(
@@ -184,7 +116,7 @@ export default function PesertaPsikotestKecermatanHasil() {
         <MemoHelmet />
         <MemoAppbarku />
         <MemoNavBreadcrumb />
-        <div className="p-4">
+        <div className={`p-4 ${textColor}`}>
             <h1 className='hidden'>Halaman Hasil Psikotest Kecermatan Peserta {dataPeserta.nama}</h1>
             {loading ? (
                 <h2 className='text-center'>
@@ -205,15 +137,23 @@ export default function PesertaPsikotestKecermatanHasil() {
                         <p><span className="font-bold">Asal : </span> {dataPeserta.asal}</p>
                         <p><span className="font-bold">Tanggal Tes : </span> {dataHasiltes.tgl_ujian}</p>
                     </div>
-                    <div className="mt-4">
-                        <h2 className='hidden'>Grafik Hasil Psikotes Kecermatan</h2>
-                        <HasilTes_GrafikKecermatan
+                    <div className={`mt-4 p-2 rounded-lg bg-white border-2 border-${borderColor}`}>
+                        <h3 className='hidden'>Peserta : {dataPeserta.nama}</h3>
+                        <TabelHasilPsikotestKecermatan
+                            hasilnilai_kolom_1={dataHasiltes.hasilnilai_kolom_1}
+                            hasilnilai_kolom_2={dataHasiltes.hasilnilai_kolom_2}
+                            hasilnilai_kolom_3={dataHasiltes.hasilnilai_kolom_3}
+                            hasilnilai_kolom_4={dataHasiltes.hasilnilai_kolom_4}
+                            hasilnilai_kolom_5={dataHasiltes.hasilnilai_kolom_5}
+                        />
+                        <GrafikHasilPsikotestKecermatan
                             tgl_tes={paramTgl_tes}
-                            hasilnilai_kolom_1={filteredMemo_dataHasiltes.type.hasilnilai_kolom_1}
-                            hasilnilai_kolom_2={filteredMemo_dataHasiltes.type.hasilnilai_kolom_2}
-                            hasilnilai_kolom_3={filteredMemo_dataHasiltes.type.hasilnilai_kolom_3}
-                            hasilnilai_kolom_4={filteredMemo_dataHasiltes.type.hasilnilai_kolom_4}
-                            hasilnilai_kolom_5={filteredMemo_dataHasiltes.type.hasilnilai_kolom_5}
+                            hasilnilai_kolom_1={dataHasiltes.hasilnilai_kolom_1}
+                            hasilnilai_kolom_2={dataHasiltes.hasilnilai_kolom_2}
+                            hasilnilai_kolom_3={dataHasiltes.hasilnilai_kolom_3}
+                            hasilnilai_kolom_4={dataHasiltes.hasilnilai_kolom_4}
+                            hasilnilai_kolom_5={dataHasiltes.hasilnilai_kolom_5}
+                            textColor={textColor}
                         />
                     </div>
                 </div>

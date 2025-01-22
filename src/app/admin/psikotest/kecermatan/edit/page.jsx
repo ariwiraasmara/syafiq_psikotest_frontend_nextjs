@@ -26,34 +26,38 @@ const Footer = dynamic(() => import('@/components/Footer'), {
 });
 import { readable, random } from '@/libraries/myfunction';
 
-const styledTextField = {
-    '& .MuiOutlinedInput-notchedOutline': {
-        border: '2px solid rgba(255, 255, 255, 0.9)',
-        color: 'white',
-    },
-    '& .MuiInputLabel-root': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-input': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-placeholder': {
-        color: 'white',
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'rgba(255, 255, 255, 0.8)', // warna hover
-    },
-    '&:hover .MuiInputLabel-root': {
-        color: 'white', // warna hover
-    },
-}
-
 export default function PsikotestKecermatan() {
     const router = useRouter();
+    const textColor = localStorage.getItem('text-color');
+    const textColorRGB = localStorage.getItem('text-color-rgb');
+    const borderColor = localStorage.getItem('border-color');
+    const borderColorRGB = localStorage.getItem('border-color-rgb');
     const [loading, setLoading] = React.useState(false);
     const [nid, setNid] = React.useState(readable(sessionStorage.getItem('admin_psikotest_kecermatan_id')));
     const [kolom_x, setKolom_x] = React.useState(readable(sessionStorage.getItem('admin_psikotest_kecermatan_kolom_x')));
     
+    const styledTextField = {
+        '& .MuiOutlinedInput-notchedOutline': {
+            border: `2px solid ${borderColor}`,
+            color: textColorRGB,
+        },
+        '& .MuiInputLabel-root': {
+            color: textColorRGB,
+        },
+        '& .MuiOutlinedInput-input': {
+            color: textColorRGB,
+        },
+        '& .MuiOutlinedInput-placeholder': {
+            color: textColorRGB,
+        },
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: borderColor, // warna hover
+        },
+        '&:hover .MuiInputLabel-root': {
+            color: textColorRGB, // warna hover
+        },
+    }
+
     const [nilai_A, setNilai_A] = React.useState(0);
     const handleChange_nilai_A = (event) => {
         event.preventDefault();
@@ -96,7 +100,7 @@ export default function PsikotestKecermatan() {
             setNilai_E(sessionStorage.getItem('admin_psikotest_kecermatan_nilai_E'));
         }
         catch(err) {
-            console.error('Eror getData Edit Psikotest Kecermatan', err);
+            console.error('Terjadi Error Kesalahan PsikotestKecermatanEdit-getData', err);
         }
         setLoading(false);
     };
@@ -154,16 +158,16 @@ export default function PsikotestKecermatan() {
                     'pranked': 'absolutely'
                 }
             });
+            // console.log('response', response);
             if(response.data.success) {
-                return router.push('/admin/psikotest/kecermatan');
+                router.push('/admin/psikotest/kecermatan');
             }
             else {
-                console.log('response', response);
-                return alert('Terjadi Kesalahan Psikotest Kecermatan');
+                alert('Terjadi Error : Tidak Dapat Menyimpan Data!');
             }
         }
         catch(er) {
-            console.log('Terjadi Kesalahan Mengirim Data Update Psikotest Kecermatan', er);
+            console.log('Terjadi Error Kesalahan PsikotestKecermatanEdit-submit', er);
         }
         setLoading(false);
     };
@@ -181,7 +185,7 @@ export default function PsikotestKecermatan() {
             return router.push('/admin/psikotest/kecermatan');
         }
         catch(err) {
-            console.log('Terjadi Kesalahan Membatalkan Update Variabel', err);
+            console.info('Terjadi Error Kesalahan PsikotestKecermatanEdit-cancel:', err);
         }
     };
     
@@ -219,16 +223,16 @@ export default function PsikotestKecermatan() {
             <MemoHelmet />
             <MemoNavBreadcrumb />
             <MemoAppbarku />
-            <div className="p-5 mb-14">
+            <div className={`p-4 ${borderColor}`}>
                 <h1 className='hidden'>Halaman Tambah Psikotest Kecermatan Baru | Admin</h1>
+                <h2 className={`text-${textColor}`}>
+                    <span className='font-bold'>Edit Data Kolom : {kolom_x}</span>
+                </h2>
                 <Box component="form"
-                    sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' } }}
+                    sx={{ '& > :not(style)': { marginTop: 3, p: 0, width: '100%' } }}
                     onSubmit={(e) => submit(e)}
                     noValidate
                     autoComplete="off">
-                    <h2>
-                        <span className='font-bold'>Edit Data Kolom : {kolom_x}</span>
-                    </h2>
                     <TextField  type="number" id="nilai_a" variant="outlined" focused
                                 placeholder="Nilai A..." label="Nilai A..."
                                 fullWidth sx={styledTextField}
@@ -254,7 +258,7 @@ export default function PsikotestKecermatan() {
                                 fullWidth sx={styledTextField}
                                 onChange={handleChange_nilai_E}
                                 defaultValue={nilai_E} />
-                    <Box sx={{ m: 1 }}>
+                    <Box>
                         <div>
                             <Button variant="contained" size="large" fullWidth color="primary" type="submit">
                                 Simpan

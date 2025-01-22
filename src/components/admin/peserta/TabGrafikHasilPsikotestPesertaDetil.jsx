@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import PesertaDetil_GrafikKecermatan from './PesertaDetil_GrafikKecermatan';
+import PesertaDetil_GrafikKecermatan from './GrafikHasilPsikotestKecermatan_Peserta';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -40,35 +40,40 @@ const TabStyle = {
     color: '#fff'
 };
 
-TabHasilPsikotestPeserta.propTypes = {
+TabGrafikHasilPsikotestPesertaDetil.propTypes = {
     peserta_id: PropTypes.number,
+    textColor: PropTypes.text,
 };
 
-export default function TabHasilPsikotestPeserta(props) {
+export default function TabGrafikHasilPsikotestPesertaDetil(props) {
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
-
+    
+    // console.info('TabHasilPsikotestPeserta peserta_id', props.peserta_id);
     return (
         <React.StrictMode>
             <Box sx={{ width: '100%' }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Tabs   value={value}
-                            onChange={handleChange}
-                            aria-label="Hasil Psikotest"
-                            variant="fullWidth" centered
+                    <Tabs value={value}
+                        onChange={handleChange}
+                        aria-label="Hasil Psikotest"
+                        variant="fullWidth" centered
                     >
                         <Tab label="Kecermatan" {...a11yProps(0)} wrapped sx={TabStyle} />
 
                         {/* <Tab label="Item Two" {...a11yProps(1)} wrapped sx={TabStyle} />
                         <Tab label="Item Three" {...a11yProps(2)} wrapped sx={TabStyle} /> */}
-
                     </Tabs>
                 </Box>
                 <CustomTabPanel value={value} index={0}>
-                    <PesertaDetil_GrafikKecermatan peserta_id={props.peserta_id} />
+                    <PesertaDetil_GrafikKecermatan
+                        peserta_id={props.peserta_id}
+                        textColor={props.textColor}
+                        borderColor={props.borderColor}
+                    />
                 </CustomTabPanel>
 
                 {/* <CustomTabPanel value={value} index={1}>
@@ -77,7 +82,6 @@ export default function TabHasilPsikotestPeserta(props) {
                 <CustomTabPanel value={value} index={2}>
                     Item Three
                 </CustomTabPanel> */}
-                
             </Box>
         </React.StrictMode>
     );

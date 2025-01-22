@@ -6,6 +6,8 @@ import Layoutadmin from '@/components/layout/Layoutadmin';
 import axios from 'axios';
 import * as React from 'react';
 import dynamic from 'next/dynamic';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import CircularProgress from '@mui/material/CircularProgress';
 import { block } from 'million/react';
 
@@ -18,7 +20,7 @@ const Appbarku = dynamic(() => import('@/components/Appbarku'), {
 const NavBreadcrumb = dynamic(() => import('@/components/NavBreadcrumb'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
-const ListPeserta = dynamic(() => import('@/components/ListPeserta'), {
+const ListPeserta = dynamic(() => import('@/components/admin/ListPeserta'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
 const Footer = dynamic(() => import('@/components/Footer'), {
@@ -27,7 +29,11 @@ const Footer = dynamic(() => import('@/components/Footer'), {
 import { readable, random } from '@/libraries/myfunction';
 
 export default function AdminDashboard() {
-    const [nama, setNama] =  React.useState('');
+    const textColor = localStorage.getItem('text-color');
+    const textColorRGB = localStorage.getItem('text-color-rgb');
+    const borderColor = localStorage.getItem('border-color');
+    const borderColorRGB = localStorage.getItem('border-color-rgb');
+    const [nama, setNama] = React.useState('');
     const [data, setData] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
 
@@ -95,7 +101,7 @@ export default function AdminDashboard() {
                         setData(apiData);
                     }
                 } catch (error) {
-                    console.error('Terjadi kesalahan saat mengambil data terbaru:', error);
+                    console.info('Terjadi kesalahan saat mengambil data terbaru:', error);
                 }
             } else {
                 // Jika data tidak ditemukan di cache, ambil dari API
@@ -140,11 +146,11 @@ export default function AdminDashboard() {
                     await cache.put('/admin/dashboard', cacheResponse);
                     console.info('Data disimpan ke cache');
                 } catch (error) {
-                    console.error('Terjadi kesalahan saat mengambil data:', error);
+                    console.info('Terjadi kesalahan saat mengambil data:', error);
                 }
             }
         } catch (error) {
-            console.error('Terjadi kesalahan saat memeriksa cache:', error);
+            console.info('Terjadi Error AdminDashboard-getData:', error);
         }
         setLoading(false);
     };
@@ -157,6 +163,17 @@ export default function AdminDashboard() {
     // console.log(data);
 
     console.table('Data Peserta Terbaru', data);
+
+    
+    if(loading) {
+        return (
+            <h2 className={`text-center p-8 font-bold text-2lg text-${textColor}`}>
+                <p>Sedang memuat data...<br/></p>
+                <p>Mohon Harap Tunggu...</p>
+                <CircularProgress color="info" size={50} />
+            </h2>
+        );
+    }
 
     const MemoHelmet = React.memo(function Memo() {
         return(
@@ -193,22 +210,22 @@ export default function AdminDashboard() {
                 <MemoHelmet />
                 <MemoAppbarku />
                 <MemoNavBreadcrumb />
-                <div className="p-4 mb-14">
+                <div className={`p-4 mb-14 ${textColor}`}>
                     <div>
                         <h1 className="hidden">Halaman Dashboard | Admin</h1>
-                        <h2 className="text-xl font-bold">Selamat Datang, {nama}</h2>
+                        <h2 className={`text-xl font-bold`}>Selamat Datang, {nama}</h2>
                     </div>
                     <div className="mt-4">
-                        <h2 className="font-bold">Daftar Tes Psikotest Terbaru</h2>
+                        <h2 className="font-bold">Daftar 10 Peserta Tes Psikotest Terbaru</h2>
                         {loading ? (
-                            <h2 className='text-center'>
+                            <h2 className={`text-center ${textColor}`}>
                                 <p><span className='font-bold text-2lg'>
                                     Sedang memuat data... Mohon Harap Tunggu...
                                 </span></p>
                                 <CircularProgress color="info" size={50} />
                             </h2>
                         ) : (
-                            <ListPeserta listpeserta={data} isLatest={true} />
+                            <ListPeserta listpeserta={data} isLatest={true} textColor={textColor} borderColor={borderColor} />
                         )}
                     </div>
                 </div>

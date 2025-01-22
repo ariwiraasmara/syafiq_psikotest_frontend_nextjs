@@ -4,7 +4,7 @@
 // const HttpTrustedURLImages = 'http://localhost:3000 http://localhost:8000 https://another.example.com';
 const nextConfig = {
     devIndicators: {
-      errorOverlay: false, // Menonaktifkan error overlay
+      errorOverlay: true, // Menonaktifkan error overlay
     },
     reactStrictMode: true,
     experimental: {

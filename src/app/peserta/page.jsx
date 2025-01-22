@@ -12,6 +12,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import CircularProgress from '@mui/material/CircularProgress';
+import InputAdornment from '@mui/material/InputAdornment';
 
 const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
@@ -32,27 +33,34 @@ import { random } from '@/libraries/myfunction';
 const styledTextField = {
     '& .MuiOutlinedInput-notchedOutline': {
         border: '2px solid rgba(255, 255, 255, 0.9)',
-        color: 'white',
+        color: '#fff',
     },
-    '& .MuiInputLabel-root': {
-        color: 'white',
+    '& .MuiInputLabel-root.MuiInputLabel-shrink': {
+        color: '#fff',
     },
     '& .MuiOutlinedInput-input': {
-        color: 'white',
+        color: '#fff',
     },
     '& .MuiOutlinedInput-placeholder': {
-        color: 'white',
+        color: '#fff',
     },
     '&:hover .MuiOutlinedInput-notchedOutline': {
         borderColor: 'rgba(255, 255, 255, 0.8)', // warna hover
     },
     '&:hover .MuiInputLabel-root': {
-        color: 'white', // warna hover
+        color: '#fff', // warna hover
     },
+    '& .MuiFormHelperText-root': {
+        color: '#fff',  // Warna helper text
+    },
+    color: '#fff',
+    marginTop: 3,
 }
 
 export default function Peserta() {
     const router = useRouter();
+    const textColor = localStorage.getItem('text-color');
+    const borderColor = localStorage.getItem('border-color');
     const [loading, setLoading] = React.useState(true);
 
     const [nama, setNama] = React.useState('');
@@ -157,8 +165,8 @@ export default function Peserta() {
                 setIsSession(true);
             }
         }
-        catch(e) {
-            console.log(e);
+        catch(err) {
+            console.info('Terjadi Erro Peserta-checkData:', err);
             setLoading(false);
         }
         setLoading(false);
@@ -191,8 +199,7 @@ export default function Peserta() {
                         'tokenlogin': random('combwisp', 50),
                     }
                 });
-
-                console.info('response', response);
+                // console.info('response', response);
                 if(parseInt(response.data.success) == 1) {
                     sessionStorage.setItem('id_peserta_psikotest', response.data.res);
                     sessionStorage.setItem('nama_peserta_psikotest', nama);
@@ -212,13 +219,12 @@ export default function Peserta() {
                     }
                 }
                 else {
-                    alert('Terjadi Kesalahan Setup Peserta');
+                    alert('Terjadi Error: Tidak Dapat Setup Data!');
                 }
             }
         }
         catch(err) {
-            console.error('Terjadi Kesalahan', err);
-            alert('Terjadi Kesalahan');
+            console.info('Terjadi Error Peserta-submit:', err);
         }
         setLoading(false);
     }
@@ -236,7 +242,7 @@ export default function Peserta() {
             router.push(`/peserta/psikotest/kecermatan/`);
         }
         catch(err) {
-            console.error('Terjadi Kesalahan', err);
+            console.info('Terjadi Error Peserta-continueSession:', err);
             setLoading(false);
         }
         setLoading(false);
@@ -263,7 +269,7 @@ export default function Peserta() {
             router.push(`/`);
         }
         catch(err) {
-            console.error('Terjadi Kesalahan', err);
+            console.info('Terjadi Error Peserta-onBack:', err);
             setLoading(false);
         }
         setLoading(false);
@@ -305,7 +311,7 @@ export default function Peserta() {
 
     const MemoFooter = React.memo(function Memo() {
         return(
-            <Footer />
+            <Footer otherCSS={`bottom-0 w-full`} />
         );
     });
 
@@ -320,19 +326,18 @@ export default function Peserta() {
                     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]" >
                         <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
                             <Box component="form"
-                                sx={{ '& > :not(style)': { m: 0, p: 3, width: '100%' },
+                                sx={{ '& > :not(style)': { p: 3, width: '100%' },
                                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                                    border: '3px solid white' ,
+                                    border: `3px solid ${borderColor}`,
                                     borderRadius: 3,
                                     textAlign: 'center',
-                                    p: 3
                                 }}
                                 onSubmit={(e) => continueSession(e)}
                                 noValidate
                                 autoComplete="off"
                             >
                                 <h1 className='font-bold underline text-2lg uppercase'>Anda masih punya sesi!</h1>
-                                <Box sx={{ m: 1 }}>
+                                <Box>
                                     <div>
                                         <Button variant="contained" size="large" fullWidth color="primary" type="submit">
                                             Lanjut
@@ -354,10 +359,10 @@ export default function Peserta() {
                     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]" >
                         <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start text-center">
                             <Link rel='follow' title='Kembali' href='/' onClick={(e) => onBack(e)} sx={{ color: 'white' }}>
-                                <h1 className='font-bold underline text-2lg uppercase'>
+                                <h1 className={`font-bold underline text-2lg uppercase ${textColor}`}>
                                     Silahkan datang esok hari lagi!
                                 </h1>
-                                <h2 className='underline uppercase'>
+                                <h2 className={`underline uppercase ${textColor}`}>
                                     Silahkan Klik disini untuk kembali ke halaman Beranda
                                 </h2>
                             </Link>
@@ -383,47 +388,50 @@ export default function Peserta() {
             <>
                 <MemoHelmet />
                 <MemoNavBreadcrumb />
-                <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]" >
-                    <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+                <div className="items-center justify-items-center p-8">
+                    <div className="row-start-2 items-center">
                         <Box component="form"
-                            sx={{ '& > :not(style)': { m: 0, p: 3, width: '100%' },
+                            sx={{ '& > :not(style)': { p: 2, width: '100%' },
                                 backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                                border: '3px solid white' ,
+                                border: `3px solid ${borderColor}`,
                                 borderRadius: 3,
-                                textAlign: 'center',
-                                p: 3
                             }}
                             onSubmit={(e) => submit(e)}
                             noValidate
                             autoComplete="off">
                             <h1 className="hidden">Halaman Formulir Peserta Psikotest</h1>
-                            <span className="text-2xl text-bold uppercase font-bold">Peserta</span>
-                            <TextField  type="text" id="nama" variant="outlined" required focused
-                                        placeholder="Nama..." label="Nama..."
-                                        onChange = {(event)=> handleChange_Nama(event)}
-                                        defaultValue={nama}
-                                        fullWidth sx={styledTextField} />
-                            <TextField  type="number" id="no_identitas" variant="outlined" required focused
-                                        placeholder="Nomor Identitas... (NIK / NIP / NISN)" label="Nomor Identitas... (NIK / NIP / NISN)"
-                                        onChange = {(event)=> handleChange_No_identitas(event)}
-                                        defaultValue={no_identitas}
-                                        fullWidth sx={styledTextField} />
-                            <TextField  type="text" id="Email" variant="outlined" focused
-                                        placeholder="Email..." label="Email..."
-                                        onChange = {(event)=> handleChange_Email(event)}
-                                        defaultValue={email}
-                                        fullWidth sx={styledTextField} />
-                            <TextField  type="date" id="tgl_lahir" variant="outlined" required focused
-                                        placeholder="Tanggal Lahir..." label="Tanggal Lahir..."
-                                        onChange = {(event)=> handleChange_Tgl_lahir(event)}
-                                        defaultValue={tgl_lahir}
-                                        fullWidth sx={styledTextField} />
-                            <TextField  type="text" id="asal" variant="outlined" focused
-                                        placeholder="Asal..." label="Asal..."
-                                        onChange = {(event)=> handleChange_Asal(event)}
-                                        defaultValue={asal}
-                                        fullWidth sx={styledTextField} />
-                            <Box sx={{ m: 1 }}>
+                            <h2 className="text-2xl text-bold uppercase font-bold text-center">Peserta</h2>
+                            <div className='form_admin_peserta text-left'>
+                                <TextField  type="text" id="nama" variant="outlined" required focused
+                                            placeholder="Nama..." label="Nama..."
+                                            helperText="Wajib diisi"
+                                            onChange = {(event)=> handleChange_Nama(event)}
+                                            defaultValue={nama}
+                                            fullWidth sx={styledTextField} />
+                                <TextField  type="number" id="no_identitas" variant="outlined" required focused
+                                            placeholder="Nomor Identitas... (NIK / NIP / NISN)" label="Nomor Identitas... (NIK / NIP / NISN)"
+                                            helperText="Wajib diisi"
+                                            onChange = {(event)=> handleChange_No_identitas(event)}
+                                            defaultValue={no_identitas}
+                                            fullWidth sx={styledTextField} />
+                                <TextField  type="text" id="Email" variant="outlined" focused
+                                            placeholder="Email..." label="Email..."
+                                            onChange = {(event)=> handleChange_Email(event)}
+                                            defaultValue={email}
+                                            fullWidth sx={styledTextField} />
+                                <TextField  type="date" id="tgl_lahir" variant="outlined" required focused
+                                            placeholder="Tanggal Lahir..." label="Tanggal Lahir..."
+                                            helperText="Wajib diisi"
+                                            onChange = {(event)=> handleChange_Tgl_lahir(event)}
+                                            defaultValue={tgl_lahir}
+                                            fullWidth sx={styledTextField} />
+                                <TextField  type="text" id="asal" variant="outlined" focused
+                                            placeholder="Asal..." label="Asal..."
+                                            onChange = {(event)=> handleChange_Asal(event)}
+                                            defaultValue={asal}
+                                            fullWidth sx={styledTextField} />
+                            </div>
+                            <Box>
                                 <div>
                                     <Button variant="contained" size="large" fullWidth color="primary" type="submit">
                                         Lanjut

@@ -2,21 +2,29 @@
 // ! Syafiq
 // ! Syahri Ramadhan Wiraasmara (ARI)
 'use client';
+import './style.css';
 import Layoutadmin from '@/components/layout/Layoutadmin';
 import axios from 'axios';
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { For } from 'million/react';
 import Swal from 'sweetalert2';
 
 import Fab from '@mui/material/Fab';
+import Button from '@mui/material/Button';
+import InputAdornment from '@mui/material/InputAdornment';
 import Link from '@mui/material/Link';
 import CircularProgress from '@mui/material/CircularProgress';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
@@ -27,24 +35,99 @@ const Appbarku = dynamic(() => import('@/components/Appbarku'), {
 const NavBreadcrumb = dynamic(() => import('@/components/NavBreadcrumb'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
-const NewOrEdit = dynamic(() => import('./new_edit'), {
+const Footer = dynamic(() => import('@/components/Footer'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
-const Footer = dynamic(() => import('@/components/Footer'), {
+const ComboPaging = dynamic(() => import('@/components/ComboPaging'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
 });
 import { readable, random } from '@/libraries/myfunction';
 
-const linkStyle = {
-    color: '#fff'
-}
-
-export default function VariabelSetting() {
+export default function AdminVariabel() {
     const router = useRouter();
-    const [data, setData] = React.useState([]);
+    const params = useSearchParams();
+    const textColor = localStorage.getItem('text-color');
+    const textColorRGB = localStorage.getItem('text-color-rgb');
+    const borderColor = localStorage.getItem('border-color');
+    const borderColorRGB = localStorage.getItem('border-color-rgb');
     const [loading, setLoading] = React.useState(false);
-            
-    const getData = async () => {
+    const [loadingData, setLoadingData] = React.useState(false);
+    const [searchHidden, setSearchHidden] = React.useState('hidden');
+    const [data, setData] = React.useState([]);
+    const [sort, setSort] = React.useState('variabel');
+    const [by, setBy] = React.useState('asc');
+    const [toSearch, setToSearch] = React.useState('null');
+
+    // paging
+    let currentpage = params.get('page');
+    const [lastpage, setLastpage] = React.useState(1);
+
+    const styledTextField = {
+        '& .MuiOutlinedInput-notchedOutline': {
+            border: `2px solid ${borderColor}`,
+            color: textColorRGB,
+        },
+        '& .MuiInputLabel-root': {
+            color: textColorRGB,
+        },
+        '& .MuiOutlinedInput-input': {
+            color: textColorRGB,
+        },
+        '& .MuiOutlinedInput-placeholder': {
+            color: textColorRGB,
+        },
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: borderColor, // warna hover
+        },
+        '&:hover .MuiInputLabel-root': {
+            color: textColorRGB, // warna hover
+        }
+    }
+
+    const linkStyle = {
+        color: textColorRGB
+    }
+
+    const getData = async() => {
+        setLoadingData(true);
+        try {
+            axios.defaults.withCredentials = true;
+            axios.defaults.withXSRFToken = true;
+            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                withCredentials: true,  // Mengirimkan cookie dalam permintaan
+            });
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting/${sort}/${by}/${toSearch}?page=${currentpage}`, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'XSRF-TOKEN': csrfToken,
+                    'islogin' : localStorage.getItem('islogin'),
+                    'isadmin' : localStorage.getItem('isadmin'),
+                    'Authorization': `Bearer ${localStorage.getItem('pat')}`,
+                    'remember-token': localStorage.getItem('remember-token'),
+                    'tokenlogin': random('combwisp', 50),
+                    'email' : localStorage.getItem('email'),
+                    '--unique--': 'I am unique!',
+                    'isvalid': 'VALID!',
+                    'isallowed': true,
+                    'key': 'key',
+                    'values': 'values',
+                    'isdumb': 'no',
+                    'challenger': 'of course',
+                    'pranked': 'absolutely'
+                }
+            });
+            setData(response.data.data.data);
+            setLastpage(response.data.data.last_page);
+            // console.log('response', response);
+        }
+        catch(err) {
+            console.info("Terjadi Error AdminVariabel-getData:", err);
+        }
+        setLoadingData(false);
+    }
+
+    /*const getData = async () => {
         setLoading(true); // Menandakan bahwa proses loading sedang berjalan
         const expirationTime = (Date.now() + 3600000) * 24; // 24 jam ke depan dalam milidetik
         try {
@@ -66,7 +149,7 @@ export default function VariabelSetting() {
                     const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
                         withCredentials: true,  // Mengirimkan cookie dalam permintaan
                     });
-                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting`, {
+                    const apiResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting/${sort}/${by}`, {
                         withCredentials: true,
                         headers: {
                             'Content-Type': 'application/json',
@@ -122,34 +205,7 @@ export default function VariabelSetting() {
                 console.error('Data tidak ditemukan di cache');
                 
                 try {
-                    axios.defaults.withCredentials = true;
-                    axios.defaults.withXSRFToken = true;
-                    const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
-                        withCredentials: true,  // Mengirimkan cookie dalam permintaan
-                    });
-                    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting`, {
-                        withCredentials: true,
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'XSRF-TOKEN': csrfToken,
-                            'islogin' : localStorage.getItem('islogin'),
-                            'isadmin' : localStorage.getItem('isadmin'),
-                            'Authorization': `Bearer ${localStorage.getItem('pat')}`,
-                            'remember-token': localStorage.getItem('remember-token'),
-                            'tokenlogin': random('combwisp', 50),
-                            'email' : localStorage.getItem('email'),
-                            '--unique--': 'I am unique!',
-                            'isvalid': 'VALID!',
-                            'isallowed': true,
-                            'key': 'key',
-                            'values': 'values',
-                            'isdumb': 'no',
-                            'challenger': 'of course',
-                            'pranked': 'absolutely'
-                        }
-                    });
-                    const data = response.data.data;
-                    setData(data);  // Menyimpan data ke state
+                    
                     const responseStore = {
                         data: data,
                         expirationTime: expirationTime
@@ -171,26 +227,121 @@ export default function VariabelSetting() {
             console.error('Terjadi kesalahan saat memeriksa cache:', error);
         }
         setLoading(false);
-    };
+    };*/
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
+        setLoading(true);
         getData();
-    }, []);
+        setLoading(false);
+    }, [sort, by, toSearch]);
 
     console.table('tabel data variabel', data);
 
+    if(loading) {
+        return (
+            <h2 className={`text-center p-8 font-bold text-2lg text-${textColor}`}>
+                <p>Sedang memuat data...<br/></p>
+                <p>Mohon Harap Tunggu...</p>
+                <CircularProgress color="info" size={50} />
+            </h2>
+        );
+    }
+
+    const MemoHelmet = React.memo(function Memo() {
+        return(
+            <Myhelmet
+                title={`Variabel | Admin | Psikotest`}
+                pathURL={`/admin/variabel?page=${currentpage}`}
+                robots={'index, follow, snippet, max-snippet:99, max-image-preview:standard, noarchive, notranslate'}
+            />
+        );
+    });
+
+    const MemoAppbarku = React.memo(function Memo() {
+        return(
+            <Appbarku headTitle="Variabel" />
+        );
+    });
+
+    const MemoNavBreadcrumb = React.memo(function Memo() {
+        return(
+            <NavBreadcrumb content={`Admin / Variabel`} hidden={`hidden`} />
+        );
+    });
+
+    const MemoFooter = React.memo(function Memo() {
+        return(
+            <Footer hidden={`hidden`} />
+        );
+    });
+
+    const handleChange_searchHidden = (e) => {
+        e.preventDefault();
+        if(searchHidden == 'hidden') setSearchHidden('');
+        else setSearchHidden('hidden');
+    }
+
+    const ButtonChange_searchHidden = () => {
+        if(searchHidden == 'hidden') return(
+            <Button variant="contained" color="primary"
+                    size="small" aria-label="cari...."
+                    onClick={(e) => handleChange_searchHidden(e)}
+                    sx={{
+                        color: '#fff',
+                        marginTop: '-2px',
+                        width: 5
+                    }}>
+                <SearchIcon fontSize="small" />
+            </Button>
+        );
+        else return(
+            <Button variant="contained" color="warning"
+                    size="small" aria-label="cari...."
+                    onClick={(e) => handleChange_searchHidden(e)}
+                    sx={{
+                        color: '#fff', marginTop: '-2px'
+                    }}>
+                <CloseIcon fontSize="small" />
+            </Button>
+        );
+    }
+
+    const handleChange_toSearch = (e) => {
+        if( e.target.value === '' ||
+            e.target.value === ' ' ||
+            e.target.value === null) {
+                setToSearch('null');
+        }
+        else {
+            setToSearch(e.target.value);
+        }
+        currentpage = 1;
+    };
+
+    const handleChange_sort = (e) => {
+        setSort(e.target.value);
+        console.info('sort', sort);
+    }
+
+    const handleChange_by = (e) => {
+        setBy(e.target.value);
+        console.info('by', by);
+    }
+
     const toAdd = (e) => {
         e.preventDefault();
-        return router.push('/admin/variabel/baru');
+        setLoading(true);
+        router.push('/admin/variabel/baru');
     }
 
     const toEdit = (e, id, nvariabel, nvalue) => {
         e.preventDefault();
+        setLoading(true);
         sessionStorage.setItem('admin_variabel_id', id);
         sessionStorage.setItem('admin_variabel_variabel', nvariabel);
         sessionStorage.setItem('admin_variabel_values', nvalue);
-        return router.push('/admin/variabel/edit');
+        router.push('/admin/variabel/edit');
     };
 
     const fDelete = async (e, id, nvariabel, nvalues) => {
@@ -233,7 +384,8 @@ export default function VariabelSetting() {
                     // Hapus item dari state variabels setelah sukses
                     setData((prev) => prev.filter((item) => item.id !== id));
                 } catch (error) {
-                    Swal.showValidationMessage(`Request failed: ${error}`);
+                    // Swal.showValidationMessage(`Request failed: ${error}`);
+                    console.info('Terjadi Error AdminVariabel-fDelte:', err)
                 }
             }
         }).then((result) => {
@@ -247,64 +399,92 @@ export default function VariabelSetting() {
         });
     };
 
-    if(loading) {
-        return (
-            <h2 className='text-center p-8'>
-                <p><span className='font-bold text-2lg'>
-                    Sedang memuat data... Mohon Harap Tunggu...
-                </span></p>
-                <CircularProgress color="info" size={50} />
-            </h2>
-        );
-    }
-
-    const MemoHelmet = React.memo(function Memo() {
-        return(
-            <Myhelmet
-                title={`Variabel | Admin | Psikotest`}
-                pathURL={`/admin/variabel`}
-                robots={'index, follow, snippet, max-snippet:99, max-image-preview:standard, noarchive, notranslate'}
-            />
-        );
-    });
-
-    const MemoAppbarku = React.memo(function Memo() {
-        return(
-            <Appbarku headTitle="Variabel" />
-        );
-    });
-
-    const MemoNavBreadcrumb = React.memo(function Memo() {
-        return(
-            <NavBreadcrumb content={`Admin / Variabel`} hidden={`hidden`} />
-        );
-    });
-
-    const MemoFooter = React.memo(function Memo() {
-        return(
-            <Footer hidden={`hidden`} />
-        );
-    });
-
     return (
         <Layoutadmin>
             <MemoHelmet />
             <MemoAppbarku  />
             <MemoNavBreadcrumb />
-            <div className="p-5 mb-14">
+            <div className={`text-${textColor}`}>
                 <h1 className="hidden">Halaman Variabel | Admin</h1>
-                {loading ? (
-                    <h2 className='text-center'>
+                <div className={`mx-2 p-2 text-right`}>
+                    <Button variant="contained" color="success" size="small" onClick={(e) => getData()} aria-label="cari...." sx={{ color: '#fff', marginTop: '-2px' }}>
+                        <RefreshIcon fontSize="small" />
+                    </Button>
+                    <ButtonChange_searchHidden />
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={sort}
+                        title={'Pilih Berdasarkan...'}
+                        label={'Pilih Berdasarkan...'}
+                        onChange={(e) => handleChange_sort(e)}
+                        sx={{
+                            border: `1px solid #000`,
+                            backgroundColor: 'rgba(255, 255, 255, 1)',
+                            color: '#000',
+                            textAlign: 'right',
+                            width: 150,
+                            height: 30,
+                        }}
+                    >
+                        <MenuItem value={`variabel`} selected={'variabel' === sort}>
+                            Nama Variabel
+                        </MenuItem>
+                        <MenuItem value={`values`} selected={'values' === sort}>
+                            Nilai Variabel
+                        </MenuItem>
+                    </Select>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={by}
+                        title={'Menaik atau Menurun...'}
+                        label={'Menaik atau Menurun...'}
+                        onChange={(e) => handleChange_by(e)}
+                        sx={{
+                            border: `1px solid #000`,
+                            backgroundColor: 'rgba(255, 255, 255, 1)',
+                            color: '#000',
+                            textAlign: 'right',
+                            width: 85,
+                            height: 30,
+                        }}
+                    >
+                        <MenuItem value={`asc`} selected={'asc' === sort}>
+                            A - Z
+                        </MenuItem>
+                        <MenuItem value={`desc`} selected={'desc' === sort}>
+                            Z - A
+                        </MenuItem>
+                    </Select>
+                </div>
+                <div className={`mx-2 p-2 ${searchHidden}`}>
+                    <TextField label="Cari.." sx={styledTextField}
+                        size="small" fullWidth
+                        onChange={(e) => handleChange_toSearch(e)}
+                        slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon sx={{ color: textColorRGB }} />
+                                </InputAdornment>
+                                ),
+                            },
+                        }}
+                    />
+                </div>
+                {loadingData ? (
+                    <h2 className={`text-center text-${textColor}`}>
                         <p><span className='font-bold text-2lg'>
                             Sedang memuat data... Mohon Harap Tunggu...
                         </span></p>
                         <CircularProgress color="info" size={50} />
                     </h2>
-                ) : (
-                    data ? (
-                        <For each={data}>
-                            {(data, index) =>
-                                <div key={index} className='border-b-2 p-3'>
+                ) : (<>
+                    {data.length > 0 ? (
+                        <div className='p-4 mb-32'>
+                            {data.map((data, index) => (
+                                <div key={index} className={`bg-slate-50 border-b-2 p-3 rounded-t-md mt-2 border-${borderColor}`}>
                                     <div className="static flex flex-row justify-between">
                                         <Link
                                             sx={linkStyle}
@@ -314,10 +494,8 @@ export default function VariabelSetting() {
                                             onClick={(e) => toEdit(e, data.id, data.variabel, data.values)}
                                             href="#"
                                         >
-                                            <div className="order-first">
-                                                <p>
-                                                    {data.variabel} = {data.values} detik
-                                                </p>
+                                            <div className={`order-first text-${textColor}`}>
+                                                {data.variabel} = {data.values} detik
                                             </div>
                                         </Link>
                                         <div className="order-last">
@@ -345,23 +523,30 @@ export default function VariabelSetting() {
                                         </div>
                                     </div>
                                 </div>
-                            }
-                        </For>
+                            ))}
+                        </div>
                     ) : (
                         <h2 className='font=bold text-center text-lg'>
                             Belum Ada Data<br/>
                             Data Kosong!
                         </h2>
-                    )
-                )}
+                    )}
+                </>)}
+                <ComboPaging
+                    title={`Variabel`}
+                    bottom={`bottom-14`}
+                    current={currentpage}
+                    lastpage={lastpage}
+                    link={`/admin/variabel`}
+                />
+                <Fab sx={{
+                    position: 'fixed',
+                    bottom: '12%',
+                    right: '3%',
+                }} color="primary" aria-label="add" rel='nofollow' title='Data Baru' href='#' onClick={(e) => toAdd(e)} >
+                    <AddIcon />
+                </Fab>
             </div>
-            <Fab sx={{
-                position: 'absolute',
-                bottom: '13%',
-                right: '3%',
-            }} color="primary" aria-label="add" rel='nofollow' title='Data Baru' href='#' onClick={(e) => toAdd(e)} >
-                <AddIcon />
-            </Fab>
             <MemoFooter />
         </Layoutadmin>
     );

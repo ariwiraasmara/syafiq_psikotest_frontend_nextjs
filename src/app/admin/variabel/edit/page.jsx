@@ -26,32 +26,36 @@ const Footer = dynamic(() => import('@/components/Footer'), {
 });
 import { readable, random } from '@/libraries/myfunction';
 
-const styledTextField = {
-    '& .MuiOutlinedInput-notchedOutline': {
-        border: '2px solid rgba(255, 255, 255, 0.9)',
-        color: 'white',
-    },
-    '& .MuiInputLabel-root': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-input': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-placeholder': {
-        color: 'white',
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'rgba(255, 255, 255, 0.8)', // warna hover
-    },
-    '&:hover .MuiInputLabel-root': {
-        color: 'white', // warna hover
-    },
-}
-
-export default function EditVariabel() {
+export default function AdminVariabelEdit() {
     const router = useRouter();
+    const textColor = localStorage.getItem('text-color');
+    const textColorRGB = localStorage.getItem('text-color-rgb');
+    const borderColor = localStorage.getItem('border-color');
+    const borderColorRGB = localStorage.getItem('border-color-rgb');
     const [loading, setLoading] = React.useState(false);
     const [nid, setNid] = React.useState(readable(sessionStorage.getItem('admin_variabel_id')));
+
+    const styledTextField = {
+        '& .MuiOutlinedInput-notchedOutline': {
+            border: `2px solid ${borderColor}`,
+            color: textColorRGB,
+        },
+        '& .MuiInputLabel-root': {
+            color: textColorRGB,
+        },
+        '& .MuiOutlinedInput-input': {
+            color: textColorRGB,
+        },
+        '& .MuiOutlinedInput-placeholder': {
+            color: textColorRGB,
+        },
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: borderColor, // warna hover
+        },
+        '&:hover .MuiInputLabel-root': {
+            color: textColorRGB, // warna hover
+        },
+    }
     
     const [nvariabel, setNvariabel] = React.useState('');
     const handleChange_Nvariable = (event) => {
@@ -95,6 +99,7 @@ export default function EditVariabel() {
 
     const submit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             axios.defaults.withCredentials = true;
             axios.defaults.withXSRFToken = true;
@@ -126,33 +131,30 @@ export default function EditVariabel() {
                     'pranked': 'absolutely'
                 }
             });
+            console.info('response', response);
             if(response.data.success) {
                 sessionStorage.removeItem('admin_variabel_id');
                 sessionStorage.removeItem('admin_variabel_variabel');
                 sessionStorage.removeItem('admin_variabel_values');
-                return router.push('/admin/variabel');
+                return router.push('/admin/variabel?page=1');
             }
             else {
-                console.log('response', response);
-                return alert('Terjadi Kesalahan Variabel');
+                alert('Terjadi Kesalahan Variabel');
             }
         }
-        catch(er) {
-            console.log('Terjadi Kesalahan Mengirim Data Update Variabel', er);
+        catch(err) {
+            console.info('Terjadi Error AdminVariabelEdit-submit:', err);
         }
+        setLoading(false);
     };
 
     const cancel = (e) => {
         e.preventDefault();
-        try {
-            sessionStorage.removeItem('admin_variabel_id');
-            sessionStorage.removeItem('admin_variabel_variabel');
-            sessionStorage.removeItem('admin_variabel_values');
-            return router.push('/admin/variabel');
-        }
-        catch(err) {
-            console.log('Terjadi Kesalahan Membatalkan Update Variabel', err);
-        }
+        setLoading(true);
+        sessionStorage.removeItem('admin_variabel_id');
+        sessionStorage.removeItem('admin_variabel_variabel');
+        sessionStorage.removeItem('admin_variabel_values');
+        router.push('/admin/variabel?page=1');
     };
     
     const MemoHelmet = React.memo(function Memo() {
@@ -189,10 +191,10 @@ export default function EditVariabel() {
             <MemoHelmet />
             <MemoNavBreadcrumb />
             <MemoAppbarku />
-            <div className="p-5 mb-14">
+            <div className="p-4 mb-14">
                 <h1 className='hidden'>Halaman Edit Variabel | Admin</h1>
                 <Box component="form"
-                    sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' } }}
+                    sx={{ '& > :not(style)': { marginTop: 3, p: 0, width: '100%' } }}
                     onSubmit={(e) => submit(e)}
                     noValidate
                     autoComplete="off">
@@ -206,7 +208,7 @@ export default function EditVariabel() {
                                 fullWidth sx={styledTextField}
                                 onChange={handleChange_Nvalues}
                                 defaultValue={nvalues} />
-                    <Box sx={{ m: 1 }}>
+                    <Box>
                         <div>
                             <Button variant="contained" size="large" fullWidth color="primary" type="submit">
                                 Simpan

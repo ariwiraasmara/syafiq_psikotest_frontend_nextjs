@@ -11,6 +11,7 @@ import dynamic from 'next/dynamic';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Myhelmet = dynamic(() => import('@/components/Myhelmet'), {
     ssr: false,  // Menonaktifkan SSR untuk komponen ini
@@ -26,32 +27,15 @@ const Footer = dynamic(() => import('@/components/Footer'), {
 });
 import { readable, random } from '@/libraries/myfunction';
 
-const styledTextField = {
-    '& .MuiOutlinedInput-notchedOutline': {
-        color: 'white',
-    },
-    '& .MuiInputLabel-root': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-input': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-placeholder': {
-        color: 'white',
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'rgba(000, 000, 000, 0.8)', // warna hover
-    },
-    '&:hover .MuiInputLabel-root': {
-        color: 'white', // warna hover
-    },
-    '& marginTop': 5
-}
-
 export default function PsikotestKecermatanDetilEdit() {
     const router = useRouter();
-    const [pkid, setPkid] = React.useState(sessionStorage.getItem('psikotest_kecermatan_id'));
-    const [lastpage, setLastpage] = React.useState(sessionStorage.getItem('psikotest_kecermatan_tabellastpage'));
+    const textColor = localStorage.getItem('text-color');
+    const textColorRGB = localStorage.getItem('text-color-rgb');
+    const borderColor = localStorage.getItem('border-color');
+    const borderColorRGB = localStorage.getItem('border-color-rgb');
+    const [loading, setLoading] = React.useState(false);
+    const [pkid, setPkid] = React.useState(sessionStorage.getItem('admin_psikotest_kecermatan_id'));
+    const [lastpage, setLastpage] = React.useState(sessionStorage.getItem('admin_psikotest_kecermatan_tabellastpage'));
 
     const [idsoal, setIdsoal] = React.useState(0);
     const [soalA, setSoalA] = React.useState(0);
@@ -84,24 +68,49 @@ export default function PsikotestKecermatanDetilEdit() {
         console.log('jawaban', jawaban);
     };
 
+    const styledTextField = {
+        '& .MuiOutlinedInput-notchedOutline': {
+            border: `2px solid ${borderColor}`,
+            color: textColorRGB,
+        },
+        '& .MuiInputLabel-root': {
+            color: textColorRGB,
+        },
+        '& .MuiOutlinedInput-input': {
+            color: textColorRGB,
+        },
+        '& .MuiOutlinedInput-placeholder': {
+            color: textColorRGB,
+        },
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: borderColor, // warna hover
+        },
+        '&:hover .MuiInputLabel-root': {
+            color: textColorRGB, // warna hover
+        },
+    }
+
     const getData = () => {
+        setLoading(true);
         try {
-            // setPkid(sessionStorage.getItem('psikotest_kecermatan_id'));
-            // setLastpage(sessionStorage.getItem('psikotest_kecermatan_tabellastpage'));
-            setIdsoal(sessionStorage.getItem('psikotest_kecermatan_idsoal'));
-            setSoalA(sessionStorage.getItem('psikotest_kecermatan_soalA'));
-            setSoalB(sessionStorage.getItem('psikotest_kecermatan_soalB'));
-            setSoalC(sessionStorage.getItem('psikotest_kecermatan_soalC'));
-            setSoalD(sessionStorage.getItem('psikotest_kecermatan_soalD'));
-            setJawaban(sessionStorage.getItem('psikotest_kecermatan_jawaban'));
+            // setPkid(sessionStorage.getItem('admin_psikotest_kecermatan_id'));
+            // setLastpage(sessionStorage.getItem('admin_psikotest_kecermatan_tabellastpage'));
+            setIdsoal(sessionStorage.getItem('admin_psikotest_kecermatan_idsoal'));
+            setSoalA(sessionStorage.getItem('admin_psikotest_kecermatan_soalA'));
+            setSoalB(sessionStorage.getItem('admin_psikotest_kecermatan_soalB'));
+            setSoalC(sessionStorage.getItem('admin_psikotest_kecermatan_soalC'));
+            setSoalD(sessionStorage.getItem('admin_psikotest_kecermatan_soalD'));
+            setJawaban(sessionStorage.getItem('admin_psikotest_kecermatan_jawaban'));
         }
-        catch(e) {
-            console.log(e);
+        catch(err) {
+            console.info('Terjadi Error PsikotestKecermatanDetilEdit-getData:', err);
         }
+        setLoading(false);
     }
 
     const submit = async(e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             const soaljawaban = {
                 soal: [[parseInt(soalA), parseInt(soalB), parseInt(soalC), parseInt(soalD)]],
@@ -136,6 +145,7 @@ export default function PsikotestKecermatanDetilEdit() {
                     'pranked': 'absolutely'
                 }
             });
+            // console.info('response', response);
             if(response.data.success) {
                 sessionStorage.removeItem('admin_psikotest_kecermatan_idsoal');
                 sessionStorage.removeItem('admin_psikotest_kecermatan_soalA');
@@ -146,30 +156,41 @@ export default function PsikotestKecermatanDetilEdit() {
                 return router.push(`/admin/psikotest/kecermatan/detil?page=${lastpage}`);
             }
             else {
-                console.log('response', response);
-                return alert('Terjadi Kesalahan Variabel');
+                alert('Terjadi Error: Tidak Dapat Menyimpan Data!');
             }
         }
-        catch(er) {
-            console.log('Terjadi Kesalahan Mengirim Data Update', er);
+        catch(err) {
+            console.info('Terjadi Error PsikotestKecermatanDetilEdit-submit', err);
         }
+        setLoading(false);
     };
 
     const cancel = (e) => {
         e.preventDefault();
+        setLoading(true);
         sessionStorage.removeItem('admin_psikotest_kecermatan_idsoal');
         sessionStorage.removeItem('admin_psikotest_kecermatan_soalA');
         sessionStorage.removeItem('admin_psikotest_kecermatan_soalB');
         sessionStorage.removeItem('admin_psikotest_kecermatan_soalC');
         sessionStorage.removeItem('admin_psikotest_kecermatan_soalD');
         sessionStorage.removeItem('admin_psikotest_kecermatan_jawaban');
-        return router.push(`/admin/psikotest/kecermatan/detil/?page=${lastpage}`);
+        router.push(`/admin/psikotest/kecermatan/detil/?page=${lastpage}`);
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     React.useEffect(() => {
         getData();
     }, []);
+
+    if(loading) {
+        return (
+            <h2 className={`text-center p-8 font-bold text-2lg text-${textColor}`}>
+                <p>Sedang memuat data...<br/></p>
+                <p>Mohon Harap Tunggu...</p>
+                <CircularProgress color="info" size={50} />
+            </h2>
+        );
+    }
 
     const MemoHelmet = React.memo(function Memo() {
         return(
@@ -205,10 +226,10 @@ export default function PsikotestKecermatanDetilEdit() {
             <MemoHelmet />
             <MemoAppbarku />
             <MemoNavBreadcrumb />
-            <div className="p-5 mb-14">
+            <div className={`p-4 text-${textColor}`}>
                 <h1 className='hidden'>Halaman Edit Psikotest Kecermatan Detil | Admin </h1>
                 <h2 className="font-bold text-center">Edit Soal dan Jawaban Psikotest Kecermatan Kolom {pkid} </h2>
-                <div className="font-bold mt-2">
+                <div className={`font-bold mt-2 text-${textColor}`}>
                     ID : {idsoal}
                     <h3 className='mt-0'>
                         <span className='font-bold mr-2'>Soal :</span>
@@ -219,40 +240,42 @@ export default function PsikotestKecermatanDetilEdit() {
                             <span className='mr-2'>{soalD}</span>
                         ]
                     </h3>
-                    <h3 className='mt-0'><span className='font-bold'>Jawaban :</span> {jawaban}</h3>
+                    <h3 className='mt-0'>
+                        <span className='font-bold'>Jawaban :</span> {jawaban}
+                    </h3>
                 </div>
                 <Box component="form"
-                    sx={{ '& > :not(style)': { marginTop: 3, p: 1, width: '100%' } }}
+                    sx={{ '& > :not(style)': { marginTop: 3, p: 0, width: '100%' } }}
                     onSubmit={(e) => submit(e)}
                     noValidate
                     autoComplete="off">
-                    <TextField id={`soala`} label="Soal A"
+                    <TextField type="number" id={`soala`} label="Soal A"
                                 onChange={handleChange_soalA} focused
                                 defaultValue={soalA} variant="outlined"
                                 sx={styledTextField} />
-                    <TextField id={`soalb`} label="Soal B"
+                    <TextField type="number" id={`soalb`} label="Soal B"
                                 onChange={handleChange_soalB} focused
                                 defaultValue={soalB} variant="outlined"
                                 sx={styledTextField} />
-                    <TextField id={`soalc`} label="Soal C"
+                    <TextField type="number" id={`soalc`} label="Soal C"
                                 onChange={handleChange_soalC} focused
                                 defaultValue={soalC} variant="outlined"
                                 sx={styledTextField} />
-                    <TextField id={`soald`} label="Soal D"
+                    <TextField type="number" id={`soald`} label="Soal D"
                                 onChange={handleChange_soalD} focused
                                 defaultValue={soalD} variant="outlined"
                                 sx={styledTextField} />
-                    <TextField id={`jawaban`} label="Jawaban"
+                    <TextField type="number" id={`jawaban`} label="Jawaban"
                                 onChange={handleChange_jawaban} focused
                                 defaultValue={jawaban} variant="outlined"
                                 sx={styledTextField} />
-                    <Box sx={{ m: 1 }}>
+                    <Box>
                         <div>
                             <Button variant="contained" size="large" color="primary" fullWidth type="submit" >
                                 Simpan
                             </Button>
                         </div>
-                        <div className="mt-4">
+                        <div className="mt-2">
                             <Button variant="contained" size="large" color="secondary" fullWidth onClick={(e) => cancel(e)} sx={{marginTop: 2}} type="button" >
                                 Batal
                             </Button>

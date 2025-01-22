@@ -16,6 +16,24 @@ const checkCompatibility = () => {
     return true;
 }
 
+const ifExist = async () => {
+    return new Promise((resolve, reject) => {
+        const request = window.indexedDB.open(dbName, dbVersion);
+
+        request.onsuccess = function(event) {
+            // Jika berhasil membuka database, anggap database ada
+            resolve(true);
+        };
+
+        request.onerror = function(event) {
+            // Jika terjadi kesalahan saat membuka database, anggap database tidak ada
+            console.error('Error opening database:', event.target.error);
+            reject(false);  // Reject dengan pesan error
+        };
+    });
+}
+
+
 const openDB = async (version) => {
     try {
         return new Promise((resolve, reject) => {
@@ -54,7 +72,7 @@ const openDB = async (version) => {
                     table_kuncijawaban.createIndex("jawaban", "jawaban", { unique: false });
                 }
 
-                console.info('IndexedDB opened successfully');
+                // console.info('IndexedDB opened successfully');
             };
     
             // Jika sukses membuka database
@@ -101,7 +119,7 @@ const getPertanyaan = async () => {
         // console.table('table pertanyaan', response.data);
         return response.data;
     } catch (error) {
-        console.error("Terjadi kesalahan:", error);
+        console.error("Terjadi kesalahan IndexedDB-getPertanyaan:", error);
         return null;
     }
 }
@@ -133,7 +151,7 @@ const getSoalJawaban = async () => {
         // console.table('table soaljawaban', response.data);
         return response.data;
     } catch (error) {
-        console.error("Terjadi kesalahan:", error);
+        console.info("Terjadi kesalahan IndexedDB-getSoalJawaban:", error);
         return null;
     }
 }
@@ -175,12 +193,12 @@ const saveDataToDB = async() => {
 
              // Menunggu transaksi selesai
             transactionPertanyaan.oncomplete = function() {
-                console.info("Data pertanyaan berhasil disimpan.");
+                console.info("IndexedDB: Data pertanyaan berhasil disimpan.");
             };
 
             // Tangani error transaksi
             transactionPertanyaan.onerror = function() {
-                console.info("Error menyimpan data pertanyaan.");
+                console.info("IndexedDB: Error menyimpan data pertanyaan.");
             };
         }
        
@@ -212,23 +230,23 @@ const saveDataToDB = async() => {
             });
 
             transactionSoaljawaban.oncomplete = function() {
-                console.info("Data soaljawaban berhasil disimpan.");
+                console.info("IndexedDB: Data soaljawaban berhasil disimpan.");
             };
     
             transactionSoaljawaban.onerror = function() {
-                console.info("Error menyimpan data soaljawaban.");
+                console.info("IndexedDB: Error menyimpan data soaljawaban.");
             };
 
             transactionKuncijawaban.oncomplete = function() {
-                console.info("Data kuncijawaban berhasil disimpan.");
+                console.info("IndexedDB: Data kuncijawaban berhasil disimpan.");
             };
 
             transactionKuncijawaban.onerror = function() {
-                console.info("Error menyimpan data kuncijawaban.");
+                console.info("IndexedDB: Error menyimpan data kuncijawaban.");
             };
         }
     } catch (error) {
-        console.error("Terjadi kesalahan:", error);
+        console.error("Terjadi kesalahan IndexedDB-saveDataToDB:", error);
     }
 }
 
@@ -251,11 +269,11 @@ const saveDataToDB = async() => {
 
                     getRequest.onsuccess = function() {
                         if (getRequest.result) {
-                            console.log("Data ditemukan:", getRequest.result);
+                            // console.info("Data ditemukan:", getRequest.result);
                             // return getRequest.result;
                             resolve(getRequest.result);
                         } else {
-                            console.log("Data tidak ditemukan.");
+                            console.info("IndexedDB: Data tidak ditemukan => readPertanyaan");
                             // return -1;
                             resolve(-1);
                         }
@@ -266,14 +284,14 @@ const saveDataToDB = async() => {
                     };
 
                     getRequest.onerror = function() {
-                        console.error("Gagal mengambil data.");
+                        console.error("IndexedDB: Gagal mengambil data => readPertanyaan");
                         reject('Gagal mengambil data');  // Menangani error
                     };
                 };
             });
         }
         catch(error) {
-            console.error('error readPertanyaan IndexedDB', error);
+            console.error('Terjadi Error IndexedDB-readPertanyaan:', error);
             return -1;
         }
     }
@@ -297,11 +315,11 @@ const saveDataToDB = async() => {
                 
                     getRequest.onsuccess = function() {
                         if (getRequest.result) {
-                            console.log("Data ditemukan:", getRequest.result);
+                            // console.log("Data ditemukan:", getRequest.result);
                             // return getRequest.result;
                             resolve(getRequest.result);
                         } else {
-                            console.log("Data tidak ditemukan.");
+                            console.log("IndexedDB: Data tidak ditemukan => readSoalJawaban");
                             // return -1;
                             resolve(-1);
                         }
@@ -312,14 +330,14 @@ const saveDataToDB = async() => {
                     };
 
                     getRequest.onerror = function() {
-                        console.error("Gagal mengambil data.");
+                        console.error("IndexedDB: Gagal mengambil data => readSoalJawaban");
                         reject('Gagal mengambil data');  // Menangani error
                     };
                 };
             });
         }
         catch(error) {
-            console.error('error readPertanyaan IndexedDB', error);
+            console.error('Terjadi Kesalahan IndexedDB-readSoalJawaban:', error);
             return error;
         }
     }
@@ -343,11 +361,11 @@ const saveDataToDB = async() => {
 
                     getRequest.onsuccess = function() {
                         if (getRequest.result) {
-                            console.log("Data ditemukan:", getRequest.result);
+                            // console.log("Data ditemukan:", getRequest.result);
                             // return getRequest.result;
                             resolve(getRequest.result);
                         } else {
-                            console.log("Data tidak ditemukan.");
+                            console.log("IndexedDB: Data tidak ditemukan => readKunciJawaban");
                             // return -1;
                             resolve(-1);
                         }
@@ -358,14 +376,14 @@ const saveDataToDB = async() => {
                     };
 
                     getRequest.onerror = function() {
-                        console.error("Gagal mengambil data.");
+                        console.error("IndexedDB: Gagal mengambil data => readKunciJawaban");
                         reject('Gagal mengambil data');  // Menangani error
                     };
                 };
             });
         }
         catch(error) {
-            console.error('error readPertanyaan IndexedDB', error);
+            console.error('Terjadi Kesalahan IndexedDB-readPertanyaan:', error);
             return error;
         }
     }
@@ -373,6 +391,7 @@ const saveDataToDB = async() => {
 
 export {
     checkCompatibility,
+    ifExist,
     openDB,
     saveDataToDB,
     readPertanyaan,

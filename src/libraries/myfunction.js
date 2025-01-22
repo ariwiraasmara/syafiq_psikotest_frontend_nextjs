@@ -26,7 +26,23 @@ const readableDate = (dateStr) => {
     const formattedDate = date.toLocaleDateString('id-ID', options);
 
     console.log(formattedDate); // Output: 24 Desember 2024
+}
 
+const currentDate = (type) => {
+    const getDate = new Date();
+    const year = getDate.getFullYear();
+    const month = getDate.getMonth() + 1;
+    const date = getDate.getDate();
+    const hour = parseInt(getDate.getHours()) + 1;
+    const minute = parseInt(getDate.getMinutes());
+    const seconds = parseInt(getDate.getSeconds());
+
+    if(type == 'today') return `${year}-${month}-${date}`;
+    else if(type == 'time') return `${hour}:${minute}:${seconds}`;
+    else if(type == 'day') return date;
+    else if(type == 'month') return month;
+    else if(type == 'year') return year;
+    else return `${year}-${month}-${date} ${hour}:${minute}:${seconds}`;
 }
 
 const encrypt = async (text, key) => {
@@ -136,6 +152,7 @@ const random = (str, length = 10) => {
 export {
     readable,
     readableDate,
+    currentDate,
     encrypt,
     decrypt,
     generateKey,

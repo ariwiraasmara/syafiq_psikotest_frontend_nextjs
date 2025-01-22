@@ -8,6 +8,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
+import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -26,31 +27,11 @@ const Footer = dynamic(() => import('@/components/Footer'), {
 });
 import { readable, random } from '@/libraries/myfunction';
 
-const styledTextField = {
-    '& .MuiOutlinedInput-notchedOutline': {
-        border: '2px solid rgba(255, 255, 255, 0.9)',
-        color: 'white',
-    },
-    '& .MuiInputLabel-root': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-input': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-placeholder': {
-        color: 'white',
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'rgba(255, 255, 255, 0.8)', // warna hover
-    },
-    '&:hover .MuiInputLabel-root': {
-        color: 'white', // warna hover
-    },
-    '& marginTop': 5
-}
-
 export default function AdminPesertaEdit() {
     const router = useRouter();
+    const textColor = localStorage.getItem('text-color');
+    const borderColor = localStorage.getItem('border-color');
+    const [loading, setLoading] = React.useState(false);
     const [idpeserta, setIdpeserta] = React.useState(0);
     const [nama, setNama] = React.useState('');
     const [no_identitas, setNo_identitas] = React.useState('');
@@ -58,23 +39,62 @@ export default function AdminPesertaEdit() {
     const [tgl_lahir, setTgl_lahir] = React.useState('');
     const [asal, setAsal] = React.useState('');
 
+    const styledTextField = {
+        '& .MuiOutlinedInput-notchedOutline': {
+            border: `2px solid ${borderColor}`,
+            color: textColor,
+        },
+        '& .MuiInputLabel-root': {
+            color: textColor,
+        },
+        '& .MuiOutlinedInput-input': {
+            color: textColor,
+        },
+        '& .MuiOutlinedInput-placeholder': {
+            color: textColor,
+        },
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: borderColor, // warna hover
+        },
+        '&:hover .MuiInputLabel-root': {
+            color: textColor, // warna hover
+        },
+    }
+
     const getData = () => {
+        setLoading(true);
         try {
-            setIdpeserta(sessionStorage.getItem('admid_peserta'));
-            setNama(sessionStorage.getItem('admnama_peserta'));
-            setNo_identitas(sessionStorage.getItem('admnoidentitas_peserta'));
-            setEmail(sessionStorage.getItem('admemail_peserta'));
-            setTgl_lahir(sessionStorage.getItem('admtgllahir_peserta'));
-            setAsal(sessionStorage.getItem('admasal_peserta'));
+            setIdpeserta(sessionStorage.getItem('admin_id_peserta'));
+            setNama(sessionStorage.getItem('admin_nama_peserta'));
+            setNo_identitas(sessionStorage.getItem('admin_noidentitas_peserta'));
+            setEmail(sessionStorage.getItem('admin_email_peserta'));
+            setTgl_lahir(sessionStorage.getItem('admin_tgllahir_peserta'));
+            setAsal(sessionStorage.getItem('admin_asal_peserta'));
         }
         catch(err) {
-            console.error(err);
-            return err;
+            console.info('Terjadi Error AdminPesertaEdit-getData:', err);
         }
+        setLoading(false);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    React.useEffect(() => {
+        getData();
+    }, []);
+
+    if(loading) {
+        return (
+            <h2 className={`text-center p-8 font-bold text-2lg text-${textColor}`}>
+                <p>Sedang memuat data...<br/></p>
+                <p>Mohon Harap Tunggu...</p>
+                <CircularProgress color="info" size={50} />
+            </h2>
+        );
     }
 
     const submit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             axios.defaults.withCredentials = true;
             axios.defaults.withXSRFToken = true;
@@ -82,6 +102,7 @@ export default function AdminPesertaEdit() {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
             });
             const response = await axios.put(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/${idpeserta}`, {
+                id: idpeserta,
                 email: email,
                 tgl_lahir: tgl_lahir,
                 asal: asal
@@ -107,42 +128,40 @@ export default function AdminPesertaEdit() {
                     'pranked': 'absolutely'
                 }
             });
+            console.info('response', response);
             if(response.data.success) {
-                sessionStorage.removeItem('admnama_peserta');
-                sessionStorage.removeItem('admnoidentitas_peserta');
-                sessionStorage.removeItem('admemail_peserta');
-                sessionStorage.removeItem('admtgllahir_peserta');
-                sessionStorage.removeItem('admasal_peserta');
+                sessionStorage.removeItem('admin_nama_peserta');
+                sessionStorage.removeItem('admin_noidentitas_peserta');
+                sessionStorage.removeItem('admin_email_peserta');
+                sessionStorage.removeItem('admin_tgllahir_peserta');
+                sessionStorage.removeItem('admin_asal_peserta');
                 return router.push('/admin/peserta/detil/');
             }
             else {
-                console.log('response', response);
-                return alert('Terjadi Kesalahan Variabel');
+                alert('Terjadi Kesalahan Variabel');
             }
         }
-        catch(e) {
-            console.log('Gagal Mengirim Update Data Peserta', );
+        catch(err) {
+            console.log('Terjadi Error AdminPesertaEdit-submit:', err);
         }
+        setLoading(false);
     };
 
     const cancel = (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
-            sessionStorage.removeItem('admnama_peserta');
-            sessionStorage.removeItem('admnoidentitas_peserta');
-            sessionStorage.removeItem('admemail_peserta');
-            sessionStorage.removeItem('admtgllahir_peserta');
-            sessionStorage.removeItem('admasal_peserta');
+            sessionStorage.removeItem('admin_nama_peserta');
+            sessionStorage.removeItem('admin_noidentitas_peserta');
+            sessionStorage.removeItem('admin_email_peserta');
+            sessionStorage.removeItem('admin_tgllahir_peserta');
+            sessionStorage.removeItem('admin_asal_peserta');
             return router.push('/admin/peserta/detil/');
         }
-        catch(e) {
-            console.log('Gagal Membatalkan Update Data Peserta', );
+        catch(err) {
+            console.log('Terjadi Error AdminPesertaEdit-cancel', err);
         }
     };
-
-    React.useEffect(() => {
-        getData();
-    }, []);
 
     const MemoHelmet = React.memo(function Memo() {
         return(
@@ -173,21 +192,18 @@ export default function AdminPesertaEdit() {
     });
 
     return(
-        <>
         <Layoutadmindetil>
             <MemoHelmet />
             <MemoAppbarku />
             <MemoNavBreadcrumb />
-            <div className="p-5 mb-14">
+            <div className={`p-4 ${textColor}`}>
                 <h1 className='hidden'>Halaman Edit Peserta | Admin</h1>
-                <div>
+                <div className={`${textColor}`}>
                     <p><span className='font-bold'>Nama</span>: {nama}</p>
                     <p><span className='font-bold'>Nomor Identitas</span>: {no_identitas}</p>
                 </div>
                 <Box component="form"
-                    sx={{ '& > :not(style)': { m: 2, p: 1, width: '100%' },
-                        p: 3
-                    }}
+                    sx={{ '& > :not(style)': { marginTop: 4, width: '100%' } }}
                     onSubmit={(e) => submit(e)}
                     noValidate
                     autoComplete="off">
@@ -206,13 +222,13 @@ export default function AdminPesertaEdit() {
                                 onChange = {(event)=> setAsal(event.target.value)}
                                 defaultValue={asal}
                                 fullWidth sx={styledTextField} />
-                    <Box sx={{ m: 1 }}>
+                    <Box>
                         <div>
                             <Button variant="contained" size="large" color="primary" fullWidth type="submit" >
                                 Simpan
                             </Button>
                         </div>
-                        <div className="mt-4">
+                        <div className="mt-2">
                             <Button variant="contained" size="large" color="secondary" fullWidth onClick={(e) => cancel(e)} sx={{marginTop: 2}} type="button">
                                 Batal
                             </Button>
@@ -222,6 +238,5 @@ export default function AdminPesertaEdit() {
             </div>
             <MemoFooter />
         </Layoutadmindetil>
-        </>
     );
 }

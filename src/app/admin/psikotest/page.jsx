@@ -25,6 +25,10 @@ const typePsikotest = [
 ];
 
 export default function Psikotest() {
+    const textColor = localStorage.getItem('text-color');
+    const textColorRGB = localStorage.getItem('text-color-rgb');
+    const borderColor = localStorage.getItem('border-color');
+    const borderColorRGB = localStorage.getItem('border-color-rgb');
     const MemoHelmet = React.memo(function Memo() {
         return(
             <Myhelmet
@@ -59,11 +63,11 @@ export default function Psikotest() {
                 <MemoHelmet />
                 <MemoAppbarku />
                 <MemoNavBreadcrumb />
-                <div className="p-5 mb-14" key={1}>
+                <div className={`p-4 mb-14 text-${textColor}`}>
                     <h1 className='hidden'>Halaman Psikotest | Admin</h1>
                     {typePsikotest.map((data, index) => (
-                        <Link rel='follow' title={`Psikotest ${data}`} href={`/admin/psikotest/${data}`} sx={{color: '#fff'}} key={index}>
-                            <div className='border-b-2 p-3 capitalize'>
+                        <Link rel='follow' title={`Psikotest ${data}`} href={`/admin/psikotest/${data}`} key={index}>
+                            <div className={`bg-slate-50 border-b-2 p-3 rounded-t-md mt-2 capitalize text-${textColor} border-${borderColor}`}>
                                 {data}
                             </div>
                         </Link>

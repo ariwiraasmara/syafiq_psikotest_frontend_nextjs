@@ -26,31 +26,35 @@ const Footer = dynamic(() => import('@/components/Footer'), {
 });
 import { readable, random } from '@/libraries/myfunction';
 
-const styledTextField = {
-    '& .MuiOutlinedInput-notchedOutline': {
-        border: '2px solid rgba(255, 255, 255, 0.9)',
-        color: 'white',
-    },
-    '& .MuiInputLabel-root': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-input': {
-        color: 'white',
-    },
-    '& .MuiOutlinedInput-placeholder': {
-        color: 'white',
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'rgba(255, 255, 255, 0.8)', // warna hover
-    },
-    '&:hover .MuiInputLabel-root': {
-        color: 'white', // warna hover
-    },
-}
-
-export default function PsikotestKecermatan() {
+export default function PsikotestKecermatanBaru() {
     const router = useRouter();
+    const textColor = localStorage.getItem('text-color');
+    const textColorRGB = localStorage.getItem('text-color-rgb');
+    const borderColor = localStorage.getItem('border-color');
+    const borderColorRGB = localStorage.getItem('border-color-rgb');
     const [loading, setLoading] = React.useState(false);
+
+    const styledTextField = {
+        '& .MuiOutlinedInput-notchedOutline': {
+            border: `2px solid ${borderColor}`,
+            color: textColorRGB,
+        },
+        '& .MuiInputLabel-root': {
+            color: textColorRGB,
+        },
+        '& .MuiOutlinedInput-input': {
+            color: textColorRGB,
+        },
+        '& .MuiOutlinedInput-placeholder': {
+            color: textColorRGB,
+        },
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: borderColor, // warna hover
+        },
+        '&:hover .MuiInputLabel-root': {
+            color: textColorRGB, // warna hover
+        },
+    }
 
     const [kolom_x, setKolom_x] = React.useState('');
     const handleChange_kolom_x = (event) => {
@@ -90,7 +94,7 @@ export default function PsikotestKecermatan() {
     
     if(loading) {
         return (
-            <h2 className='text-center p-8'>
+            <h2 className={`text-center p-8 text-${textColor}`}>
                 <p><span className='font-bold text-2lg'>
                     Sedang memuat data... Mohon Harap Tunggu...
                 </span></p>
@@ -98,6 +102,34 @@ export default function PsikotestKecermatan() {
             </h2>
         );
     }
+
+    const MemoHelmet = React.memo(function Memo() {
+        return(
+            <Myhelmet
+                title={`Tambah Psikotest Kecermatan Baru | Admin | Psikotest`}
+                pathURL={`/admin/psikotest/kecermatan/baru`}
+                robots={`none, nosnippet, noarchive, notranslate, noimageindex`}
+            />
+        );
+    });
+
+    const MemoAppbarku = React.memo(function Memo() {
+        return(
+            <Appbarku headTitle="Psikotest Kecermatan Baru" />
+        );
+    });
+
+    const MemoNavBreadcrumb = React.memo(function Memo() {
+        return(
+            <NavBreadcrumb content={`Admin / Psikotest/ Kecermatan / Baru`} hidden={`hidden`} />
+        );
+    });
+
+    const MemoFooter = React.memo(function Memo() {
+        return(
+            <Footer hidden={`hidden`} />
+        );
+    });
 
     const submit = async (e) => {
         e.preventDefault();
@@ -137,16 +169,16 @@ export default function PsikotestKecermatan() {
                     'pranked': 'absolutely'
                 }
             });
+            // console.log('response', response);
             if(response.data.success) {
-                return router.push('/admin/psikotest/kecermatan');
+                router.push('/admin/psikotest/kecermatan');
             }
             else {
-                console.log('response', response);
-                return alert('Terjadi Kesalahan Psikotest Kecermatan');
+                alert('Terjadi Error : Tidak Dapat Menyimpan Data!');
             }
         }
-        catch(er) {
-            console.log('Terjadi Kesalahan Mengirim Data Update Psikotest Kecermatan', er);
+        catch(err) {
+            console.log('Terjadi Error PsikotestKecermatanBaru-submit:', err);
         }
         setLoading(false);
     };
@@ -161,40 +193,12 @@ export default function PsikotestKecermatan() {
             setNilai_C(sessionStorage.getItem('admin_psikotest_kecermatan_nilai_C'));
             setNilai_D(sessionStorage.getItem('admin_psikotest_kecermatan_nilai_D'));
             setNilai_E(sessionStorage.getItem('admin_psikotest_kecermatan_nilai_E'));
-            return router.push('/admin/variabel');
+            return router.push('/admin/psikotest/kecermatan');
         }
         catch(err) {
-            console.log('Terjadi Kesalahan Membatalkan Update Variabel', err);
+            console.log('Terjadi Error PsikotestKecermatanBaru-cancel', err);
         }
     };
-    
-    const MemoHelmet = React.memo(function Memo() {
-        return(
-            <Myhelmet
-                title={`Tambah Psikotest Kecermatan Baru | Admin | Psikotest`}
-                pathURL={`/admin/psikotest/kecermatan/baru`}
-                robots={`none, nosnippet, noarchive, notranslate, noimageindex`}
-            />
-        );
-    });
-
-    const MemoAppbarku = React.memo(function Memo() {
-        return(
-            <Appbarku headTitle="Psikotest Kecermatan Baru" />
-        );
-    });
-
-    const MemoNavBreadcrumb = React.memo(function Memo() {
-        return(
-            <NavBreadcrumb content={`Admin / Psikotest/ Kecermatan / Baru`} hidden={`hidden`} />
-        );
-    });
-
-    const MemoFooter = React.memo(function Memo() {
-        return(
-            <Footer hidden={`hidden`} />
-        );
-    });
 
     return(
     <>
@@ -202,10 +206,10 @@ export default function PsikotestKecermatan() {
             <MemoHelmet />
             <MemoNavBreadcrumb />
             <MemoAppbarku />
-            <div className="p-5 mb-14">
+            <div className={`p-4 text-${textColor}`}>
                 <h1 className='hidden'>Halaman Tambah Psikotest Kecermatan Baru | Admin</h1>
                 <Box component="form"
-                    sx={{ '& > :not(style)': { m: 0, p: 1, width: '100%' } }}
+                    sx={{ '& > :not(style)': { marginTop: 2, p: 0, width: '100%' } }}
                     onSubmit={(e) => submit(e)}
                     noValidate
                     autoComplete="off">
@@ -239,7 +243,7 @@ export default function PsikotestKecermatan() {
                                 fullWidth sx={styledTextField}
                                 onChange={handleChange_nilai_E}
                                 defaultValue={nilai_E} />
-                    <Box sx={{ m: 1 }}>
+                    <Box>
                         <div>
                             <Button variant="contained" size="large" fullWidth color="primary" type="submit">
                                 Simpan

@@ -8,7 +8,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement
 // Registrasi komponen Chart.js
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend);
 
-HasilTes_GrafikKecermatan.propTypes = {
+GrafikHasilPsikotestKecermatan.propTypes = {
     hasilnilai_kolom_1: PropTypes.number,
     hasilnilai_kolom_2: PropTypes.number,
     hasilnilai_kolom_3: PropTypes.number,
@@ -16,7 +16,7 @@ HasilTes_GrafikKecermatan.propTypes = {
     hasilnilai_kolom_5: PropTypes.number
 };
 
-export default function HasilTes_GrafikKecermatan(props) {
+export default function GrafikHasilPsikotestKecermatan(props) {
     // Daftar label untuk grafik (Kolom)
     const label = [
         'Kolom 1',
@@ -28,7 +28,7 @@ export default function HasilTes_GrafikKecermatan(props) {
 
     // Menyusun dataset secara dinamis berdasarkan nilai kolom yang ada di props
     const dataset = {
-        label: 'Hasil Psikotes Kecermatan',
+        label: 'Hasil Psikotest Kecermatan',
         datasets: [{
             label: 'Nilai',
             data: [
@@ -39,9 +39,9 @@ export default function HasilTes_GrafikKecermatan(props) {
                 props.hasilnilai_kolom_5,
             ],
             fill: false,
-            borderColor: 'rgba(200, 200, 255, 1)',
+            borderColor: 'rgba(255, 50, 50, 1)',
             tension: 0.1,
-            pointBackgroundColor: 'rgba(200, 200, 255, 1)',
+            pointBackgroundColor: 'rgba(255, 50, 50, 1)',
             pointRadius: 5,
         },],
     };
@@ -58,33 +58,33 @@ export default function HasilTes_GrafikKecermatan(props) {
         plugins: {
             title: {
                 display: true,
-                text: 'Grafik Hasil Psikotes Kecermatan',
-                color: 'rgba(255, 255, 255, 1)',
+                text: 'Grafik Hasil Psikotest Kecermatan',
+                color: props.textColor,
                 font: {
                 size: 18,
                 },
             },
             tooltip: {
                 callbacks: {
-                label: (context) => {
-                    return `${context.dataset.label}: ${context.raw}`;
-                },
+                    label: (context) => {
+                        return `${context.dataset.label}: ${context.raw}`;
+                    },
                 },
             },
         },
         scales: {
             x: {
                 title: {
-                display: true,
-                text: 'Kolom',
-                color: 'rgba(255, 255, 255, 1)',
+                    display: true,
+                    text: 'Kolom',
+                    color: props.textColor,
                 },
             },
             y: {
                 title: {
-                display: true,
-                text: 'Nilai',
-                color: 'rgba(255, 255, 255, 1)',
+                    display: true,
+                    text: 'Nilai',
+                    color: props.textColor,
                 },
                 beginAtZero: true,
             },
@@ -93,10 +93,10 @@ export default function HasilTes_GrafikKecermatan(props) {
 
     return (
         <React.StrictMode>
-            <div className="text-white">
+            <div className={`props.textColor`}>
+                <h4 className='hidden'>Grafik Hasil Psikotest Kecermatan</h4>
                 <Line data={chartData} options={optionsData} />
             </div>
         </React.StrictMode>
-        
     );
 }
