@@ -30,69 +30,11 @@ import {
 } from '@/indexedDB/db';
 import { random } from '@/libraries/myfunction';
 
-const styledTextField = {
-    '& .MuiOutlinedInput-notchedOutline': {
-        border: '2px solid rgba(255, 255, 255, 0.9)',
-        color: '#fff',
-    },
-    '& .MuiInputLabel-root.MuiInputLabel-shrink': {
-        color: '#fff',
-    },
-    '& .MuiOutlinedInput-input': {
-        color: '#fff',
-    },
-    '& .MuiOutlinedInput-placeholder': {
-        color: '#fff',
-    },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'rgba(255, 255, 255, 0.8)', // warna hover
-    },
-    '&:hover .MuiInputLabel-root': {
-        color: '#fff', // warna hover
-    },
-    '& .MuiFormHelperText-root': {
-        color: '#fff',  // Warna helper text
-    },
-    color: '#fff',
-    marginTop: 3,
-}
-
 export default function Peserta() {
     const router = useRouter();
     const textColor = localStorage.getItem('text-color');
     const borderColor = localStorage.getItem('border-color');
-    const [loading, setLoading] = React.useState(true);
-
-    const [nama, setNama] = React.useState('');
-    const handleChange_Nama = (event) => {
-        event.preventDefault();
-        setNama(event.target.value);
-    }
-
-    const [no_identitas, setNo_identitas] = React.useState('');
-    const handleChange_No_identitas = (event) => {
-        event.preventDefault();
-        setNo_identitas(event.target.value);
-    }
-
-    const [email, setEmail] = React.useState('');
-    const handleChange_Email = (event) => {
-        event.preventDefault();
-        setEmail(event.target.value);
-    }
-
-    const [tgl_lahir, setTgl_lahir] = React.useState('');
-    const handleChange_Tgl_lahir = (event) => {
-        event.preventDefault();
-        setTgl_lahir(event.target.value);
-    }
-
-    const [asal, setAsal] = React.useState('');
-    const handleChange_Asal = (event) => {
-        event.preventDefault();
-        setAsal(event.target.value);
-    }
-
+    const [loading, setLoading] = React.useState(false);
     const [tgl_tes, setTgl_tes] = React.useState('');
     const [datex, isDatex] = React.useState(false);
     const [sesiPsikotestKecermatan, setSesiPsikotestKecermatan] = React.useState(0);
@@ -103,6 +45,39 @@ export default function Peserta() {
     const month = getDate.getMonth() + 1;
     const date = getDate.getDate();
     const today = `${year}-${month}-${date}`;
+
+    const [nama, setNama] = React.useState('');
+    const [no_identitas, setNo_identitas] = React.useState('');
+    const [email, setEmail] = React.useState('');
+    const [tgl_lahir, setTgl_lahir] = React.useState('');
+    const [asal, setAsal] = React.useState('');
+
+    const styledTextField = {
+        '& .MuiOutlinedInput-notchedOutline': {
+            border: '2px solid rgba(255, 255, 255, 0.9)',
+            color: '#fff',
+        },
+        '& .MuiInputLabel-root.MuiInputLabel-shrink': {
+            color: '#fff',
+        },
+        '& .MuiOutlinedInput-input': {
+            color: '#fff',
+        },
+        '& .MuiOutlinedInput-placeholder': {
+            color: '#fff',
+        },
+        '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'rgba(255, 255, 255, 0.8)', // warna hover
+        },
+        '&:hover .MuiInputLabel-root': {
+            color: '#fff', // warna hover
+        },
+        '& .MuiFormHelperText-root': {
+            color: '#fff',  // Warna helper text
+        },
+        color: '#fff',
+        marginTop: 3,
+    }
 
     const UseDB = async() => {
 		try {
@@ -172,18 +147,70 @@ export default function Peserta() {
         setLoading(false);
     };
 
+    const MemoHelmet = React.memo(function Memo() {
+        return(
+            <Myhelmet
+                title={`Formulir Peserta | Psikotest Online App`}
+                pathURL={`/peserta`}
+                robots={`index, follow, snippet, max-snippet:99, max-image-preview:standard, noarchive, notranslate`}
+                onetime={true}
+            />
+        );
+    });
+
+    const MemoNavBreadcrumb = React.memo(function Memo() {
+        return(
+            <NavBreadcrumb content={`Peserta`} hidden={`hidden`} />
+        );
+    });
+
+    const MemoFooter = React.memo(function Memo() {
+        return(
+            <Footer otherCSS={`bottom-0 w-full`} />
+        );
+    });
+
+    const handleChange_Nama = (event) => {
+        event.preventDefault();
+        setNama(event.target.value);
+    }
+
+    
+    const handleChange_No_identitas = (event) => {
+        event.preventDefault();
+        setNo_identitas(event.target.value);
+    }
+
+    const handleChange_Email = (event) => {
+        event.preventDefault();
+        setEmail(event.target.value);
+    }
+
+    const handleChange_Tgl_lahir = (event) => {
+        event.preventDefault();
+        setTgl_lahir(event.target.value);
+    }
+
+    const handleChange_Asal = (event) => {
+        event.preventDefault();
+        setAsal(event.target.value);
+    }
+
     const submit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            if (!nama || !no_identitas || !tgl_lahir) alert('Nama, No Identitas, dan Tanggal Lahir harus diisi.');
+            if (!nama || !no_identitas || !tgl_lahir) {
+                alert('Nama, No Identitas, dan Tanggal Lahir harus diisi.');
+            }
             else {
                 axios.defaults.withCredentials = true;
                 axios.defaults.withXSRFToken = true;
-                const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                const csrfToken = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                    method: 'GET',
                     withCredentials: true,  // Mengirimkan cookie dalam permintaan
                 });
-                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/setup`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/peserta/setup`, {
                     nama: nama,
                     no_identitas: no_identitas,
                     email: email,
@@ -191,6 +218,7 @@ export default function Peserta() {
                     asal: asal,
                     tgl_tes: tgl_tes
                 }, {
+                    method: 'POST',
                     withCredentials: true,  // Mengirimkan cookie dalam permintaan
                     headers: {
                         'X-API-KEY': process.env.APP_FAST_API_KEY,
@@ -199,7 +227,7 @@ export default function Peserta() {
                         'tokenlogin': random('combwisp', 50),
                     }
                 });
-                // console.info('response', response);
+                console.info('response', response);
                 if(parseInt(response.data.success) == 1) {
                     sessionStorage.setItem('id_peserta_psikotest', response.data.res);
                     sessionStorage.setItem('nama_peserta_psikotest', nama);
@@ -239,6 +267,11 @@ export default function Peserta() {
             sessionStorage.removeItem(`nilai_total_psikotest_kecermatan_kolom3`);
             sessionStorage.removeItem(`nilai_total_psikotest_kecermatan_kolom4`);
             sessionStorage.removeItem(`nilai_total_psikotest_kecermatan_kolom5`);
+            sessionStorage.removeItem(`sisawaktu_pengerjaan_peserta_psikotest_kecermatan_sesi1`);
+            sessionStorage.removeItem(`sisawaktu_pengerjaan_peserta_psikotest_kecermatan_sesi2`);
+            sessionStorage.removeItem(`sisawaktu_pengerjaan_peserta_psikotest_kecermatan_sesi3`);
+            sessionStorage.removeItem(`sisawaktu_pengerjaan_peserta_psikotest_kecermatan_sesi4`);
+            sessionStorage.removeItem(`sisawaktu_pengerjaan_peserta_psikotest_kecermatan_sesi5`);
             router.push(`/peserta/psikotest/kecermatan/`);
         }
         catch(err) {
@@ -266,6 +299,11 @@ export default function Peserta() {
             sessionStorage.removeItem(`nilai_total_psikotest_kecermatan_kolom3`);
             sessionStorage.removeItem(`nilai_total_psikotest_kecermatan_kolom4`);
             sessionStorage.removeItem(`nilai_total_psikotest_kecermatan_kolom5`);
+            sessionStorage.removeItem(`sisawaktu_pengerjaan_peserta_psikotest_kecermatan_sesi1`);
+            sessionStorage.removeItem(`sisawaktu_pengerjaan_peserta_psikotest_kecermatan_sesi2`);
+            sessionStorage.removeItem(`sisawaktu_pengerjaan_peserta_psikotest_kecermatan_sesi3`);
+            sessionStorage.removeItem(`sisawaktu_pengerjaan_peserta_psikotest_kecermatan_sesi4`);
+            sessionStorage.removeItem(`sisawaktu_pengerjaan_peserta_psikotest_kecermatan_sesi5`);
             router.push(`/`);
         }
         catch(err) {
@@ -274,46 +312,6 @@ export default function Peserta() {
         }
         setLoading(false);
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    React.useEffect(() => {
-        indexedDB();
-        checkData();
-    }, []);
-
-    if(loading) {
-        return (
-            <h2 className='text-center p-8'>
-                <p><span className='font-bold text-2lg'>
-                    Sedang memuat data... Mohon Harap Tunggu...
-                </span></p>
-                <CircularProgress color="info" size={50} />
-            </h2>
-        );
-    }
-
-    const MemoHelmet = React.memo(function Memo() {
-        return(
-            <Myhelmet
-                title={`Formulir Peserta | Psikotest Online App`}
-                pathURL={`/peserta`}
-                robots={`index, follow, snippet, max-snippet:99, max-image-preview:standard, noarchive, notranslate`}
-                onetime={true}
-            />
-        );
-    });
-
-    const MemoNavBreadcrumb = React.memo(function Memo() {
-        return(
-            <NavBreadcrumb content={`Peserta`} hidden={`hidden`} />
-        );
-    });
-
-    const MemoFooter = React.memo(function Memo() {
-        return(
-            <Footer otherCSS={`bottom-0 w-full`} />
-        );
-    });
 
     const FormIsSession = () => {
         if(datex) {
@@ -359,10 +357,10 @@ export default function Peserta() {
                     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]" >
                         <div className="flex flex-col gap-8 row-start-2 items-center sm:items-start text-center">
                             <Link rel='follow' title='Kembali' href='/' onClick={(e) => onBack(e)} sx={{ color: 'white' }}>
-                                <h1 className={`font-bold underline text-2lg uppercase ${textColor}`}>
+                                <h1 className={`font-bold underline text-2lg uppercase text-${textColor}`}>
                                     Silahkan datang esok hari lagi!
                                 </h1>
-                                <h2 className={`underline uppercase ${textColor}`}>
+                                <h2 className={`underline uppercase text-${textColor}`}>
                                     Silahkan Klik disini untuk kembali ke halaman Beranda
                                 </h2>
                             </Link>
@@ -373,7 +371,23 @@ export default function Peserta() {
         }
     }
 
-    if(datex) {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    React.useEffect(() => {
+        indexedDB();
+        checkData();
+    }, []);
+
+    if(loading) {
+        return (
+            <h2 className='text-center p-8'>
+                <p><span className='font-bold text-2lg'>
+                    Sedang memuat data... Mohon Harap Tunggu...
+                </span></p>
+                <CircularProgress color="info" size={50} />
+            </h2>
+        );
+    }
+    else if(datex) {
         return(
             <>
                 <MemoHelmet />
@@ -400,7 +414,7 @@ export default function Peserta() {
                             noValidate
                             autoComplete="off">
                             <h1 className="hidden">Halaman Formulir Peserta Psikotest</h1>
-                            <h2 className="text-2xl text-bold uppercase font-bold text-center">Peserta</h2>
+                            <h2 className="text-2xl text-bold uppercase font-bold text-center text-white">Peserta</h2>
                             <div className='form_admin_peserta text-left'>
                                 <TextField  type="text" id="nama" variant="outlined" required focused
                                             placeholder="Nama..." label="Nama..."

@@ -46,13 +46,13 @@ export default function ListPeserta(props) {
                     <For each={props.listpeserta}>
                         {(data, index) =>
                             <Link href='/admin/peserta/detil' rel="follow" title={`Detil Peserta ${data.nama}`} onClick={() => goTo(data.id) } key={index}>
-                                <div key={index} className={`bg-slate-50 border-b-2 p-3 rounded-t-md mt-2 text-${props.textColor} border-${props.borderColor}`}>
+                                <h3 key={index} className={`bg-slate-50 border-b-2 p-3 rounded-t-md mt-2 text-${props.textColor} border-${props.borderColor}`}>
                                     {isLatest(props.isLatest, data.tgl_ujian)}
                                     <p><span className="font-bold">{data.nama}</span></p>
                                     <p>{data.no_identitas}</p>
                                     <p>{data.email}</p>
                                     <p>{data.asal}</p>
-                                </div>
+                                </h3>
                             </Link>
                         }
                     </For>

@@ -74,7 +74,6 @@ export default function Admin() {
             setSessionAdmin(new Date(localStorage.getItem('sesi_admin')));
         }
     }, []);
-    console.info('cdate', cdate);
     // console.info('sessionAdmin', Date.now(sessionAdmin.expire_at));
 
     if(loading) {

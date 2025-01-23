@@ -5,6 +5,7 @@
 import "./globals.css";
 import "./animate.css";
 import * as React from 'react';
+import dynamic from 'next/dynamic';
 import localFont from "next/font/local";
 import axios from 'axios';
 import Cookies from 'js-cookie';

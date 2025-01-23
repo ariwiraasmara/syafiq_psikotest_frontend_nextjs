@@ -54,8 +54,8 @@ export default function PesertaPsikotestKecermatan() {
     const [dataSoalJawaban, setDataSoalJawaban] = React.useState([]);
     const [variabel, setVariabel] = React.useState(0);
     const [timeLeft, setTimeLeft] = React.useState();
-    const [loading, setLoading] = React.useState(true);
-    const [loadingTimer, setLoadingTimer] = React.useState(true);
+    const [loading, setLoading] = React.useState(false);
+    const [loadingTimer, setLoadingTimer] = React.useState(false);
     const [isDoTest, setIsDoTest] = React.useState(false);
 
     const [jawabanUser, setJawabanUser] = React.useState({});
@@ -64,11 +64,11 @@ export default function PesertaPsikotestKecermatan() {
 
     const handleChange_nilaiTotal = React.useCallback((event, index, kuncijawaban) => {
         const value = parseInt(event.target.value);
-        // console.info('handleChange_nilaiTotal: value', value);
+        console.info('handleChange_nilaiTotal: value', value);
 
         const correctAnswer = parseInt(kuncijawaban);
         // const correctAnswer = parseInt(kuncijawaban);
-        // console.info('handleChange_nilaiTotal: correctAnswer', correctAnswer);
+        console.info('handleChange_nilaiTotal: correctAnswer', correctAnswer);
 
         // Update jawabanUser untuk setiap perubahan
         setJawabanUser(prevjawabanuser => {
@@ -98,7 +98,7 @@ export default function PesertaPsikotestKecermatan() {
          */
 
         setNilaiTotal(prevnilaitotal => {
-            // console.log(`jawabanUser${index}`, jawabanUser);
+            console.log(`jawabanUser${index}`, jawabanUser);
             if(jawabanUser[index]) { //? Mengecek jika jawabanUser sudah tersedia atau belum
                 //? jika ya
                 if(value === correctAnswer) { //? ketika jawaban benar
@@ -106,12 +106,12 @@ export default function PesertaPsikotestKecermatan() {
                     nilaiTotalRef.current = res;
                     sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom${sessionID}`, nilaiTotalRef.current);
                     // console.info('nilaiTotalRef', nilaiTotalRef);
-                    // console.info('jawaban benar', res);
+                    console.info('jawaban benar', res);
                     return res;
                 }
                 else { //? ketika jawaban salah
                     const res = prevnilaitotal - 1; //? Berkurang 1
-                    // console.info('jawaban salah', res);
+                    console.info('jawaban salah', res);
                     return res;
                     //? alasan karena ketika user bermain curang maka bagian ini tertrigger ketika user  hanya memindahkan radio button saja.
                 }
@@ -123,11 +123,11 @@ export default function PesertaPsikotestKecermatan() {
                     nilaiTotalRef.current = res;
                     sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom${sessionID}`, nilaiTotalRef.current);
                     // console.info('nilaiTotalRef', nilaiTotalRef);
-                    // console.info('jawaban benar', res);
+                    console.info('jawaban benar', res);
                     return res;
                 } else { //? ketika jawaban salah
                     const res = prevnilaitotal - 0; //? nilai tidak bertambah maupun berkurang
-                    // console.info('jawaban salah', res);
+                    console.info('jawaban salah', res);
                     return res;
                 }
             }
@@ -145,16 +145,62 @@ export default function PesertaPsikotestKecermatan() {
         try {
             if(!checkCompatibility) {
                 alert('Browser Tidak Support');
-                return router.push(`/peserta`);
+                router.push(`/peserta`);
             }
             else {
                 setLoadingTimer(true);
-                const pertanyaan = await readPertanyaan(sessionID);
-                const soal = await readSoalJawaban(sessionID);
-                const jawaban = await readKunciJawaban(sessionID);
-                setDataPertanyaan(pertanyaan);
-                setDataSoalJawaban(soal);
-                setDataJawaban(jawaban);
+                // const pertanyaan = await readPertanyaan(sessionID);
+                // const soal = await readSoalJawaban(sessionID);
+                // const jawaban = await readKunciJawaban(sessionID);
+                axios.defaults.withCredentials = true;
+                axios.defaults.withXSRFToken = true;
+                const csrfToken1 = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                    withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                });
+                const response_pertanyaan = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/indexedDB/psikotest/kecermatan/pertanyaan/${sessionID}`, {
+                    withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    headers: {
+                        'XSRF-TOKEN': csrfToken1,
+                        'Content-Type': 'application/json',
+                        'indexeddb' : 'syafiq_psikotest',
+                        'tokenlogin': random('combwisp', 50),
+                        '--unique--': 'I am unique!',
+                        'isvalid': 'VALID!',
+                        'isallowed': true,
+                        'key': 'key',
+                        'values': 'values',
+                        'isdumb': 'no',
+                        'challenger': 'of course',
+                        'pranked': 'absolutely'
+                    }
+                });
+                const csrfToken2 = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+                    withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                });
+                const response_soaljawaban = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/indexedDB/psikotest/kecermatan/soaljawaban/${sessionID}`, {
+                    withCredentials: true,  // Mengirimkan cookie dalam permintaan
+                    headers: {
+                        'XSRF-TOKEN': csrfToken2,
+                        'Content-Type': 'application/json',
+                        'indexeddb' : 'syafiq_psikotest',
+                        'tokenlogin': random('combwisp', 50),
+                        '--unique--': 'I am unique!',
+                        'isvalid': 'VALID!',
+                        'isallowed': true,
+                        'key': 'key',
+                        'values': 'values',
+                        'isdumb': 'no',
+                        'challenger': 'of course',
+                        'pranked': 'absolutely'
+                    }
+                });
+
+                console.info('resresponse_pertanyaan', response_pertanyaan);
+                setDataPertanyaan(response_pertanyaan.data[0]);
+
+                console.info('resresponse_soaljawaban', response_soaljawaban);
+                setDataSoalJawaban(response_soaljawaban.data);
+                // setDataJawaban(jawaban);
                 setJawabanUser({});
                 setNilaiTotal(0);
                 sessionStorage.setItem(`nilai_total_psikotest_kecermatan_kolom${sessionID}`, 0);
@@ -165,20 +211,18 @@ export default function PesertaPsikotestKecermatan() {
         catch (error) {
             console.error('Terjadi kesalahan saat memeriksa cache:', error);
         }
-        
         setLoading(false);
     }
 
-    /*const getVariabel = async() => {
-        setIsDoTest(false);
+    const getVariabel = async() => {
         setLoadingTimer(true);
         try {
             axios.defaults.withCredentials = true;
             axios.defaults.withXSRFToken = true;
-            const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
+            const csrfToken = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
             });
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting/1`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BACKEND}/api/variabel-setting/1`, {
                 withCredentials: true,  // Mengirimkan cookie dalam permintaan
                 headers: {
                     'Content-Type': 'application/json',
@@ -187,17 +231,18 @@ export default function PesertaPsikotestKecermatan() {
                     'tokenlogin': random('combwisp', 50),
                 }
             });
+            setIsDoTest(false);
             setVariabel(response.data.data[0].values);
             setTimeLeft(response.data.data[0].values);
+            setIsDoTest(true);
         }
         catch(err) {
             console.info('Error getVariabel halaman Peserta', err);
         }
         setLoadingTimer(false);
-        setIsDoTest(true);
-    }*/
+    }
 
-    const getVariabel = async () => {
+    /*const getVariabel = async () => {
         setIsDoTest(false);
         setLoadingTimer(true); // Menandakan bahwa proses loading sedang berjalan
         try {
@@ -214,7 +259,7 @@ export default function PesertaPsikotestKecermatan() {
                 setTimeLeft(cachedData[0].values); // Mengambil waktu awal
 
                 // Cek waktu atau versi data di server jika memungkinkan
-                /*try {
+                try {
                     axios.defaults.withCredentials = true;
                     axios.defaults.withXSRFToken = true;
                     const csrfToken = await axios.get(`${process.env.NEXT_PUBLIC_API_BACKEND}/sanctum/csrf-cookie`, {
@@ -253,7 +298,7 @@ export default function PesertaPsikotestKecermatan() {
                     }
                 } catch (error) {
                     console.error('Terjadi kesalahan saat mengambil data terbaru:', error);
-                }*/
+                }/
             } else {
                 // Jika data tidak ditemukan di cache, ambil dari API
                 console.log('Data tidak ditemukan di cache');
@@ -294,7 +339,7 @@ export default function PesertaPsikotestKecermatan() {
         }
         setLoadingTimer(false);
         setIsDoTest(true);
-    };
+    };*/
 
     // Format waktu menjadi menit:detik
     const formatTime = (time) => {
@@ -312,32 +357,32 @@ export default function PesertaPsikotestKecermatan() {
             getData();
             getVariabel()
             if(isDoTest) {
-            let hasUpdatedSessionID = false;
-            const interval = setInterval(() => {
-                setTimeLeft((prevTime) => {
-                    if (prevTime <= 0 && !hasUpdatedSessionID) {
-                        setSessionID((prevSessionID) => {
-                            const nextSessionID = prevSessionID + 1;
-                            sessionStorage.setItem('sesi_psikotest_kecermatan', nextSessionID);
-                            return nextSessionID;
-                        });
-                        hasUpdatedSessionID = true;
-                        clearInterval(interval);
-                        // Menyimpan nilaiTotal setelah interval selesai dengan sedikit penundaan
-                        setTimeout(() => {
-                            if (sessionID > 5) {
-                                submit();
-                            } else {
-                                router.push(`/peserta/psikotest/kecermatan/`);
-                            }
-                        }, 60000); // Menunda penyimpanan nilaiTotal beberapa detik
-                    }
-                    let res = prevTime - 1;
-                    sessionStorage.setItem(`sisawaktu_pengerjaan_peserta_psikotest_kecermatan_sesi${sessionID}`, res);
-                    return res;
-                });
-            }, 1000);
-            return () => clearInterval(interval);
+                let hasUpdatedSessionID = false;
+                const interval = setInterval(() => {
+                    setTimeLeft((prevTime) => {
+                        if (prevTime <= 0 && !hasUpdatedSessionID) {
+                            setSessionID((prevSessionID) => {
+                                const nextSessionID = prevSessionID + 1;
+                                sessionStorage.setItem('sesi_psikotest_kecermatan', nextSessionID);
+                                return nextSessionID;
+                            });
+                            hasUpdatedSessionID = true;
+                            clearInterval(interval);
+                            // Menyimpan nilaiTotal setelah interval selesai dengan sedikit penundaan
+                            setTimeout(() => {
+                                if (sessionID > 5) {
+                                    submit();
+                                } else {
+                                    router.push(`/peserta/psikotest/kecermatan/`);
+                                }
+                            }, 60000); // Menunda penyimpanan nilaiTotal beberapa detik
+                        }
+                        let res = prevTime - 1;
+                        sessionStorage.setItem(`sisawaktu_pengerjaan_peserta_psikotest_kecermatan_sesi${sessionID}`, res);
+                        return res;
+                    });
+                }, 1000);
+                return () => clearInterval(interval);
             }
         }
     }, [sessionID, isDoTest, nilaiTotalRef]);
@@ -485,7 +530,7 @@ export default function PesertaPsikotestKecermatan() {
                                     <h2 className='hidden'>Soal Psikotest Kecermatan {dataPertanyaan.kolom_x}</h2>
                                     <FormControl>
                                         {dataSoalJawaban.map((data, index) => (
-                                            <div className="border-4 mt-4 rounded-lg border-black p-4 bg-gray-400" id={`row${index}`} key={index}>
+                                            <div className="border-4 mt-4 rounded-lg w-full border-black p-2 content-center bg-gray-400" id={`row${index}`} key={index}>
                                                 <MemoSoal
                                                     soal1={data.soal_jawaban.soal[0][0]}
                                                     soal2={data.soal_jawaban.soal[0][1]}
@@ -497,7 +542,7 @@ export default function PesertaPsikotestKecermatan() {
                                                     aria-labelledby="demo-row-radio-buttons-group-label"
                                                     name="row-radio-buttons-group"
                                                     value={jawabanUser[index] || ''}
-                                                    onChange={(event) => handleChange_nilaiTotal(event, index, dataJawaban[index].kunci_jawaban)}
+                                                    onChange={(event) => handleChange_nilaiTotal(event, index, data.soal_jawaban.jawaban)}
                                                 >
                                                     <FormControlLabel value={dataPertanyaan.nilai_A} control={<Radio />} label="A" />
                                                     <FormControlLabel value={dataPertanyaan.nilai_B} control={<Radio />} label="B" />

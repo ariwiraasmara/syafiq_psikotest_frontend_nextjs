@@ -5,6 +5,7 @@
 import RootLayout from '../../app/layout';
 import * as React from 'react';
 import PropTypes from 'prop-types';
+import dynamic from 'next/dynamic';
 
 Layout.propTypes = {
   children: PropTypes.any,

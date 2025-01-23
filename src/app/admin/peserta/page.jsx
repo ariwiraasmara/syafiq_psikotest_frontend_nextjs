@@ -424,6 +424,7 @@ export default function AdminPeserta() {
                     </h2>
                 ) : (
                     <div className='p-4 mb-32'>
+                        <h2 className='hidden'>Daftar Peserta</h2>
                         <ListPeserta listpeserta={data} textColor={textColor} borderColor={borderColor} />
                     </div>
                 )}
